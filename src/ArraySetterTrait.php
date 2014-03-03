@@ -15,10 +15,15 @@
     limitations under the License.
 */
 
-class UtilTest extends PHPUnit_Framework_TestCase {
-    public function testGetUUID() {
-        $result = TinCan\Util::getUUID();
+namespace TinCan;
 
-        $this->assertRegExp(TinCan\Util::UUID_REGEX, $result);
+trait ArraySetterTrait {
+    private function _fromArray($options) {
+        foreach (get_object_vars($this) as $k => $v) {
+            $method = 'set' . ucfirst($k);
+            if (isset($options[$k]) && method_exists($this, $method)) {
+                $this->$method($options[$k]);
+            }
+        }
     }
 }

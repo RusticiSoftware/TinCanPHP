@@ -18,41 +18,42 @@
 namespace TinCan;
 
 class Verb implements VersionableInterface {
-    use FromJSONTrait;
+    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
 
     protected $id;
     protected $display;
+
+    static private $directProps = array(
+        'id',
+    );
+    static private $versionedProps = array(
+        'display',
+    );
 
     public function __construct() {
         if (func_num_args() == 1) {
             $arg = func_get_arg(0);
 
-            if (isset($arg['id'])) {
-                $this->setId($arg['id']);
-            }
-            if (isset($arg['display'])) {
-                $this->setDisplay($arg['display']);
-            }
-        }
-    }
-
-    public function asVersion($version) {
-        $result = array();
-        if (isset($this->id)) {
-            $result['id'] = $this->id;
-        }
-        if (isset($this->display)) {
-            $result['display'] = $this->display;
+            $this->_fromArray($arg);
         }
 
-        return $result;
+        if (! isset($this->display)) {
+            $this->setDisplay(array());
+        }
     }
 
     // FEATURE: check IRI?
     public function setId($value) { $this->id = $value; return $this; }
     public function getId() { return $this->id; }
 
-    // TODO: provide display language interface rather than direct?
-    public function setDisplay($value) { $this->display = $value; return $this; }
+    public function setDisplay($value) {
+        if ($value instanceof LanguageMap) {
+            $this->display = $value;
+        }
+        else {
+            $this->display = new LanguageMap($value);
+        }
+        return $this;
+    }
     public function getDisplay() { return $this->display; }
 }

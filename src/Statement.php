@@ -18,7 +18,7 @@
 namespace TinCan;
 
 class Statement implements VersionableInterface {
-    use FromJSONTrait;
+    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
 
     protected $id;
     protected $actor;
@@ -58,50 +58,23 @@ class Statement implements VersionableInterface {
         if (func_num_args() == 1) {
             $arg = func_get_arg(0);
 
-            if (isset($arg['id'])) {
-                $this->setId($arg['id']);
-            }
-            if (isset($arg['actor'])) {
-                $this->setActor($arg['actor']);
-            }
-            if (isset($arg['verb'])) {
-                $this->setVerb($arg['verb']);
-            }
-            if (isset($arg['target'])) {
-                $this->setTarget($arg['target']);
-            }
+            $this->_fromArray($arg);
+
+            //
+            // 'object' isn't in the list of properties so ._fromArray doesn't
+            // pick it up correctly, but 'target' and 'object' shouldn't be in
+            // the args at the same time, so handle 'object' here
+            //
             if (isset($arg['object'])) {
-                $this->setTarget($arg['object']);
-            }
-            if (isset($arg['timestamp'])) {
-                $this->setTimestamp($arg['timestamp']);
-            }
-            if (isset($arg['stored'])) {
-                $this->setStored($arg['stored']);
+                $this->setObject($arg['object']);
             }
         }
     }
 
-    // TODO: make this a trait?
-    public function asVersion($version) {
-        $result = array();
-
-        foreach (self::$directProps as $key) {
-            if (isset($this->$key)) {
-                $result[$key] = $this->$key;
-            }
-        }
-        foreach (self::$versionedProps as $key) {
-            if (isset($this->$key)) {
-                $result[$key] = $this->$key->asVersion($version);
-            }
-        }
-
+    private function _asVersion(&$result, $version) {
         if (isset($this->target)) {
             $result['object'] = $this->target->asVersion($version);
         }
-
-        return $result;
     }
 
     public function stamp() {
@@ -109,8 +82,13 @@ class Statement implements VersionableInterface {
         $this->setTimestamp(Util::getTimestamp());
     }
 
-    // FEATURE: check IRI?
-    public function setId($value) { $this->id = $value; return $this; }
+    public function setId($value) {
+        if (! preg_match(Util::UUID_REGEX, $value)) {
+            throw new InvalidArgumentException('arg1 must be a UUIDv4');
+        }
+        $this->id = $value;
+        return $this;
+    }
     public function getId() { return $this->id; }
     public function hasId() { return isset($this->id); }
 
@@ -153,6 +131,28 @@ class Statement implements VersionableInterface {
     public function setObject($value) { return $this->setTarget($value); }
     public function getObject() { return $this->getTarget(); }
 
+    public function setResult($value) {
+        if ($value instanceof Result) {
+            $this->result = $value;
+        }
+        else {
+            $this->result = new Result($value);
+        }
+        return $this;
+    }
+    public function getResult() { return $this->result; }
+
+    public function setContext($value) {
+        if ($value instanceof Context) {
+            $this->context = $value;
+        }
+        else {
+            $this->context = new Context($value);
+        }
+        return $this;
+    }
+    public function getContext() { return $this->context; }
+
     public function setTimestamp($value) {
         if ($value instanceof \DateTime) {
             $this->timestamp = $value->format(\DateTime::ISO8601);
@@ -180,4 +180,18 @@ class Statement implements VersionableInterface {
         return $this;
     }
     public function getStored() { return $this->stored; }
+
+    public function setAuthority($value) {
+        if ($value instanceof Agent) {
+            $this->authority = $value;
+        }
+        else {
+            $this->authority = new Agent($value);
+        }
+        return $this;
+    }
+    public function getAuthority() { return $this->authority; }
+
+    public function setVersion($value) { $this->version = $value; return $this; }
+    public function getVersion() { return $this->version; }
 }

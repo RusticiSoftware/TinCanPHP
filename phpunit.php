@@ -8,13 +8,24 @@ require_once('src/LRSInterface.php');
 require_once('src/StatementTargetInterface.php');
 require_once('src/VersionableInterface.php');
 
+require_once('src/ArraySetterTrait.php');
 require_once('src/FromJSONTrait.php');
+require_once('src/AsVersionTrait.php');
+
+require_once('src/Map.php');
 
 require_once('src/Util.php');
 require_once('src/Version.php');
+require_once('src/LanguageMap.php');
+require_once('src/Extensions.php');
+require_once('src/ActivityDefinition.php');
 require_once('src/Activity.php');
 require_once('src/Agent.php');
 require_once('src/Verb.php');
+require_once('src/ContextActivities.php');
+require_once('src/Context.php');
+//require_once('src/Score.php');
+//require_once('src/Result.php');
 require_once('src/Statement.php');
 require_once('src/RemoteLRS.php');
 

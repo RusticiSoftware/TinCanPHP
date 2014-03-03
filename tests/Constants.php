@@ -18,7 +18,6 @@
 //
 // Some constants used throughout the various test cases
 //
-define('UUID_V4_REGEX',      '/[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}/');
 define('COMMON_EMAIL',       'tincanphp@tincanapi.com');
 define('COMMON_MBOX',        'mailto:tincanphp@tincanapi.com');
 define('COMMON_VERB_ID',     'http://adlnet.gov/expapi/verbs/experienced');

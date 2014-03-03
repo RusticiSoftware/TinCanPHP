@@ -18,11 +18,20 @@
 namespace TinCan;
 
 class Activity implements VersionableInterface, StatementTargetInterface {
-    use FromJSONTrait;
+    use FromJSONTrait, AsVersionTrait;
     private $objectType = 'Activity';
 
     protected $id;
     protected $definition;
+
+    static private $directProps = array(
+        'objectType',
+        'id',
+    );
+
+    static private $versionedProps = array(
+        'definition',
+    );
 
     public function __construct() {
         if (func_num_args() == 1) {
@@ -37,26 +46,20 @@ class Activity implements VersionableInterface, StatementTargetInterface {
         }
     }
 
-    public function asVersion($version) {
-        $result = array(
-            'objectType' => $this->objectType
-        );
-        if (isset($this->id)) {
-            $result['id'] = $this->id;
-        }
-        if (isset($this->definition)) {
-            $result['definition'] = $this->definition;
-        }
-
-        return $result;
-    }
-
     public function getObjectType() { return $this->objectType; }
 
     // FEATURE: check IRI?
     public function setId($value) { $this->id = $value; return $this; }
     public function getId() { return $this->id; }
 
-    public function setDefinition($value) { $this->definition = $value; return $this; }
+    public function setDefinition($value) {
+        if ($value instanceof ActivityDefinition) {
+            $this->definition = $value;
+        }
+        else {
+            $this->definition = new ActivityDefinition($value);
+        }
+        return $this;
+    }
     public function getDefinition() { return $this->definition; }
 }

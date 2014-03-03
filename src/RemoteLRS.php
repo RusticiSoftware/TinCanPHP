@@ -61,7 +61,7 @@ class RemoteLRS implements LRSInterface {
     }
 
     public function saveStatement($statement) {
-        $strSt = json_encode($statement->asVersion($this->version));
+        $strSt = json_encode($statement->asVersion($this->version), JSON_UNESCAPED_SLASHES);
 
         $resp = $this->sendRequest(
             ($statement->hasId() ? 'PUT' : 'POST'),

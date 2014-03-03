@@ -15,10 +15,7 @@
     limitations under the License.
 */
 
-class UtilTest extends PHPUnit_Framework_TestCase {
-    public function testGetUUID() {
-        $result = TinCan\Util::getUUID();
+namespace TinCan;
 
-        $this->assertRegExp(TinCan\Util::UUID_REGEX, $result);
-    }
+class LanguageMap extends Map {
 }
