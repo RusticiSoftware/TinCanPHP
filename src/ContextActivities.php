@@ -64,12 +64,10 @@ class ContextActivities implements VersionableInterface {
         $result = array();
 
         foreach (self::$directProps as $k) {
-            if (isset($this->$k) && count($this->$k) > 0) {
-                print "$k has activities\n";
-                if (! isset($result[$k])) {
-                    $result[$k] = array();
-                }
-                $inner = $this->$k;
+            $inner = $this->$k;
+            if (isset($inner) && count($inner) > 0) {
+                $result[$k] = array();
+
                 foreach ($inner as $act) {
                     array_push($result[$k], $act->asVersion($version));
                 }
@@ -78,12 +76,35 @@ class ContextActivities implements VersionableInterface {
         return $result;
     }
 
-    public function setCategory($value) { $this->category = $value; return $this; }
+    private function _listSetter($prop, $value) {
+        if (is_array($value)) {
+            if (isset($value['id'])) {
+                array_push($this->$prop, new Activity($value));
+            }
+            else {
+                foreach ($value as $k => $v) {
+                    if (! $value[$k] instanceof Activity) {
+                        $value[$k] = new Activity($value[$k]);
+                    }
+                }
+                $this->$prop = $value;
+            }
+        }
+        else if ($value instanceof Activity) {
+            array_push($this->$prop, $value);
+        }
+        else {
+            throw new \InvalidArgumentException('type of arg1 must be Activity, array of Activity properties, or array of Activity/array of Activity properties');
+        }
+        return $this;
+    }
+
+    public function setCategory($value) { return $this->_listSetter('category', $value); }
     public function getCategory() { return $this->category; }
-    public function setParent($value) { $this->parent = $value; return $this; }
+    public function setParent($value) { return $this->_listSetter('parent', $value); }
     public function getParent() { return $this->parent; }
-    public function setGrouping($value) { $this->grouping = $value; return $this; }
+    public function setGrouping($value) { return $this->_listSetter('grouping', $value); }
     public function getGrouping() { return $this->grouping; }
-    public function setOther($value) { $this->other = $value; return $this; }
+    public function setOther($value) { return $this->_listSetter('other', $value); }
     public function getOther() { return $this->other; }
 }
