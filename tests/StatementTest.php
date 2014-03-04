@@ -62,7 +62,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
         $obj->stamp();
 
         $this->assertAttributeInternalType('string', 'timestamp', $obj, 'timestamp is string');
-        $this->assertRegExp(UUID_V4_REGEX, $obj->getId(), 'id is UUId');
+        $this->assertRegExp(TinCan\Util::UUID_REGEX, $obj->getId(), 'id is UUId');
     }
 
     /*
