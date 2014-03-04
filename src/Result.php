@@ -45,12 +45,8 @@ class Result implements VersionableInterface {
             $this->_fromArray($arg);
         }
 
-        foreach ([ 'extensions' ] as $k) {
-            $method = 'set' . ucfirst($k);
-
-            if (! isset($this->$k)) {
-                $this->$method(array());
-            }
+        if (! isset($this->extensions)) {
+            $this->setExtensions(array());
         }
     }
 
