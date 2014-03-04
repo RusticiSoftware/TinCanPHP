@@ -32,7 +32,7 @@ abstract class Map implements VersionableInterface {
     }
 
     public function asVersion($version) {
-        if (count($this->_map) > 0) {
+        if (! $this->isEmpty()) {
             return $this->_map;
         }
     }
@@ -42,6 +42,10 @@ abstract class Map implements VersionableInterface {
     }
     private function _unset($code) {
         unset($this->_map[$code]);
+    }
+
+    public function isEmpty() {
+        return count($this->_map) === 0;
     }
 
     public function __call($func, $args) {

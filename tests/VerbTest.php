@@ -22,7 +22,7 @@ class VerbTest extends PHPUnit_Framework_TestCase {
         $obj = new Verb();
         $this->assertInstanceOf('TinCan\Verb', $obj);
         $this->assertAttributeEmpty('id', $obj, 'id empty');
-        $this->assertAttributeEmpty('display', $obj, 'display empty');
+        $this->assertAttributeInstanceOf('TinCan\LanguageMap', 'display', $obj, 'display is LanguageMap');
     }
 
     public function testFromJSONInvalidNull() {
@@ -53,13 +53,13 @@ class VerbTest extends PHPUnit_Framework_TestCase {
         $obj = Verb::fromJSON('{"id":"' . COMMON_VERB_ID . '"}');
         $this->assertInstanceOf('TinCan\Verb', $obj);
         $this->assertAttributeEquals(COMMON_VERB_ID, 'id', $obj, 'id matches');
-        $this->assertAttributeEmpty('display', $obj, 'display empty');
+        $this->assertTrue($obj->getDisplay()->isEmpty(), 'display empty');
     }
 
     // TODO: need to loop versions
     public function testAsVersion() {
         $obj = new Verb(
-            array('id' => COMMON_VERB_ID)
+            ['id' => COMMON_VERB_ID]
         );
         $versioned = $obj->asVersion('1.0.0');
 

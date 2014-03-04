@@ -47,12 +47,12 @@ class Verb implements VersionableInterface {
     public function getId() { return $this->id; }
 
     public function setDisplay($value) {
-        if ($value instanceof LanguageMap) {
-            $this->display = $value;
+        if (! $value instanceof LanguageMap) {
+            $value = new LanguageMap($value);
         }
-        else {
-            $this->display = new LanguageMap($value);
-        }
+
+        $this->display = $value;
+
         return $this;
     }
     public function getDisplay() { return $this->display; }
