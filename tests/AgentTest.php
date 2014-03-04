@@ -72,4 +72,20 @@ class AgentTest extends PHPUnit_Framework_TestCase {
             "mbox only: 1.0.0"
         );
     }
+
+    public function testSetMbox() {
+        $obj = new Agent();
+
+        $obj->setMbox(COMMON_MBOX);
+        $this->assertSame(COMMON_MBOX, $obj->getMbox());
+
+        $obj->setMbox(COMMON_EMAIL);
+        $this->assertSame(COMMON_MBOX, $obj->getMbox());
+
+        //
+        // make sure it doesn't add mailto when null
+        //
+        $obj->setMbox(null);
+        $this->assertAttributeEmpty('mbox', $obj);
+    }
 }

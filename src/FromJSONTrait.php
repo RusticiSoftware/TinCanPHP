@@ -28,6 +28,7 @@ trait FromJSONTrait {
             $err = json_last_error();
             throw new \InvalidArgumentException("Invalid JSON: $err");
         }
-        return new self($cfg);
+        $called_class = get_called_class();
+        return new $called_class($cfg);
     }
 }

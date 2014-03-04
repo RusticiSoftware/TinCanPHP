@@ -19,6 +19,8 @@
 // Some constants used throughout the various test cases
 //
 define('COMMON_EMAIL',       'tincanphp@tincanapi.com');
+define('COMMON_GROUP_EMAIL', 'tincanphp+group@tincanapi.com');
 define('COMMON_MBOX',        'mailto:tincanphp@tincanapi.com');
+define('COMMON_GROUP_MBOX',  'mailto:tincanphp+group@tincanapi.com');
 define('COMMON_VERB_ID',     'http://adlnet.gov/expapi/verbs/experienced');
 define('COMMON_ACTIVITY_ID', 'http://tincanapi.com/TinCanPHP/Test/Activity');

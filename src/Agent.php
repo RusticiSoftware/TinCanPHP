@@ -18,8 +18,8 @@
 namespace TinCan;
 
 class Agent implements VersionableInterface, StatementTargetInterface {
-    use FromJSONTrait;
-    private $objectType = 'Agent';
+    use ArraySetterTrait, FromJSONTrait;
+    protected $objectType = 'Agent';
 
     protected $name;
     protected $mbox;
@@ -31,12 +31,7 @@ class Agent implements VersionableInterface, StatementTargetInterface {
         if (func_num_args() == 1) {
             $arg = func_get_arg(0);
 
-            if (isset($arg['name'])) {
-                $this->setName($arg['name']);
-            }
-            if (isset($arg['mbox'])) {
-                $this->setMbox($arg['mbox']);
-            }
+            $this->_fromArray($arg);
         }
     }
 
@@ -48,8 +43,21 @@ class Agent implements VersionableInterface, StatementTargetInterface {
         if (isset($this->name)) {
             $result['name'] = $this->name;
         }
-        if (isset($this->mbox)) {
+
+        //
+        // only one of these
+        //
+        if (isset($this->account)) {
+            $result['account'] = $this->account->asVersion($version);
+        }
+        else if (isset($this->mbox_sha1sum)) {
+            $result['mbox_sha1sum'] = $this->mbox_sha1sum;
+        }
+        else if (isset($this->mbox)) {
             $result['mbox'] = $this->mbox;
+        }
+        else if (isset($this->openid)) {
+            $result['openid'] = $this->openid;
         }
 
         return $result;
@@ -60,7 +68,28 @@ class Agent implements VersionableInterface, StatementTargetInterface {
     public function setName($value) { $this->name = $value; return $this; }
     public function getName() { return $this->name; }
 
-    // TODO: prepend 'mailto:' when not present
-    public function setMbox($value) { $this->mbox = $value; return $this; }
+    public function setMbox($value) {
+        if (isset($value) && (! (strpos($value, 'mailto:') === 0))) {
+            $value = 'mailto:' . $value;
+        }
+        $this->mbox = $value;
+        return $this;
+    }
     public function getMbox() { return $this->mbox; }
+
+    public function setMbox_sha1sum($value) { $this->mbox_sha1sum = $value; return $this; }
+    public function getMbox_sha1sum() { return $this->mbox_sha1sum; }
+    public function setOpenid($value) { $this->openid = $value; return $this; }
+    public function getOpenid() { return $this->openid; }
+
+    public function setAccount($value) {
+        if (! $value instanceof AgentAccount) {
+            $value = new AgentAccount($value);
+        }
+
+        $this->account = $value;
+
+        return $this;
+    }
+    public function getAccount() { return $this->account; }
 }
