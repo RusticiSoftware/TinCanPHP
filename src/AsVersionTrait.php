@@ -32,6 +32,7 @@ trait AsVersionTrait {
         if (property_exists(get_class($this), 'versionedProps')) {
             foreach (self::$versionedProps as $key) {
                 if (isset($this->$key)) {
+                    //print "AsVersionTrait::asVersion: " . get_class($this) . " - $key\n";
                     $versioned = $this->$key->asVersion($version);
                     if (isset($versioned)) {
                         $result[$key] = $versioned;

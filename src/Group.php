@@ -44,8 +44,17 @@ class Group extends Agent {
         return $result;
     }
 
-    // TODO: detect non-array and fail? loop over elements and convert to Agents (have to for JSON?)
-    public function setMember($value) { $this->member = $value; return $this; }
+    public function setMember($value) {
+        foreach ($value as $k => $v) {
+            if (! $value[$k] instanceof Agent) {
+                $value[$k] = new Agent($value[$k]);
+            }
+        }
+
+        $this->member = $value;
+
+        return $this;
+    }
     public function getMember() { return $this->member; }
     public function addMember($value) {
         if (! $value instanceof Agent) {

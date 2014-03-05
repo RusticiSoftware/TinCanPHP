@@ -62,12 +62,6 @@ class ActivityDefinition implements VersionableInterface {
                 'name',
                 'description',
                 'extensions',
-                'correctResponsesPattern',
-                'choices',
-                'scale',
-                'source',
-                'target',
-                'steps'
             ] as $k
         ) {
             $method = 'set' . ucfirst($k);
@@ -83,23 +77,23 @@ class ActivityDefinition implements VersionableInterface {
     public function getType() { return $this->type; }
 
     public function setName($value) {
-        if ($value instanceof LanguageMap) {
-            $this->name = $value;
+        if (! $value instanceof LanguageMap) {
+            $value = new LanguageMap($value);
         }
-        else {
-            $this->name = new LanguageMap($value);
-        }
+
+        $this->name = $value;
+
         return $this;
     }
     public function getName() { return $this->name; }
 
     public function setDescription($value) {
-        if ($value instanceof LanguageMap) {
-            $this->description = $value;
+        if (! $value instanceof LanguageMap) {
+            $value = new LanguageMap($value);
         }
-        else {
-            $this->description = new LanguageMap($value);
-        }
+
+        $this->description = $value;
+
         return $this;
     }
     public function getDescription() { return $this->description; }
@@ -108,12 +102,12 @@ class ActivityDefinition implements VersionableInterface {
     public function getMoreInfo() { return $this->moreInfo; }
 
     public function setExtensions($value) {
-        if ($value instanceof Extensions) {
-            $this->extensions = $value;
+        if (! $value instanceof Extensions) {
+            $value = new Extensions($value);
         }
-        else {
-            $this->extensions = new Extensions($value);
-        }
+
+        $this->extensions = $value;
+
         return $this;
     }
     public function getExtensions() { return $this->extensions; }
@@ -122,6 +116,8 @@ class ActivityDefinition implements VersionableInterface {
     public function getInteractionType() { return $this->interactionType; }
     public function setCorrectResponsesPattern($value) { $this->correctResponsesPattern = $value; return $this; }
     public function getCorrectResponsesPattern() { return $this->correctResponsesPattern; }
+
+    // TODO: make these arrays of InteractionComponents
     public function setChoices($value) { $this->choices = $value; return $this; }
     public function getChoices() { return $this->choices; }
     public function setScale($value) { $this->scale = $value; return $this; }

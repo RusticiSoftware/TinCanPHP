@@ -51,12 +51,12 @@ class Result implements VersionableInterface {
     }
 
     public function setScore($value) {
-        if ($value instanceof Score) {
-            $this->score = $value;
+        if (! $value instanceof Score && is_array($value)) {
+            $value = new Score($value);
         }
-        else {
-            $this->score = new Score($value);
-        }
+
+        $this->score = $value;
+
         return $this;
     }
     public function getScore() { return $this->score; }
@@ -69,12 +69,12 @@ class Result implements VersionableInterface {
     public function getDuration() { return $this->duration; }
 
     public function setExtensions($value) {
-        if ($value instanceof Extensions) {
-            $this->extensions = $value;
+        if (! $value instanceof Extensions) {
+            $value = new Extensions($value);
         }
-        else {
-            $this->extensions = new Extensions($value);
-        }
+
+        $this->extensions = $value;
+
         return $this;
     }
     public function getExtensions() { return $this->extensions; }

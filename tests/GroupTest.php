@@ -30,7 +30,7 @@ class GroupTest extends PHPUnit_Framework_TestCase {
         $obj = Group::fromJSON('{"mbox":"' . COMMON_GROUP_MBOX . '", "member":[{"mbox":"' . COMMON_MBOX . '"}]}');
         $this->assertInstanceOf('TinCan\Group', $obj);
         $this->assertSame(COMMON_GROUP_MBOX, $obj->getMbox(), 'mbox value');
-        $this->assertEquals([['mbox' => COMMON_MBOX]], $obj->getMember(), 'member list');
+        $this->assertEquals([new TinCan\Agent(['mbox' => COMMON_MBOX])], $obj->getMember(), 'member list');
     }
 
     // TODO: need to loop versions

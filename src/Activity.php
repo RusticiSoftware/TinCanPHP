@@ -18,7 +18,7 @@
 namespace TinCan;
 
 class Activity implements VersionableInterface, StatementTargetInterface {
-    use FromJSONTrait, AsVersionTrait;
+    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
     private $objectType = 'Activity';
 
     protected $id;
@@ -37,12 +37,7 @@ class Activity implements VersionableInterface, StatementTargetInterface {
         if (func_num_args() == 1) {
             $arg = func_get_arg(0);
 
-            if (isset($arg['id'])) {
-                $this->setId($arg['id']);
-            }
-            if (isset($arg['definition'])) {
-                $this->setDefinition($arg['definition']);
-            }
+            $this->_fromArray($arg);
         }
     }
 
@@ -53,12 +48,12 @@ class Activity implements VersionableInterface, StatementTargetInterface {
     public function getId() { return $this->id; }
 
     public function setDefinition($value) {
-        if ($value instanceof ActivityDefinition) {
-            $this->definition = $value;
+        if (! $value instanceof ActivityDefinition && is_array($value)) {
+            $value = new ActivityDefinition($value);
         }
-        else {
-            $this->definition = new ActivityDefinition($value);
-        }
+
+        $this->definition = $value;
+
         return $this;
     }
     public function getDefinition() { return $this->definition; }

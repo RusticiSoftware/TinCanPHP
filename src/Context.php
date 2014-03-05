@@ -66,7 +66,7 @@ class Context implements VersionableInterface {
     }
 
     public function setRegistration($value) {
-        if (! preg_match(Util::UUID_REGEX, $value)) {
+        if (isset($value) && ! preg_match(Util::UUID_REGEX, $value)) {
             throw new InvalidArgumentException('arg1 must be a UUIDv4');
         }
         $this->registration = $value;
@@ -75,35 +75,39 @@ class Context implements VersionableInterface {
     public function getRegistration() { return $this->registration; }
 
     public function setInstructor($value) {
-        // TODO: can be Group
-        if ($value instanceof Agent) {
-            $this->instructor = $value;
+        if (! ($value instanceof Agent || $value instanceof Group) && is_array($value)) {
+            if (isset($value['objectType']) && $value['objectType'] === "Group") {
+                $value = new Group($value);
+            }
+            else {
+                $value = new Agent($value);
+            }
         }
-        else {
-            $this->instructor = new Agent($value);
-        }
+
+        $this->instructor = $value;
+
         return $this;
     }
     public function getInstructor() { return $this->instructor; }
 
     public function setTeam($value) {
-        if ($value instanceof Group) {
-            $this->team = $value;
+        if (! $value instanceof Group && is_array($value)) {
+            $value = new Group($value);
         }
-        else {
-            $this->team = new Group($value);
-        }
+
+        $this->team = $value;
+
         return $this;
     }
     public function getTeam() { return $this->team; }
 
     public function setContextActivities($value) {
-        if ($value instanceof ContextActivities) {
-            $this->contextActivities = $value;
+        if (! $value instanceof ContextActivities) {
+            $value = new ContextActivities($value);
         }
-        else {
-            $this->contextActivities = new ContextActivities($value);
-        }
+
+        $this->contextActivities = $value;
+
         return $this;
     }
     public function getContextActivities() { return $this->contextActivities; }
@@ -116,23 +120,23 @@ class Context implements VersionableInterface {
     public function getLanguage() { return $this->language; }
 
     public function setStatement($value) {
-        if ($value instanceof StatementRef) {
-            $this->statement = $value;
+        if (! $value instanceof StatementRef && is_array($value)) {
+            $value = new StatementRef($value);
         }
-        else {
-            $this->statement = new StatementRef($value);
-        }
+
+        $this->statement = $value;
+
         return $this;
     }
     public function getStatement() { return $this->statement; }
 
     public function setExtensions($value) {
-        if ($value instanceof Extensions) {
-            $this->extensions = $value;
+        if (! $value instanceof Extensions) {
+            $value = new Extensions($value);
         }
-        else {
-            $this->extensions = new Extensions($value);
-        }
+
+        $this->extensions = $value;
+
         return $this;
     }
     public function getExtensions() { return $this->extensions; }

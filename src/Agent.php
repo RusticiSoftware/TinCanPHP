@@ -83,7 +83,7 @@ class Agent implements VersionableInterface, StatementTargetInterface {
     public function getOpenid() { return $this->openid; }
 
     public function setAccount($value) {
-        if (! $value instanceof AgentAccount) {
+        if (! $value instanceof AgentAccount && is_array($value)) {
             $value = new AgentAccount($value);
         }
 
