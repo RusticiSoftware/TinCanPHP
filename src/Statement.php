@@ -39,6 +39,7 @@ class Statement implements VersionableInterface {
 
     protected $authority;
     protected $version;
+    protected $attachments;
 
     static private $directProps = array(
         'id',
@@ -69,11 +70,22 @@ class Statement implements VersionableInterface {
                 $this->setObject($arg['object']);
             }
         }
+        if (! isset($this->attachments)) {
+            $this->setAttachments(array());
+        }
     }
 
     private function _asVersion(&$result, $version) {
         if (isset($this->target)) {
             $result['object'] = $this->target->asVersion($version);
+        }
+
+        if (count($this->attachments) > 0) {
+            $result['attachments'] = array();
+
+            foreach ($this->attachments as $k) {
+                array_push($result['attachments'], $k->asVersion($version));
+            }
         }
     }
 
@@ -231,4 +243,26 @@ class Statement implements VersionableInterface {
 
     public function setVersion($value) { $this->version = $value; return $this; }
     public function getVersion() { return $this->version; }
+
+    public function setAttachments($value) {
+        foreach ($value as $k => $v) {
+            if (! $value[$k] instanceof Attachment) {
+                $value[$k] = new Attachment($value[$k]);
+            }
+        }
+
+        $this->attachments = $value;
+
+        return $this;
+    }
+    public function getAttachments() { return $this->attachments; }
+    public function addAttachment($value) {
+        if (! $value instanceof Attachment) {
+            $value = new Attachment($value);
+        }
+
+        array_push($this->attachments, $value);
+
+        return $this;
+    }
 }
