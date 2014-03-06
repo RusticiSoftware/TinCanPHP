@@ -28,6 +28,9 @@ require_once('src/ContextActivities.php');
 require_once('src/Context.php');
 require_once('src/Score.php');
 require_once('src/Result.php');
+require_once('src/StatementRef.php');
+require_once('src/StatementBase.php');
+require_once('src/SubStatement.php');
 require_once('src/Statement.php');
 require_once('src/RemoteLRS.php');
 

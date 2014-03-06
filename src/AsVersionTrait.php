@@ -21,16 +21,19 @@ trait AsVersionTrait {
     public function asVersion($version) {
         $result = array();
 
-        if (property_exists(get_class($this), 'directProps')) {
-            foreach (self::$directProps as $key) {
+        $klass = get_class($this);
+        if (property_exists($klass, 'directProps')) {
+            foreach ($klass::$directProps as $key) {
+                //print "AsVersionTrait::asVersion - " . get_class($this) . " - $key:" . $this->$key . "\n";
+
                 // TODO: should this be a prop name -> method map instead?
                 if (isset($this->$key) && ((! is_array($this->$key)) || (count($this->$key) > 0))) {
                     $result[$key] = $this->$key;
                 }
             }
         }
-        if (property_exists(get_class($this), 'versionedProps')) {
-            foreach (self::$versionedProps as $key) {
+        if (property_exists($klass, 'versionedProps')) {
+            foreach ($klass::$versionedProps as $key) {
                 if (isset($this->$key)) {
                     //print "AsVersionTrait::asVersion: " . get_class($this) . " - $key\n";
                     $versioned = $this->$key->asVersion($version);

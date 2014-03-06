@@ -79,19 +79,67 @@ class StatementTest extends PHPUnit_Framework_TestCase {
         $obj = new Statement(
             [
                 'actor' => [
-                    'id' => COMMON_MBOX
+                    'mbox' => COMMON_MBOX
                 ],
                 'verb' => [
-                    'id' => COMMON_VERB_ID
+                    'id' => COMMON_VERB_ID,
+                    'display' => [
+                        'en-US' => 'experienced'
+                    ]
                 ],
-                'object' => new TinCan\Activity([
-                    'id' => COMMON_ACTIVITY_ID
-                ])
+                'object' => new TinCan\Activity(
+                    [
+                        'id' => COMMON_ACTIVITY_ID,
+                        'definition' => [
+                            'type' => 'Invalid type',
+                            'name' => [
+                                'en-US' => 'Test',
+                            ],
+                            //'description' => [
+                                //'en-US' => 'Test description',
+                            //],
+                            'extensions' => [
+                                'http://someuri' => 'some value'
+                            ],
+                        ]
+                    ]
+                ),
+                'context' => [
+                    'contextActivities' => [
+                        'parent' => [
+                            new TinCan\Activity(
+                                [
+                                    'id' => COMMON_ACTIVITY_ID . '/1',
+                                    'definition' => [
+                                        'name' => [
+                                            'en-US' => 'Test: 1',
+                                        ],
+                                    ],
+                                ]
+                            )
+                        ],
+                    ],
+                    'registration' => TinCan\Util::getUUID(),
+                ],
+                'result' => [
+                    'completion' => true,
+                    'success' => false,
+                    'score' => [
+                        'raw' => '97',
+                        'min' => '65',
+                        'max' => '100',
+                        'scaled' => '.97'
+                    ]
+                ]
+
             ]
         );
         $obj->stamp();
+        $obj->getTarget()->getDefinition()->getDescription()->set('en-ES', 'Testo descriptiono');
+        $obj->getTarget()->getDefinition()->getName()->unset('en-US');
+
         $versioned = $obj->asVersion('1.0.0');
 
-        print json_encode($versioned);
+        print json_encode($versioned, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 }

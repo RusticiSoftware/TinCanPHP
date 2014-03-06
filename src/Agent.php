@@ -69,7 +69,7 @@ class Agent implements VersionableInterface, StatementTargetInterface {
     public function getName() { return $this->name; }
 
     public function setMbox($value) {
-        if (isset($value) && (! (strpos($value, 'mailto:') === 0))) {
+        if (isset($value) && (! (stripos($value, 'mailto:') === 0))) {
             $value = 'mailto:' . $value;
         }
         $this->mbox = $value;
