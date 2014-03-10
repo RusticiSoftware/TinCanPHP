@@ -24,12 +24,12 @@ class Activity implements VersionableInterface, StatementTargetInterface {
     protected $id;
     protected $definition;
 
-    static private $directProps = array(
+    private static $directProps = array(
         'objectType',
         'id',
     );
 
-    static private $versionedProps = array(
+    private static $versionedProps = array(
         'definition',
     );
 

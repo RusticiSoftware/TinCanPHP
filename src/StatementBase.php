@@ -35,10 +35,10 @@ abstract class StatementBase implements VersionableInterface {
     //
     protected $timestamp;
 
-    static protected $directProps = array(
+    protected static $directProps = array(
         'timestamp',
     );
-    static protected $versionedProps = array(
+    protected static $versionedProps = array(
         'actor',
         'verb',
         'result',

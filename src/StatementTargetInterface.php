@@ -21,5 +21,5 @@ interface StatementTargetInterface {
     public function getObjectType();
     public function asVersion($version);
 
-    static public function fromJSON($jsonStr);
+    public static function fromJSON($jsonStr);
 }

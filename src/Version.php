@@ -18,17 +18,17 @@
 namespace TinCan;
 
 class Version {
-    static private $_supported = array(
+    private static $_supported = array(
         "1.0.1",
         "1.0.0"
         //, "0.95"
     );
 
-    static public function supported() {
+    public static function supported() {
         return self::$_supported;
     }
 
-    static public function latest() {
+    public static function latest() {
         return self::$_supported[0];
     }
 }

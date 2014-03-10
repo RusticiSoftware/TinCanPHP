@@ -23,7 +23,7 @@ class AgentAccount implements VersionableInterface {
     protected $name;
     protected $homePage;
 
-    static private $directProps = array(
+    private static $directProps = array(
         'name',
         'homePage',
     );

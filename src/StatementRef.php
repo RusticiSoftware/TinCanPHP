@@ -24,7 +24,7 @@ class StatementRef implements VersionableInterface, StatementTargetInterface {
 
     protected $id;
 
-    static private $directProps = array(
+    private static $directProps = array(
         'objectType',
         'id',
     );

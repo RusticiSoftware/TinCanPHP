@@ -25,7 +25,7 @@ class Score implements VersionableInterface {
     protected $min;
     protected $max;
 
-    static private $directProps = array(
+    private static $directProps = array(
         'scaled',
         'raw',
         'min',

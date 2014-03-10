@@ -33,13 +33,13 @@ class Statement extends StatementBase {
     protected $version;
     protected $attachments;
 
-    static protected $directProps = array(
+    protected static $directProps = array(
         'id',
         'timestamp',
         'stored',
         'version',
     );
-    static protected $versionedProps = array(
+    protected static $versionedProps = array(
         'actor',
         'verb',
         'result',

@@ -25,7 +25,7 @@ class ContextActivities implements VersionableInterface {
     protected $grouping;
     protected $other;
 
-    static private $directProps = array(
+    private static $directProps = array(
         'category',
         'parent',
         'grouping',

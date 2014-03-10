@@ -27,13 +27,13 @@ class Result implements VersionableInterface {
     protected $response;
     protected $extensions;
 
-    static private $directProps = array(
+    private static $directProps = array(
         'success',
         'completion',
         'duration',
         'response',
     );
-    static private $versionedProps = array(
+    private static $versionedProps = array(
         'score',
         'extensions',
     );

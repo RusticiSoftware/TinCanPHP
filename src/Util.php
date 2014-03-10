@@ -24,7 +24,7 @@ class Util {
     // Based on code from
     // http://stackoverflow.com/questions/2040240/php-function-to-generate-v4-uuid
     //
-    static public function getUUID() {
+    public static function getUUID() {
         $randomString = openssl_random_pseudo_bytes(16);
         $time_low = bin2hex(substr($randomString, 0, 4));
         $time_mid = bin2hex(substr($randomString, 4, 2));
@@ -69,7 +69,7 @@ class Util {
     //
     // TODO: is this giving too much precision?
     //
-    static public function getTimestamp() {
+    public static function getTimestamp() {
         $t = microtime(true);
         $micro = sprintf("%06d", ($t - floor($t)) * 1000000);
         return date('Y-m-d\TH:i:s.' . $micro . 'O', $t);

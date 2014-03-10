@@ -33,7 +33,7 @@ class ActivityDefinition implements VersionableInterface {
     protected $target;
     protected $steps;
 
-    static private $directProps = array(
+    private static $directProps = array(
         'type',
         'moreInfo',
         'interactionType',
@@ -44,7 +44,7 @@ class ActivityDefinition implements VersionableInterface {
         'target',
         'steps',
     );
-    static private $versionedProps = array(
+    private static $versionedProps = array(
         'name',
         'description',
         'extensions',

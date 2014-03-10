@@ -23,10 +23,10 @@ class Verb implements VersionableInterface {
     protected $id;
     protected $display;
 
-    static private $directProps = array(
+    private static $directProps = array(
         'id',
     );
-    static private $versionedProps = array(
+    private static $versionedProps = array(
         'display',
     );
 

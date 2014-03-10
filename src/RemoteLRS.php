@@ -20,7 +20,7 @@ namespace TinCan;
 class RemoteLRS implements LRSInterface {
     use ArraySetterTrait;
 
-    static private $whitelistedHeaders = array(
+    private static $whitelistedHeaders = array(
         'Content-Type'                        => 'contentType',
         'Date'                                => 'date',
         'Last-Modified'                       => 'lastModified',

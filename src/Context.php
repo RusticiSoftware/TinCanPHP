@@ -30,13 +30,13 @@ class Context implements VersionableInterface {
     protected $statement;
     protected $extensions;
 
-    static private $directProps = array(
+    private static $directProps = array(
         'registration',
         'revision',
         'platform',
         'language',
     );
-    static private $versionedProps = array(
+    private static $versionedProps = array(
         'instructor',
         'team',
         'contextActivities',

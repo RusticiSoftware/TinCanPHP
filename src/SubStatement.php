@@ -20,7 +20,7 @@ namespace TinCan;
 class SubStatement extends StatementBase implements StatementTargetInterface {
     private $objectType = 'SubStatement';
 
-    static protected $directProps = array(
+    protected static $directProps = array(
         'objectType',
         'timestamp',
     );

@@ -28,14 +28,14 @@ class Attachment implements VersionableInterface {
     protected $sha2;
     protected $fileUrl;
 
-    static private $directProps = array(
+    private static $directProps = array(
         'usageType',
         'contentType',
         'length',
         'sha2',
         'fileUrl'
     );
-    static private $versionedProps = array(
+    private static $versionedProps = array(
         'display',
         'description',
     );
