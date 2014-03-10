@@ -102,17 +102,17 @@ abstract class StatementBase implements VersionableInterface
                 if ($value['objectType'] === 'Activity') {
                     $value = new Activity($value);
                 }
-                else if ($value['objectType'] === 'Agent') {
+                elseif ($value['objectType'] === 'Agent') {
                     $value = new Agent($value);
                 }
-                else if ($value['objectType'] === 'Group') {
+                elseif ($value['objectType'] === 'Group') {
                     $value = new Group($value);
                 }
-                else if ($value['objectType'] === 'StatementRef') {
+                elseif ($value['objectType'] === 'StatementRef') {
                     // TODO:
                     //$value = new StatementRef($value);
                 }
-                else if ($value['objectType'] === 'SubStatement') {
+                elseif ($value['objectType'] === 'SubStatement') {
                     // TODO:
                     //$value = new SubStatement($value);
                 }
@@ -162,7 +162,7 @@ abstract class StatementBase implements VersionableInterface
             if ($value instanceof \DateTime) {
                 $value = $value->format(\DateTime::ISO8601);
             }
-            else if (is_string($value)) {
+            elseif (is_string($value)) {
                 $value = $value;
             }
             else {

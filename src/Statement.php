@@ -102,7 +102,7 @@ class Statement extends StatementBase
             if ($value instanceof \DateTime) {
                 $value = $value->format(\DateTime::ISO8601);
             }
-            else if (is_string($value)) {
+            elseif (is_string($value)) {
                 $value = $value;
             }
             else {

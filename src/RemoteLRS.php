@@ -48,12 +48,12 @@ class RemoteLRS implements LRSInterface
                 $this->setAuth($arg['username'], $arg['password']);
             }
         }
-        else if ($_num_args === 3) {
+        elseif ($_num_args === 3) {
             $this->setEndpoint(func_get_arg(0));
             $this->setVersion(func_get_arg(1));
             $this->setAuth(func_get_arg(2));
         }
-        else if ($_num_args === 4) {
+        elseif ($_num_args === 4) {
             $this->setEndpoint(func_get_arg(0));
             $this->setVersion(func_get_arg(1));
             $this->setAuth(func_get_arg(2), func_get_arg(3));
@@ -147,7 +147,7 @@ class RemoteLRS implements LRSInterface
         if (($response['status'] >= 200 && $response['status'] < 300) || ($response['status'] === 404 && $options['ignore404'])) {
             $success = true;
         }
-        else if ($response['status'] >= 300 && $response['status'] < 400) {
+        elseif ($response['status'] >= 300 && $response['status'] < 400) {
             throw new \Exception("Unsupported status code: " . $response['status'] . " (LRS should not redirect)");
         }
 
