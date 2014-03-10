@@ -13,6 +13,7 @@ require_once('src/FromJSONTrait.php');
 require_once('src/AsVersionTrait.php');
 
 require_once('src/Map.php');
+require_once('src/LRSResponse.php');
 
 require_once('src/Util.php');
 require_once('src/Version.php');
@@ -32,6 +33,14 @@ require_once('src/StatementRef.php');
 require_once('src/StatementBase.php');
 require_once('src/SubStatement.php');
 require_once('src/Statement.php');
+
+require_once('src/StatementsResult.php');
+require_once('src/About.php');
+require_once('src/Document.php');
+require_once('src/ActivityProfile.php');
+require_once('src/AgentProfile.php');
+require_once('src/State.php');
+
 require_once('src/RemoteLRS.php');
 
 register_shutdown_function(

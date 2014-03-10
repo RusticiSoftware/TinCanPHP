@@ -25,20 +25,22 @@ interface LRSInterface {
     public function retrieveStatement($id);
     public function retrieveVoidedStatement($id);
     public function queryStatements($query);
-    public function moreStatements($moreURL);
+    public function moreStatements($moreUrl);
 
-    public function retrieveStateKeys();
-    public function retrieveState();
-    public function saveState();
-    public function deleteState();
+    // TODO: should the document APIs be able to just provide a Document object?
+    public function retrieveStateIds($activity, $agent);
+    public function retrieveState($activity, $agent, $id);
+    public function saveState($activity, $agent, $id, $content);
+    public function deleteState($activity, $agent, $id);
+    public function clearState($activity, $agent);
 
-    public function retrieveActivityProfileKeys();
-    public function retrieveActivityProfile();
-    public function saveActivityProfile();
-    public function deleteActivityProfile();
+    public function retrieveActivityProfileIds($activity);
+    public function retrieveActivityProfile($activity, $id);
+    public function saveActivityProfile($activity, $id, $content);
+    public function deleteActivityProfile($activity, $id);
 
-    public function retrieveAgentProfileKeys();
-    public function retrieveAgentProfile();
-    public function saveAgentProfile();
-    public function deleteAgentProfile();
+    public function retrieveAgentProfileIds($agent);
+    public function retrieveAgentProfile($agent, $id);
+    public function saveAgentProfile($agent, $id, $content);
+    public function deleteAgentProfile($agent, $id);
 }
