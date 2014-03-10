@@ -34,11 +34,6 @@ class ContextActivities implements VersionableInterface
     );
 
     public function __construct() {
-        //
-        // TODO: need to handle the single or multiple handling, need to detect
-        //       based on existence of 'objectType' property I suspect, unless
-        //       instanceof on Activity will do better
-        //
         if (func_num_args() == 1) {
             $arg = func_get_arg(0);
 
