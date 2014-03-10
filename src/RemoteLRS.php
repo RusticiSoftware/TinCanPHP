@@ -382,8 +382,8 @@ class RemoteLRS implements LRSInterface
         $requestCfg = array(
             'params' => array(
                 'activityId' => $activity->getId(),
-                'agent'      => json_encode($agent->asVersion($this->version))
-            )
+                'agent'      => json_encode($agent->asVersion($this->version)),
+            ),
         );
         if (func_num_args() > 2) {
             $options = func_get_arg(2);
