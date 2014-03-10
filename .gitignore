@@ -1,0 +1,8 @@
+# Third party libraries
+
+# buildables
+
+# bad.
+.DS_Store
+*.swp
+tmp/
