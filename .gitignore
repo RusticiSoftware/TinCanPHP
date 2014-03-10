@@ -1,6 +1,8 @@
 # Third party libraries
 
 # buildables
+sample/vendor
+sample/composer.lock
 
 # bad.
 .DS_Store
