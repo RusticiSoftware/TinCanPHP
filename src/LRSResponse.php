@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class LRSResponse {
+class LRSResponse
+{
     use ArraySetterTrait;
 
     public $success;

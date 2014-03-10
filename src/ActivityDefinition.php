@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class ActivityDefinition implements VersionableInterface {
+class ActivityDefinition implements VersionableInterface
+{
     use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
 
     protected $type;

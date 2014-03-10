@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class Statement extends StatementBase {
+class Statement extends StatementBase
+{
     protected $id;
 
     //

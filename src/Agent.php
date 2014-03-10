@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class Agent implements VersionableInterface, StatementTargetInterface {
+class Agent implements VersionableInterface, StatementTargetInterface
+{
     use ArraySetterTrait, FromJSONTrait;
     protected $objectType = 'Agent';
 

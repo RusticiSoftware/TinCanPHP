@@ -17,6 +17,7 @@
 
 namespace TinCan;
 
-interface VersionableInterface {
+interface VersionableInterface
+{
     public function asVersion($version);
 }

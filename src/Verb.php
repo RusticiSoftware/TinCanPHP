@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class Verb implements VersionableInterface {
+class Verb implements VersionableInterface
+{
     use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
 
     protected $id;

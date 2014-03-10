@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class SubStatement extends StatementBase implements StatementTargetInterface {
+class SubStatement extends StatementBase implements StatementTargetInterface
+{
     private $objectType = 'SubStatement';
 
     protected static $directProps = array(

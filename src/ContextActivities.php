@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class ContextActivities implements VersionableInterface {
+class ContextActivities implements VersionableInterface
+{
     use ArraySetterTrait, FromJSONTrait;
 
     protected $category;

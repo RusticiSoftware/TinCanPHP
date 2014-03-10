@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class AgentProfile extends Document {
+class AgentProfile extends Document
+{
     protected $agent;
 
     public function setAgent($value) {

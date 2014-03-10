@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class About implements VersionableInterface {
+class About implements VersionableInterface
+{
     use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
 
     protected $version;

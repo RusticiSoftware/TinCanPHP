@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-abstract class StatementBase implements VersionableInterface {
+abstract class StatementBase implements VersionableInterface
+{
     use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
 
     protected $actor;

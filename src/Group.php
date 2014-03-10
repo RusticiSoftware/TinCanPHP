@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class Group extends Agent {
+class Group extends Agent
+{
     protected $objectType = 'Group';
 
     protected $member;

@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-trait FromJSONTrait {
+trait FromJSONTrait
+{
     public static function fromJSON($jsonStr) {
         //
         // 2nd arg as true means return value is an assoc. array rather than object

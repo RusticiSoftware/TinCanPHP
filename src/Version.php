@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class Version {
+class Version
+{
     private static $_supported = array(
         "1.0.1",
         "1.0.0"

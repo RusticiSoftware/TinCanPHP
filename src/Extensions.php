@@ -17,5 +17,6 @@
 
 namespace TinCan;
 
-class Extensions extends Map {
+class Extensions extends Map
+{
 }

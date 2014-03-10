@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class Context implements VersionableInterface {
+class Context implements VersionableInterface
+{
     use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
 
     protected $registration;

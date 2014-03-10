@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class StatementRef implements VersionableInterface, StatementTargetInterface {
+class StatementRef implements VersionableInterface, StatementTargetInterface
+{
     use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
 
     private $objectType = 'StatementRef';

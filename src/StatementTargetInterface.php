@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-interface StatementTargetInterface {
+interface StatementTargetInterface
+{
     public function getObjectType();
     public function asVersion($version);
 

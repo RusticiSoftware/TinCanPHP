@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class ActivityProfile extends Document {
+class ActivityProfile extends Document
+{
     protected $activity;
 
     public function setActivity($value) {

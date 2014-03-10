@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class State extends Document {
+class State extends Document
+{
     protected $activity;
     protected $agent;
     protected $registration;

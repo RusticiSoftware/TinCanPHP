@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class Activity implements VersionableInterface, StatementTargetInterface {
+class Activity implements VersionableInterface, StatementTargetInterface
+{
     use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
     private $objectType = 'Activity';
 

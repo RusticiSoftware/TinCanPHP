@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-interface LRSInterface {
+interface LRSInterface
+{
     public function about();
 
     public function saveStatement($statement);

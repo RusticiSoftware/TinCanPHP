@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-trait AsVersionTrait {
+trait AsVersionTrait
+{
     public function asVersion($version) {
         $result = array();
 

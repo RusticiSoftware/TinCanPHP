@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class Result implements VersionableInterface {
+class Result implements VersionableInterface
+{
     use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
 
     protected $score;

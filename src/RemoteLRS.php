@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class RemoteLRS implements LRSInterface {
+class RemoteLRS implements LRSInterface
+{
     use ArraySetterTrait;
 
     private static $whitelistedHeaders = array(

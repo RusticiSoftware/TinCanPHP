@@ -17,5 +17,6 @@
 
 namespace TinCan;
 
-class LanguageMap extends Map {
+class LanguageMap extends Map
+{
 }

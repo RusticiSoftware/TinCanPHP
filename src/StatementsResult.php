@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class StatementsResult {
+class StatementsResult
+{
     use ArraySetterTrait, FromJSONTrait;
 
     protected $statements;

@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-abstract class Map implements VersionableInterface {
+abstract class Map implements VersionableInterface
+{
     use FromJSONTrait;
 
     protected $_map;

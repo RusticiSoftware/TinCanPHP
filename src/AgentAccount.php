@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class AgentAccount implements VersionableInterface {
+class AgentAccount implements VersionableInterface
+{
     use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
 
     protected $name;

@@ -17,7 +17,8 @@
 
 namespace TinCan;
 
-class Attachment implements VersionableInterface {
+class Attachment implements VersionableInterface
+{
     use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
 
     protected $usageType;

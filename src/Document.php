@@ -18,7 +18,8 @@
 namespace TinCan;
 
 // TODO: should this be an implementation of an interface?
-abstract class Document {
+abstract class Document
+{
     use ArraySetterTrait;
 
     protected $id;
