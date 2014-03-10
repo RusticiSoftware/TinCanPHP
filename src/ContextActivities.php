@@ -62,11 +62,13 @@ class ContextActivities implements VersionableInterface
     }
 
     public function asVersion($version) {
-        $result = array();
+        $result = null;
 
         foreach (self::$directProps as $k) {
             $inner = $this->$k;
             if (isset($inner) && count($inner) > 0) {
+                $result = $result || array();
+
                 $result[$k] = array();
 
                 foreach ($inner as $act) {
