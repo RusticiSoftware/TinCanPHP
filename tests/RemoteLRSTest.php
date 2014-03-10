@@ -20,8 +20,8 @@ use TinCan\RemoteLRS;
 class RemoteLRSTest extends PHPUnit_Framework_TestCase {
     static private $endpoint = 'http://cloud.scorm.com/tc/3HYPTQLAI9/sandbox';
     static private $version  = '1.0.1';
-    static private $username = 'FACN92bSbV5LiU0w1fM';
-    static private $password = 'asGGV3TPUCkMY9u9kSk';
+    static private $username = '';
+    static private $password = '';
 
     public function testInstantiation() {
         $lrs = new RemoteLRS();
