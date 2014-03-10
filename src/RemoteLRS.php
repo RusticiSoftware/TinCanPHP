@@ -303,9 +303,48 @@ class RemoteLRS implements LRSInterface
         return $response;
     }
 
+    private function queryStatementsRequestParams($query) {
+        $result = array();
+
+        foreach (array('agent') as $k) {
+            if (isset($query[$k])) {
+                $result[$k] = json_encode($query[$k]->asVersion($this->version));
+            }
+        }
+        foreach (
+            array(
+                'verb',
+                'activity',
+            ) as $k
+        ) {
+            if (isset($query[$k])) {
+                $result[$k] = $query[$k]->getId();
+            }
+        }
+        foreach (
+            array(
+                'registration',
+                'since',
+                'until',
+                'limit',
+                'ascending',
+                'related_activities',
+                'related_agents',
+                'format',
+                'attachments',
+            ) as $k
+        ) {
+            if (isset($query[$k])) {
+                $result[$k] = $query[$k];
+            }
+        }
+
+        return $result;
+    }
+
     public function queryStatements($query) {
         $requestCfg = array(
-            'params' => $query
+            'params' => $this->queryStatementsRequestParams($query),
         );
 
         $response = $this->sendRequest('GET', 'statements', $requestCfg);
