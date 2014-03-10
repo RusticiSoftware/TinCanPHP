@@ -109,12 +109,10 @@ abstract class StatementBase implements VersionableInterface
                     $value = new Group($value);
                 }
                 elseif ($value['objectType'] === 'StatementRef') {
-                    // TODO:
-                    //$value = new StatementRef($value);
+                    $value = new StatementRef($value);
                 }
                 elseif ($value['objectType'] === 'SubStatement') {
-                    // TODO:
-                    //$value = new SubStatement($value);
+                    $value = new SubStatement($value);
                 }
                 else {
                     throw new \InvalidArgumentException('arg1 must implement the StatementTargetInterface objectType not recognized:' . $value['objectType']);
