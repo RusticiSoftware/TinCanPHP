@@ -237,7 +237,34 @@ class RemoteLRS implements LRSInterface
     }
 
     public function saveStatements($statements) {
-        throw new Exception('Feature not implemented');
+        $versioned_statements = array();
+        foreach ($statements as $i => $st) {
+            if (! $st instanceof Statement) {
+                $st = new Statement($st);
+                $statements[$i] = $st;
+            }
+            $versioned_statements[$i] = $st->asVersion($this->version);
+        }
+
+        $requestCfg = array(
+            'headers' => array(
+                'Content-Type' => 'application/json'
+            ),
+            'content' => json_encode($versioned_statements, JSON_UNESCAPED_SLASHES),
+        );
+
+        $response = $this->sendRequest('POST', 'statements', $requestCfg);
+
+        if ($response->success) {
+            $parsed_content = json_decode($response->content, true);
+            foreach ($parsed_content as $i => $stId) {
+                $statements[$i]->setId($stId);
+            }
+
+            $response->content = $statements;
+        }
+
+        return $response;
     }
 
     public function retrieveStatement($id) {
