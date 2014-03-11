@@ -1,5 +1,5 @@
 {
     "require": {
-        "rusticisoftware/tincan": "~0.0"
+        "rusticisoftware/tincan": "~0"
     }
 }
