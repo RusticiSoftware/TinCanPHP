@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+  <title>TinCanPHP by Rustici Software and Community</title>
+  <parser>
+    <target>doc/api</target>
+  </parser>
+  <transformer>
+    <target>doc/api</target>
+  </transformer>
+  <files>
+    <directory>src</directory>
+  </files>
+</phpdoc>

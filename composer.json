@@ -25,6 +25,9 @@
     "require": {
         "php": ">=5.4.0"
     },
+    "require-dev": {
+        "phpdocumentor/phpdocumentor": "2.*"
+    },
     "autoload": {
         "psr-4": {
             "TinCan\\": "src/"

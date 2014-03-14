@@ -1,8 +1,13 @@
 # Third party libraries
+phpdoc.xml
+php.ini
 
 # buildables
+vendor
+composer.lock
 sample/vendor
 sample/composer.lock
+doc/api
 
 # bad.
 .DS_Store
