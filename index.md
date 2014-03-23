@@ -41,7 +41,7 @@ $statement = new TinCan\Statement(
     ]
 );
 
-$response = $lrs->sendStatement($statement);
+$response = $lrs->saveStatement($statement);
 if ($response->success) {
     print "Statement sent successfully!\n";
 }
@@ -50,10 +50,10 @@ else {
 }
 ```
 
-Alternatively most interfaces that take a specific type of object can also be passed an array that will be materialized into the particular type of object. This allows for easier creation of simplified calls, such as sending a statemnt without pre-composing the objects. Such as:
+Alternatively most interfaces that take a specific type of object can also be passed an array that will be materialized into the particular type of object. This allows for easier creation of simplified calls, such as sending a statement without pre-composing the objects. Such as:
 
 ```php
-$response = $lrs->sendStatement(
+$response = $lrs->saveStatement(
     [
         'actor' => [
             'mbox' => 'info@tincanapi.com',
