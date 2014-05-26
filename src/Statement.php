@@ -89,7 +89,7 @@ class Statement extends StatementBase
 
     public function setId($value) {
         if (isset($value) && ! preg_match(Util::UUID_REGEX, $value)) {
-            throw new InvalidArgumentException('arg1 must be a UUID');
+            throw new \InvalidArgumentException('arg1 must be a UUID');
         }
         $this->id = $value;
         return $this;
