@@ -120,7 +120,7 @@ class RemoteLRS implements LRSInterface
         $context = stream_context_create(array( 'http' => $http ));
         $fp = fopen($url, 'rb', false, $context);
         if (! $fp) {
-            throw new \Exception("Request fialed: $php_errormsg");
+            throw new \Exception("Request failed: $php_errormsg");
         }
 
         //
