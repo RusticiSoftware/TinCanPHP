@@ -65,6 +65,16 @@ class StatementTest extends PHPUnit_Framework_TestCase {
         $this->assertRegExp(TinCan\Util::UUID_REGEX, $obj->getId(), 'id is UUId');
     }
 
+    public function testSetId() {
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'arg1 must be a UUID "some invalid id"'
+        );
+
+        $obj = new Statement();
+        $obj->setId('some invalid id');
+    }
+
     /*
     // TODO: need to loop possible configs
     public function testFromJSONInstantiations() {
