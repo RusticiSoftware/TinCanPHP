@@ -62,7 +62,7 @@ class ContextActivities implements VersionableInterface
         foreach (self::$directProps as $k) {
             $inner = $this->$k;
             if (isset($inner) && count($inner) > 0) {
-                $result = $result || array();
+                $result = $result ?: array();
 
                 $result[$k] = array();
 
