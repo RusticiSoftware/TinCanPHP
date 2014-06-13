@@ -68,6 +68,8 @@ class Result implements VersionableInterface
     public function getCompletion() { return $this->completion; }
     public function setDuration($value) { $this->duration = $value; return $this; }
     public function getDuration() { return $this->duration; }
+    public function setResponse($value) { $this->response = $value; return $this; }
+    public function getResponse() { return $this->response; }
 
     public function setExtensions($value) {
         if (! $value instanceof Extensions) {
