@@ -46,9 +46,9 @@ class Group extends Agent
     }
 
     public function setMember($value) {
-        foreach ($value as $k) {
-            if (! $value[$k] instanceof Agent) {
-                $value[$k] = new Agent($value[$k]);
+        foreach ($value as $k => $v) {
+            if (! $v instanceof Agent) {
+                $value[$k] = new Agent($v);
             }
         }
 
