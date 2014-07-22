@@ -8,7 +8,8 @@
         "tincan",
         "xapi",
         "experience api",
-        "e-learning"
+        "e-learning",
+        "scorm"
     ],
     "license": "Apache-2.0",
     "authors": [
