@@ -199,9 +199,6 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
         );
 
         $this->assertInstanceOf('TinCan\LRSResponse', $response);
-        print_r($response->httpResponse['headers']);
-        print "\n\n";
-        print_r($response->content);
     }
 
     public function testSaveActivityProfile() {
