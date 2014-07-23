@@ -31,15 +31,31 @@ class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
         }
     }
 
-    /*
-    // TODO: need to loop possible configs
     public function testFromJSONInstantiations() {
-        $obj = ContextActivities::fromJSON('{"mbox":"' . COMMON_GROUP_MBOX . '", "member":[{"mbox":"' . COMMON_MBOX . '"}]}');
+        $common_activity = new TinCan\Activity(self::$common_activity_cfg);
+
+        $all_json = array();
+        foreach (self::$listProps as $k) {
+            $getMethod = 'get' . ucfirst($k);
+
+            $prop_json = '"' . $k . '":[' . json_encode($common_activity->asVersion('1.0.0')) . ']';
+
+            array_push($all_json, $prop_json);
+
+            $obj = ContextActivities::fromJSON('{' . $prop_json . '}');
+
+            $this->assertInstanceOf('TinCan\ContextActivities', $obj);
+            $this->assertEquals([$common_activity], $obj->$getMethod(), "$k list");
+        }
+
+        $obj = ContextActivities::fromJSON('{' . join(",", $all_json) . "}");
+
         $this->assertInstanceOf('TinCan\ContextActivities', $obj);
-        $this->assertSame(COMMON_GROUP_MBOX, $obj->getMbox(), 'mbox value');
-        $this->assertEquals([['mbox' => COMMON_MBOX]], $obj->getMember(), 'member list');
+        $this->assertEquals([$common_activity], $obj->getCategory(), "all props: category list");
+        $this->assertEquals([$common_activity], $obj->getParent(), "all props: parent list");
+        $this->assertEquals([$common_activity], $obj->getGrouping(), "all props: grouping list");
+        $this->assertEquals([$common_activity], $obj->getOther(), "all props: other list");
     }
-    */
 
     // TODO: need to loop versions
     public function testAsVersion() {

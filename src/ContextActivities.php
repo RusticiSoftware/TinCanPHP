@@ -21,10 +21,10 @@ class ContextActivities implements VersionableInterface
 {
     use ArraySetterTrait, FromJSONTrait;
 
-    protected $category;
-    protected $parent;
-    protected $grouping;
-    protected $other;
+    protected $category = array();
+    protected $parent = array();
+    protected $grouping = array();
+    protected $other = array();
 
     private static $directProps = array(
         'category',
@@ -38,21 +38,6 @@ class ContextActivities implements VersionableInterface
             $arg = func_get_arg(0);
 
             $this->_fromArray($arg);
-        }
-
-        foreach (
-            [
-                'category',
-                'parent',
-                'grouping',
-                'other',
-            ] as $k
-        ) {
-            $method = 'set' . ucfirst($k);
-
-            if (! isset($this->$k)) {
-                $this->$method(array());
-            }
         }
     }
 

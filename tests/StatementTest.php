@@ -150,6 +150,6 @@ class StatementTest extends PHPUnit_Framework_TestCase {
 
         $versioned = $obj->asVersion('1.0.0');
 
-        print json_encode($versioned, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        //print json_encode($versioned, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 }
