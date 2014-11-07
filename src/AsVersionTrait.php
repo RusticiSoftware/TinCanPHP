@@ -17,31 +17,27 @@
 
 namespace TinCan;
 
+/**
+ * Basic implementation of the {@link VersionableInterface}
+ */
 trait AsVersionTrait
 {
-    public function asVersion($version) {
+    /**
+     * Collects defined object properties for a given version into an array
+     *
+     * @param  mixed $version
+     * @return array
+     */
+    public function asVersion($version)
+    {
         $result = array();
 
-        $klass = get_class($this);
-        if (property_exists($klass, 'directProps')) {
-            foreach ($klass::$directProps as $key) {
-                //print "AsVersionTrait::asVersion - " . get_class($this) . " - $key:" . $this->$key . "\n";
-
-                // TODO: should this be a prop name -> method map instead?
-                if (isset($this->$key) && ((! is_array($this->$key)) || (count($this->$key) > 0))) {
-                    $result[$key] = $this->$key;
-                }
+        foreach (get_object_vars($this) as $property => $value) {
+            if ($value instanceof VersionableInterface) {
+                $value = $value->asVersion($version);
             }
-        }
-        if (property_exists($klass, 'versionedProps')) {
-            foreach ($klass::$versionedProps as $key) {
-                if (isset($this->$key)) {
-                    //print "AsVersionTrait::asVersion: " . get_class($this) . " - $key\n";
-                    $versioned = $this->$key->asVersion($version);
-                    if (isset($versioned)) {
-                        $result[$key] = $versioned;
-                    }
-                }
+            if (isset($value)) {
+                $result[$property] = $value;
             }
         }
 
