@@ -16,3 +16,8 @@ tmp/
 
 # wild
 todo.md
+
+# eclipse project files
+.buildpath
+.project
+.settings
