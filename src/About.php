@@ -24,13 +24,6 @@ class About implements VersionableInterface
     protected $version;
     protected $extensions;
 
-    private static $directProps = array(
-        'version',
-    );
-    private static $versionedProps = array(
-        'extensions',
-    );
-
     public function __construct() {
         if (func_num_args() == 1) {
             $arg = func_get_arg(0);

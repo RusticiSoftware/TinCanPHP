@@ -25,15 +25,6 @@ class Activity implements VersionableInterface, StatementTargetInterface
     protected $id;
     protected $definition;
 
-    private static $directProps = array(
-        'objectType',
-        'id',
-    );
-
-    private static $versionedProps = array(
-        'definition',
-    );
-
     public function __construct() {
         if (func_num_args() == 1) {
             $arg = func_get_arg(0);

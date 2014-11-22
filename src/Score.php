@@ -26,13 +26,6 @@ class Score implements VersionableInterface
     protected $min;
     protected $max;
 
-    private static $directProps = array(
-        'scaled',
-        'raw',
-        'min',
-        'max',
-    );
-
     public function __construct() {
         if (func_num_args() == 1) {
             $arg = func_get_arg(0);

@@ -19,12 +19,7 @@ namespace TinCan;
 
 class SubStatement extends StatementBase implements StatementTargetInterface
 {
-    private $objectType = 'SubStatement';
-
-    protected static $directProps = array(
-        'objectType',
-        'timestamp',
-    );
+    protected $objectType = 'SubStatement';
 
     public function getObjectType() { return $this->objectType; }
 }

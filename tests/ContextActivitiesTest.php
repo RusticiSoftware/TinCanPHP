@@ -31,6 +31,11 @@ class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
         }
     }
 
+    public function testUsesAsVersionTrait() {
+        $obj = new ContextActivities();
+        $this->assertTrue(method_exists($obj, 'asVersion'));
+    }
+
     public function testFromJSONInstantiations() {
         $common_activity = new TinCan\Activity(self::$common_activity_cfg);
 
@@ -60,13 +65,16 @@ class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
     // TODO: need to loop versions
     public function testAsVersion() {
         $obj = new ContextActivities();
+        $obj->setCategory(self::$common_activity_cfg);
         $versioned = $obj->asVersion('1.0.0');
 
-        //$this->assertEquals(
-            //[ 'objectType' => 'ContextActivities' ],
-            //$versioned,
-            //"empty: 1.0.0"
-        //);
+        $this->assertEquals(
+            ['category' => [
+                ['objectType' => 'Activity', 'id' => COMMON_ACTIVITY_ID]
+            ]],
+            $versioned,
+            "category only: 1.0.0"
+        );
     }
 
     public function testListSetters() {

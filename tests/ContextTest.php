@@ -18,9 +18,42 @@
 use TinCan\Context;
 
 class ContextTest extends PHPUnit_Framework_TestCase {
+    private $emptyProperties = array(
+        'registration',
+        'revision',
+        'platform',
+        'language',
+    );
+
+    private $nonEmptyProperties = array(
+        'contextActivities',
+        'extensions',
+    );
+
     public function testInstantiation() {
         $obj = new Context();
         $this->assertInstanceOf('TinCan\Context', $obj);
+        foreach ($this->emptyProperties as $property) {
+            $this->assertAttributeEmpty($property, $obj, "$property empty");
+        }
+        foreach ($this->nonEmptyProperties as $property) {
+            $this->assertAttributeNotEmpty($property, $obj, "$property not empty");
+        }
+    }
+
+    public function testUsesArraySetterTrait() {
+        $obj = new Context();
+        $this->assertTrue(method_exists($obj, '_fromArray'));
+    }
+
+    public function testUsesFromJSONTrait() {
+        $obj = new Context();
+        $this->assertTrue(method_exists($obj, 'fromJSON'));
+    }
+
+    public function testUsesAsVersionTrait() {
+        $obj = new Context();
+        $this->assertTrue(method_exists($obj, 'asVersion'));
     }
 
     /*
@@ -33,16 +66,13 @@ class ContextTest extends PHPUnit_Framework_TestCase {
     }
     */
 
-    // TODO: need to loop versions
+    // TODO: need more robust test (happy-path)
     public function testAsVersion() {
-        $obj = new Context();
+        $args      = ['platform' => 'testPlatform'];
+        $obj       = new Context($args);
         $versioned = $obj->asVersion('1.0.0');
 
-        //$this->assertEquals(
-            //[ 'objectType' => 'Context' ],
-            //$versioned,
-            //"empty: 1.0.0"
-        //);
+        $this->assertEquals($versioned, $args, "platform only: 1.0.0");
     }
 
     public function testSetInstructor() {

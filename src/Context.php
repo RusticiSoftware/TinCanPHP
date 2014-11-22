@@ -31,20 +31,6 @@ class Context implements VersionableInterface
     protected $statement;
     protected $extensions;
 
-    private static $directProps = array(
-        'registration',
-        'revision',
-        'platform',
-        'language',
-    );
-    private static $versionedProps = array(
-        'instructor',
-        'team',
-        'contextActivities',
-        'statement',
-        'extensions',
-    );
-
     public function __construct() {
         if (func_num_args() == 1) {
             $arg = func_get_arg(0);
@@ -141,4 +127,18 @@ class Context implements VersionableInterface
         return $this;
     }
     public function getExtensions() { return $this->extensions; }
+
+    private function _asVersion(array &$result, $version)
+    {
+        foreach ($result as $property => $value) {
+            if (empty($value)) {
+                unset($result[$property]);
+            } elseif (is_array($value)) {
+                $this->_asVersion($value, $version);
+                $result[$property] = $value;
+            } elseif ($value instanceof VersionableInterface) {
+                $result[$property] = $value->asVersion($version);
+            }
+        }
+    }
 }

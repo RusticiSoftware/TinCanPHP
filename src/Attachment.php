@@ -29,18 +29,6 @@ class Attachment implements VersionableInterface
     protected $sha2;
     protected $fileUrl;
 
-    private static $directProps = array(
-        'usageType',
-        'contentType',
-        'length',
-        'sha2',
-        'fileUrl'
-    );
-    private static $versionedProps = array(
-        'display',
-        'description',
-    );
-
     public function __construct() {
         if (func_num_args() == 1) {
             $arg = func_get_arg(0);

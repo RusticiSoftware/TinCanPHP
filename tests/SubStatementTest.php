@@ -15,78 +15,24 @@
     limitations under the License.
 */
 
-use TinCan\Statement;
+use TinCan\SubStatement;
 
-class StatementTest extends PHPUnit_Framework_TestCase {
+class SubStatementTest extends PHPUnit_Framework_TestCase {
     public function testInstantiation() {
-        $obj = new Statement();
-        $this->assertInstanceOf('TinCan\Statement', $obj);
-        $this->assertAttributeEmpty('id', $obj, 'id empty');
-        $this->assertAttributeEmpty('actor', $obj, 'actor empty');
-        $this->assertAttributeEmpty('verb', $obj, 'verb empty');
-        $this->assertAttributeEmpty('target', $obj, 'target empty');
-        $this->assertAttributeEmpty('context', $obj, 'context empty');
-        $this->assertAttributeEmpty('result', $obj, 'result empty');
-        $this->assertAttributeEmpty('timestamp', $obj, 'timestamp empty');
-        $this->assertAttributeEmpty('stored', $obj, 'stored empty');
-        $this->assertAttributeEmpty('authority', $obj, 'authority empty');
-        $this->assertAttributeEmpty('version', $obj, 'version empty');
+        $obj = new SubStatement();
+        $this->assertInstanceOf('TinCan\StatementBase', $obj);
     }
 
-    public function testFromJSONInvalidNull() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
-        );
-        $obj = Statement::fromJSON(null);
+    public function testGetObjectType()
+    {
+        $obj = new SubStatement();
+        $this->assertSame('SubStatement', $obj->getObjectType());
     }
-
-    public function testFromJSONInvalidEmptyString() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
-        );
-        $obj = Statement::fromJSON('');
-    }
-
-    public function testFromJSONInvalidMalformed() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_SYNTAX
-        );
-        $obj = Statement::fromJSON('{id:"some value"}');
-    }
-
-    public function testStamp() {
-        $obj = new Statement();
-        $obj->stamp();
-
-        $this->assertAttributeInternalType('string', 'timestamp', $obj, 'timestamp is string');
-        $this->assertRegExp(TinCan\Util::UUID_REGEX, $obj->getId(), 'id is UUId');
-    }
-
-    public function testSetId() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'arg1 must be a UUID "some invalid id"'
-        );
-
-        $obj = new Statement();
-        $obj->setId('some invalid id');
-    }
-
-    /*
-    // TODO: need to loop possible configs
-    public function testFromJSONInstantiations() {
-        $obj = Statement::fromJSON('{"id":"' . COMMON_MBOX . '"}');
-        $this->assertInstanceOf('TinCan\Statement', $obj);
-        $this->assertSame(COMMON_MBOX, $obj->getMbox(), 'mbox value');
-    }
-    */
 
     // TODO: need to loop versions
     public function testAsVersion() {
         $args = [
+            'objectType' => 'SubStatement',
             'actor' => [
                 'mbox' => COMMON_MBOX,
                 'objectType' => 'Agent',
@@ -139,21 +85,8 @@ class StatementTest extends PHPUnit_Framework_TestCase {
                     'scaled' => '.97'
                 ]
             ],
-            'version' => '1.0.0',
-            'attachments' => [
-                [
-                    'description' => [
-                        'en-US' => 'Attachment description'
-                    ],
-                    'length' => 0,
-                ]
-            ]
         ];
-        $obj = new Statement($args);
-
-        $obj->stamp();
-        $args['id']        = $obj->getId();
-        $args['timestamp'] = $obj->getTimestamp();
+        $obj = new SubStatement($args);
 
         $obj->getTarget()->getDefinition()->getDescription()->set('en-ES', 'Testo descriptiono');
         $args['object']['definition']['description'] = ['en-ES' => 'Testo descriptiono'];
