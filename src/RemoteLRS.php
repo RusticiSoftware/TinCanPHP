@@ -351,6 +351,50 @@ class RemoteLRS implements LRSInterface
 
         if ($response->success) {
             $response->content = StatementsResult::fromJSON($response->content);
+            $response = $this->ensureStatementsReturned($response, $query);
+        }
+
+        return $response;
+    }
+
+    private function ensureStatementsReturned($initialResponse, $initialQuery) {
+
+        $response = &$initialResponse;
+
+        $is_more_results = ($response->content->getMore() != null);
+        if (!$is_more_results) {
+            return $response;
+        }
+
+        $statements = $response->content->getStatements();
+
+        $originalLimit = (array_key_exists('limit', $initialQuery))? $initialQuery['limit']: null;
+
+        if ($originalLimit == null) {
+            while (0 == count($statements) && $is_more_results) {
+                $response = $this->moreStatements($response->content->getMore());
+                $statements = &$response->content->getStatements();
+                $is_more_results = ($response->content->getMore() != null);
+              }
+        } else if ($originalLimit > 0 && count($statements) <= $originalLimit && $is_more_results) {
+            // reissue the original request without the limit filter
+            $query = $initialQuery;
+            unset ($query['limit']);
+
+            $response = $this->queryStatements($query);
+
+            if ($response->success) {
+                $statements = &$response->content->getStatements();
+                $is_more_results = ($response->content->getMore() != null);
+
+                while (count($statements) <= $originalLimit && $is_more_results) {
+                    $response = $this->moreStatements($response->content->getMore());
+                    $is_more_results = ($response->content->getMore() != null);
+                    $statements = array_merge($statements, $response->content->getStatements());
+                }
+
+                $response->content->setStatements($statements);
+            }
         }
 
         return $response;
