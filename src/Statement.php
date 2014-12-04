@@ -100,7 +100,7 @@ class Statement extends StatementBase
     public function setStored($value) {
         if (isset($value)) {
             if ($value instanceof \DateTime) {
-                $value = $value->format(\DateTime::ISO8601);
+                $value = $value->format('c');
             }
             elseif (is_string($value)) {
                 $value = $value;
