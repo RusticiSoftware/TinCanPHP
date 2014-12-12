@@ -14,12 +14,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class ContextActivities implements VersionableInterface
+class TinCanAPI_ContextActivities extends TinCanAPI_VersionableInterface
 {
-    use ArraySetterTrait, FromJSONTrait;
 
     protected $category = array();
     protected $parent = array();
@@ -62,22 +60,22 @@ class ContextActivities implements VersionableInterface
     private function _listSetter($prop, $value) {
         if (is_array($value)) {
             if (isset($value['id'])) {
-                array_push($this->$prop, new Activity($value));
+                array_push($this->$prop, new TinCanAPI_Activity($value));
             }
             else {
                 foreach ($value as $k => $v) {
-                    if (! $value[$k] instanceof Activity) {
-                        $value[$k] = new Activity($value[$k]);
+                    if (! $value[$k] instanceof TinCanAPI_Activity) {
+                        $value[$k] = new TinCanAPI_Activity($value[$k]);
                     }
                 }
                 $this->$prop = $value;
             }
         }
-        elseif ($value instanceof Activity) {
+        elseif ($value instanceof TinCanAPI_Activity) {
             array_push($this->$prop, $value);
         }
         else {
-            throw new \InvalidArgumentException('type of arg1 must be Activity, array of Activity properties, or array of Activity/array of Activity properties');
+            throw new InvalidArgumentException('type of arg1 must be Activity, array of Activity properties, or array of Activity/array of Activity properties');
         }
         return $this;
     }
@@ -90,4 +88,5 @@ class ContextActivities implements VersionableInterface
     public function getGrouping() { return $this->grouping; }
     public function setOther($value) { return $this->_listSetter('other', $value); }
     public function getOther() { return $this->other; }
+	
 }

@@ -14,12 +14,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class ActivityDefinition implements VersionableInterface
+class TinCanAPI_ActivityDefinition extends TinCanAPI_VersionableInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
 
     protected $type;
     protected $name;
@@ -34,7 +32,7 @@ class ActivityDefinition implements VersionableInterface
     protected $target;
     protected $steps;
 
-    private static $directProps = array(
+    public static $directProps = array(
         'type',
         'moreInfo',
         'interactionType',
@@ -45,7 +43,7 @@ class ActivityDefinition implements VersionableInterface
         'target',
         'steps',
     );
-    private static $versionedProps = array(
+    public static $versionedProps = array(
         'name',
         'description',
         'extensions',
@@ -78,8 +76,8 @@ class ActivityDefinition implements VersionableInterface
     public function getType() { return $this->type; }
 
     public function setName($value) {
-        if (! $value instanceof LanguageMap) {
-            $value = new LanguageMap($value);
+        if (! $value instanceof TinCanAPI_LanguageMap) {
+            $value = new TinCanAPI_LanguageMap($value);
         }
 
         $this->name = $value;
@@ -89,8 +87,8 @@ class ActivityDefinition implements VersionableInterface
     public function getName() { return $this->name; }
 
     public function setDescription($value) {
-        if (! $value instanceof LanguageMap) {
-            $value = new LanguageMap($value);
+        if (! $value instanceof TinCanAPI_LanguageMap) {
+            $value = new TinCanAPI_LanguageMap($value);
         }
 
         $this->description = $value;
@@ -103,8 +101,8 @@ class ActivityDefinition implements VersionableInterface
     public function getMoreInfo() { return $this->moreInfo; }
 
     public function setExtensions($value) {
-        if (! $value instanceof Extensions) {
-            $value = new Extensions($value);
+        if (! $value instanceof TinCanAPI_Extensions) {
+            $value = new TinCanAPI_Extensions($value);
         }
 
         $this->extensions = $value;
@@ -129,4 +127,5 @@ class ActivityDefinition implements VersionableInterface
     public function getTarget() { return $this->target; }
     public function setSteps($value) { $this->steps = $value; return $this; }
     public function getSteps() { return $this->steps; }
+	
 }

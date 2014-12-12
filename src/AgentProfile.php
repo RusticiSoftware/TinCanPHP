@@ -14,20 +14,19 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class AgentProfile extends Document
+class TinCanAPI_AgentProfile extends TinCanAPI_Document
 {
     protected $agent;
 
     public function setAgent($value) {
-        if ((! $value instanceof Agent && ! $value instanceof Group) && is_array($value)) {
-            if (isset($value['objectType']) && $value['objectType'] === 'Group') {
-                $value = new Group($value);
+        if ((! $value instanceof TinCanAPI_Agent && ! $value instanceof TinCanAPI_Group) && is_array($value)) {
+            if (isset($value['objectType']) && $value['objectType'] === 'TinCanAPI_Group') {
+                $value = new TinCanAPI_Group($value);
             }
             else {
-                $value = new Agent($value);
+                $value = new TinCanAPI_Agent($value);
             }
         }
 

@@ -15,14 +15,14 @@
     limitations under the License.
 */
 
-use TinCan\Verb;
+require_once( 'TinCanApi_Autoloader.php' );
 
-class VerbTest extends PHPUnit_Framework_TestCase {
+class VerbTest extends require_once( 'TinCanApi_Autoloader.php' ); {
     public function testInstantiation() {
-        $obj = new Verb();
-        $this->assertInstanceOf('TinCan\Verb', $obj);
+        $obj = new TinCanAPI_Verb();
+        $this->assertInstanceOf('TinCanAPI_Verb', $obj);
         $this->assertAttributeEmpty('id', $obj, 'id empty');
-        $this->assertAttributeInstanceOf('TinCan\LanguageMap', 'display', $obj, 'display is LanguageMap');
+        $this->assertAttributeInstanceOf('TinCanAPI_LanguageMap', 'display', $obj, 'display is LanguageMap');
     }
 
     public function testFromJSONInvalidNull() {
@@ -30,7 +30,7 @@ class VerbTest extends PHPUnit_Framework_TestCase {
             'InvalidArgumentException',
             'Invalid JSON: ' . JSON_ERROR_NONE
         );
-        $obj = Verb::fromJSON(null);
+        $obj = TinCanAPI_Verb::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
@@ -38,7 +38,7 @@ class VerbTest extends PHPUnit_Framework_TestCase {
             'InvalidArgumentException',
             'Invalid JSON: ' . JSON_ERROR_NONE
         );
-        $obj = Verb::fromJSON('');
+        $obj = TinCanAPI_Verb::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
@@ -46,19 +46,19 @@ class VerbTest extends PHPUnit_Framework_TestCase {
             'InvalidArgumentException',
             'Invalid JSON: ' . JSON_ERROR_SYNTAX
         );
-        $obj = Verb::fromJSON('{id:"some value"}');
+        $obj = TinCanAPI_Verb::fromJSON('{id:"some value"}');
     }
 
     public function testFromJSONIDOnly() {
-        $obj = Verb::fromJSON('{"id":"' . COMMON_VERB_ID . '"}');
-        $this->assertInstanceOf('TinCan\Verb', $obj);
+        $obj = TinCanAPI_Verb::fromJSON('{"id":"' . COMMON_VERB_ID . '"}');
+        $this->assertInstanceOf('TinCanAPI_Verb', $obj);
         $this->assertAttributeEquals(COMMON_VERB_ID, 'id', $obj, 'id matches');
         $this->assertTrue($obj->getDisplay()->isEmpty(), 'display empty');
     }
 
     // TODO: need to loop versions
     public function testAsVersion() {
-        $obj = new Verb(
+        $obj = new TinCanAPI_Verb(
             ['id' => COMMON_VERB_ID]
         );
         $versioned = $obj->asVersion('1.0.0');

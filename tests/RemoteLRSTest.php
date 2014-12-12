@@ -15,33 +15,33 @@
     limitations under the License.
 */
 
-use TinCan\RemoteLRS;
+require_once( 'TinCanApi_Autoloader.php' );
 
-class RemoteLRSTest extends PHPUnit_Framework_TestCase {
+class RemoteLRSTest extends require_once( 'TinCanApi_Autoloader.php' ); {
     static private $endpoint = 'http://cloud.scorm.com/tc/3HYPTQLAI9/sandbox';
     static private $version  = '1.0.1';
     static private $username = '';
     static private $password = '';
 
     public function testInstantiation() {
-        $lrs = new RemoteLRS();
-        $this->assertInstanceOf('TinCan\RemoteLRS', $lrs);
+        $lrs = new TinCanAPI_RemoteLRS();
+        $this->assertInstanceOf('TinCanAPI_RemoteLRS', $lrs);
         $this->assertAttributeEmpty('endpoint', $lrs, 'endpoint empty');
         $this->assertAttributeEmpty('auth', $lrs, 'auth empty');
         $this->assertAttributeEmpty('extended', $lrs, 'extended empty');
-        $this->assertSame(TinCan\Version::latest(), $lrs->getVersion(), 'version set to latest');
+        $this->assertSame(TinCanAPI_Version::latest(), $lrs->getVersion(), 'version set to latest');
     }
 
     public function testAbout() {
-        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $lrs = new TinCanAPI_RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->about();
 
-        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertInstanceOf('TinCanAPI_LRSResponse', $response);
     }
 
     public function testSaveStatement() {
-        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
-        $statement = new TinCan\Statement(
+        $lrs = new TinCanAPI_RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $statement = new TinCanAPI_Statement(
             [
                 'actor' => [
                     'mbox' => COMMON_MBOX
@@ -49,7 +49,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
                 'verb' => [
                     'id' => COMMON_VERB_ID
                 ],
-                'object' => new TinCan\Activity([
+                'object' => new TinCanAPI_Activity([
                     'id' => COMMON_ACTIVITY_ID
                 ])
             ]
@@ -57,11 +57,11 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
         //$statement->stamp();
 
         $response = $lrs->saveStatement($statement);
-        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertInstanceOf('TinCanAPI_LRSResponse', $response);
     }
 
     public function testRetrieveStatement() {
-        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $lrs = new TinCanAPI_RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
 
         $saveResponse = $lrs->saveStatement(
             [
@@ -71,7 +71,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
                 'verb' => [
                     'id' => COMMON_VERB_ID
                 ],
-                'object' => new TinCan\Activity([
+                'object' => new TinCanAPI_Activity([
                     'id' => COMMON_ACTIVITY_ID
                 ])
             ]
@@ -79,9 +79,9 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
         if ($saveResponse->success) {
             $response = $lrs->retrieveStatement($saveResponse->content->getId());
 
-            $this->assertInstanceOf('TinCan\LRSResponse', $response);
+            $this->assertInstanceOf('TinCanAPI_LRSResponse', $response);
             $this->assertTrue($response->success);
-            $this->assertInstanceOf('TinCan\Statement', $response->content);
+            $this->assertInstanceOf('TinCanAPI_Statement', $response->content);
         }
         else {
             // TODO: skipped? throw?
@@ -89,22 +89,22 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testQueryStatements() {
-        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $lrs = new TinCanAPI_RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->queryStatements(['limit' => 4]);
 
-        $this->assertInstanceOf('TinCan\LRSResponse', $response);
-        $this->assertInstanceOf('TinCan\StatementsResult', $response->content);
+        $this->assertInstanceOf('TinCanAPI_LRSResponse', $response);
+        $this->assertInstanceOf('TinCanAPI_StatementsResult', $response->content);
     }
 
     public function testMoreStatements() {
-        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $lrs = new TinCanAPI_RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $queryResponse = $lrs->queryStatements(['limit' => 4]);
 
         if ($queryResponse->success) {
             $response = $lrs->moreStatements($queryResponse->content);
 
-            $this->assertInstanceOf('TinCan\LRSResponse', $response);
-            $this->assertInstanceOf('TinCan\StatementsResult', $response->content);
+            $this->assertInstanceOf('TinCanAPI_LRSResponse', $response);
+            $this->assertInstanceOf('TinCanAPI_StatementsResult', $response->content);
         }
         else {
             // TODO: skipped? throw?
@@ -112,62 +112,62 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testRetrieveStateIds() {
-        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $lrs = new TinCanAPI_RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->retrieveStateIds(
-            new TinCan\Activity(
+            new TinCanAPI_Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
-            new TinCan\Agent(
+            new TinCanAPI_Agent(
                 [ 'mbox' => COMMON_MBOX ]
             ),
             array(
-                'registration' => TinCan\Util::getUUID(),
+                'registration' => TinCanAPI_Util::getUUID(),
                 'since' => '2014-01-07T08:24:30Z'
             )
         );
 
-        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertInstanceOf('TinCanAPI_LRSResponse', $response);
     }
 
     public function testDeleteState() {
-        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $lrs = new TinCanAPI_RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->deleteState(
-            new TinCan\Activity(
+            new TinCanAPI_Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
-            new TinCan\Agent(
+            new TinCanAPI_Agent(
                 [ 'mbox' => COMMON_MBOX ]
             ),
             'testKey',
             [
-                'registration' => TinCan\Util::getUUID()
+                'registration' => TinCanAPI_Util::getUUID()
             ]
         );
 
-        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertInstanceOf('TinCanAPI_LRSResponse', $response);
     }
 
     public function testClearState() {
-        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $lrs = new TinCanAPI_RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->clearState(
-            new TinCan\Activity(
+            new TinCanAPI_Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
-            new TinCan\Agent(
+            new TinCanAPI_Agent(
                 [ 'mbox' => COMMON_MBOX ]
             ),
             [
-                'registration' => TinCan\Util::getUUID()
+                'registration' => TinCanAPI_Util::getUUID()
             ]
         );
 
-        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertInstanceOf('TinCanAPI_LRSResponse', $response);
     }
 
     public function testRetrieveActivityProfileIds() {
-        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $lrs = new TinCanAPI_RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->retrieveActivityProfileIds(
-            new TinCan\Activity(
+            new TinCanAPI_Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
             array(
@@ -175,13 +175,13 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
             )
         );
 
-        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertInstanceOf('TinCanAPI_LRSResponse', $response);
     }
 
     public function testRetrieveActivityProfile() {
-        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $lrs = new TinCanAPI_RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->saveActivityProfile(
-            new TinCan\Activity(
+            new TinCanAPI_Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
             'testKey',
@@ -192,19 +192,19 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
         );
 
         $response = $lrs->retrieveActivityProfile(
-            new TinCan\Activity(
+            new TinCanAPI_Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
             'testKey'
         );
 
-        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertInstanceOf('TinCanAPI_LRSResponse', $response);
     }
 
     public function testSaveActivityProfile() {
-        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $lrs = new TinCanAPI_RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->saveActivityProfile(
-            new TinCan\Activity(
+            new TinCanAPI_Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
             'testKey',
@@ -214,25 +214,25 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
             ]
         );
 
-        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertInstanceOf('TinCanAPI_LRSResponse', $response);
     }
 
     public function testDeleteActivityProfile() {
-        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $lrs = new TinCanAPI_RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->deleteActivityProfile(
-            new TinCan\Activity(
+            new TinCanAPI_Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
             'testKey'
         );
 
-        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertInstanceOf('TinCanAPI_LRSResponse', $response);
     }
 
     public function testRetrieveAgentProfileIds() {
-        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $lrs = new TinCanAPI_RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->retrieveAgentProfileIds(
-            new TinCan\Agent(
+            new TinCanAPI_Agent(
                 [ 'mbox' => COMMON_MBOX ]
             ),
             array(
@@ -240,30 +240,30 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
             )
         );
 
-        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertInstanceOf('TinCanAPI_LRSResponse', $response);
     }
 
     public function testRetrieveAgentProfile() {
-        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $lrs = new TinCanAPI_RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->retrieveAgentProfile(
-            new TinCan\Agent(
+            new TinCanAPI_Agent(
                 [ 'mbox' => COMMON_MBOX ]
             ),
             'testKey'
         );
 
-        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertInstanceOf('TinCanAPI_LRSResponse', $response);
     }
 
     public function testDeleteAgentProfile() {
-        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $lrs = new TinCanAPI_RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->deleteAgentProfile(
-            new TinCan\Agent(
+            new TinCanAPI_Agent(
                 [ 'mbox' => COMMON_MBOX ]
             ),
             'testKey'
         );
 
-        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertInstanceOf('TinCanAPI_LRSResponse', $response);
     }
 }

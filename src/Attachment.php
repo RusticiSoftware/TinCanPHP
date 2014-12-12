@@ -14,13 +14,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class Attachment implements VersionableInterface
+class TinCanAPI_Attachment extends TinCanAPI_VersionableInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
-
     protected $usageType;
     protected $display;
     protected $description;
@@ -29,14 +26,14 @@ class Attachment implements VersionableInterface
     protected $sha2;
     protected $fileUrl;
 
-    private static $directProps = array(
+    public static $directProps = array(
         'usageType',
         'contentType',
         'length',
         'sha2',
         'fileUrl'
     );
-    private static $versionedProps = array(
+    public static $versionedProps = array(
         'display',
         'description',
     );
@@ -66,8 +63,8 @@ class Attachment implements VersionableInterface
     public function getUsageType() { return $this->usageType; }
 
     public function setDisplay($value) {
-        if (! $value instanceof LanguageMap) {
-            $value = new LanguageMap($value);
+        if (! $value instanceof TinCanAPI_LanguageMap) {
+            $value = new TinCanAPI_LanguageMap($value);
         }
 
         $this->display = $value;
@@ -77,8 +74,8 @@ class Attachment implements VersionableInterface
     public function getDisplay() { return $this->display; }
 
     public function setDescription($value) {
-        if (! $value instanceof LanguageMap) {
-            $value = new LanguageMap($value);
+        if (! $value instanceof TinCanAPI_LanguageMap) {
+            $value = new TinCanAPI_LanguageMap($value);
         }
 
         $this->description = $value;
@@ -95,4 +92,14 @@ class Attachment implements VersionableInterface
     public function getSha2() { return $this->sha2; }
     public function setFileUrl($value) { $this->fileUrl = $value; return $this; }
     public function getFileUrl() { return $this->fileUrl; }
+	
+    private function _fromArray($options) {
+        foreach (get_object_vars($this) as $k => $v) {
+            $method = 'set' . ucfirst($k);
+            if (isset($options[$k]) && method_exists($this, $method)) {
+                $this->$method($options[$k]);
+            }
+        }
+    }
+	
 }

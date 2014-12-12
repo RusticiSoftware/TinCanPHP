@@ -1,8 +1,8 @@
 <?php
 
-$loader = require 'vendor/autoload.php';
+require_once( '../TinCanApi_Autoloader.php' );
 
-$lrs = new TinCan\RemoteLRS(
+$lrs = new TinCanAPI_RemoteLRS(
     'http://cloud.scorm.com/tc/public',
     '1.0.1',
     'user',

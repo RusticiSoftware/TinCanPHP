@@ -14,34 +14,34 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
+if( !class_exists( 'TinCanAPI_LRSInterface' ) ) {
+class TinCanAPI_LRSInterface extends TinCanAPI_Object {
+    public function about(){}
 
-interface LRSInterface
-{
-    public function about();
-
-    public function saveStatement($statement);
-    public function saveStatements($statements);
-    public function retrieveStatement($id);
-    public function retrieveVoidedStatement($id);
-    public function queryStatements($query);
-    public function moreStatements($moreUrl);
+    public function saveStatement($statement){}
+    public function saveStatements($statements){}
+    public function retrieveStatement($id){}
+    public function retrieveVoidedStatement($id){}
+    public function queryStatements($query){}
+    public function moreStatements($moreUrl){}
 
     // TODO: should the document APIs be able to just provide a Document object?
-    public function retrieveStateIds($activity, $agent);
-    public function retrieveState($activity, $agent, $id);
-    public function saveState($activity, $agent, $id, $content);
-    public function deleteState($activity, $agent, $id);
-    public function clearState($activity, $agent);
+    public function retrieveStateIds($activity, $agent){}
+    public function retrieveState($activity, $agent, $id){}
+    public function saveState($activity, $agent, $id, $content){}
+    public function deleteState($activity, $agent, $id){}
+    public function clearState($activity, $agent){}
 
-    public function retrieveActivityProfileIds($activity);
-    public function retrieveActivityProfile($activity, $id);
-    public function saveActivityProfile($activity, $id, $content);
-    public function deleteActivityProfile($activity, $id);
+    public function retrieveActivityProfileIds($activity){}
+    public function retrieveActivityProfile($activity, $id){}
+    public function saveActivityProfile($activity, $id, $content){}
+    public function deleteActivityProfile($activity, $id){}
 
-    public function retrieveAgentProfileIds($agent);
-    public function retrieveAgentProfile($agent, $id);
-    public function saveAgentProfile($agent, $id, $content);
-    public function deleteAgentProfile($agent, $id);
+    public function retrieveAgentProfileIds($agent){}
+    public function retrieveAgentProfile($agent, $id){}
+    public function saveAgentProfile($agent, $id, $content){}
+    public function deleteAgentProfile($agent, $id){}
+}
 }

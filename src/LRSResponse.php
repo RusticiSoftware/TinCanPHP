@@ -14,12 +14,9 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class LRSResponse
-{
-    use ArraySetterTrait;
+class TinCanAPI_LRSResponse extends TinCanAPI_Object {
 
     public $success;
     public $content;
@@ -30,4 +27,6 @@ class LRSResponse
         $this->content = $content;
         $this->httpResponse = $httpResponse;
     }
+	
+	
 }

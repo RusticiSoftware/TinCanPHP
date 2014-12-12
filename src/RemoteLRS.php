@@ -14,14 +14,12 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class RemoteLRS implements LRSInterface
+class TinCanAPI_RemoteLRS extends TinCanAPI_LRSInterface
 {
-    use ArraySetterTrait;
 
-    private static $whitelistedHeaders = array(
+    public static $whitelistedHeaders = array(
         'Content-Type'                        => 'contentType',
         'Date'                                => 'date',
         'Last-Modified'                       => 'lastModified',
@@ -42,7 +40,7 @@ class RemoteLRS implements LRSInterface
             $this->_fromArray($arg);
 
             if (! isset($this->version)) {
-                $this->setVersion(Version::latest());
+                $this->setVersion(TinCanAPI_Version::latest());
             }
             if (! isset($this->auth) && isset($arg['username']) && isset($arg['password'])) {
                 $this->setAuth($arg['username'], $arg['password']);
@@ -59,11 +57,11 @@ class RemoteLRS implements LRSInterface
             $this->setAuth(func_get_arg(2), func_get_arg(3));
         }
         else {
-            $this->setVersion(Version::latest());
+            $this->setVersion(TinCanAPI_Version::latest());
         }
     }
 
-    protected function sendRequest($method, $resource) {
+    public function sendRequest($method, $resource) {
         $options = func_num_args() === 3 ? func_get_arg(2) : array();
 
         //
@@ -120,7 +118,7 @@ class RemoteLRS implements LRSInterface
         $context = stream_context_create(array( 'http' => $http ));
         $fp = fopen($url, 'rb', false, $context);
         if (! $fp) {
-            throw new \Exception("Request failed: $php_errormsg");
+            throw new Exception("Request failed: $php_errormsg");
         }
 
         //
@@ -148,10 +146,10 @@ class RemoteLRS implements LRSInterface
             $success = true;
         }
         elseif ($response['status'] >= 300 && $response['status'] < 400) {
-            throw new \Exception("Unsupported status code: " . $response['status'] . " (LRS should not redirect)");
+            throw new Exception("Unsupported status code: " . $response['status'] . " (LRS should not redirect)");
         }
 
-        return new LRSResponse($success, $content, $response);
+        return new TinCanAPI_LRSResponse($success, $content, $response);
     }
 
     private function _parseMetadata($metadata) {
@@ -190,15 +188,15 @@ class RemoteLRS implements LRSInterface
         $response = $this->sendRequest('GET', 'about');
 
         if ($response->success) {
-            $response->content = About::FromJSON($response->content);
+            $response->content = TinCanAPI_About::FromJSON($response->content);
         }
 
         return $response;
     }
 
     public function saveStatement($statement) {
-        if (! $statement instanceof Statement) {
-            $statement = new Statement($statement);
+        if (! $statement instanceof TinCanAPI_Statement) {
+            $statement = new TinCanAPI_Statement($statement);
         }
 
         $requestCfg = array(
@@ -239,8 +237,8 @@ class RemoteLRS implements LRSInterface
     public function saveStatements($statements) {
         $versioned_statements = array();
         foreach ($statements as $i => $st) {
-            if (! $st instanceof Statement) {
-                $st = new Statement($st);
+            if (! $st instanceof TinCanAPI_Statement) {
+                $st = new TinCanAPI_Statement($st);
                 $statements[$i] = $st;
             }
             $versioned_statements[$i] = $st->asVersion($this->version);
@@ -279,7 +277,7 @@ class RemoteLRS implements LRSInterface
         );
 
         if ($response->success) {
-            $response->content = Statement::FromJSON($response->content);
+            $response->content = TinCanAPI_Statement::FromJSON($response->content);
         }
 
         return $response;
@@ -297,7 +295,7 @@ class RemoteLRS implements LRSInterface
         );
 
         if ($response->success) {
-            $response->content = Statement::FromJSON($response->content);
+            $response->content = TinCanAPI_Statement::FromJSON($response->content);
         }
 
         return $response;
@@ -350,14 +348,14 @@ class RemoteLRS implements LRSInterface
         $response = $this->sendRequest('GET', 'statements', $requestCfg);
 
         if ($response->success) {
-            $response->content = StatementsResult::fromJSON($response->content);
+            $response->content = TinCanAPI_StatementsResult::fromJSON($response->content);
         }
 
         return $response;
     }
 
     public function moreStatements($moreUrl) {
-        if ($moreUrl instanceof StatementsResult) {
+        if ($moreUrl instanceof TinCanAPI_StatementsResult) {
             $moreUrl = $moreUrl->getMore();
         }
         $moreUrl = $this->getEndpointServerRoot() . $moreUrl;
@@ -365,18 +363,18 @@ class RemoteLRS implements LRSInterface
         $response = $this->sendRequest('GET', $moreUrl);
 
         if ($response->success) {
-            $response->content = StatementsResult::fromJSON($response->content);
+            $response->content = TinCanAPI_StatementsResult::fromJSON($response->content);
         }
 
         return $response;
     }
 
     public function retrieveStateIds($activity, $agent) {
-        if (! $activity instanceof Activity) {
-            $activity = new Activity($activity);
+        if (! $activity instanceof TinCanAPI_Activity) {
+            $activity = new TinCanAPI_Activity($activity);
         }
-        if (! $agent instanceof Agent) {
-            $agent = new Agent($agent);
+        if (! $agent instanceof TinCanAPI_Agent) {
+            $agent = new TinCanAPI_Agent($agent);
         }
 
         $requestCfg = array(
@@ -407,11 +405,11 @@ class RemoteLRS implements LRSInterface
     }
 
     public function retrieveState($activity, $agent, $id) {
-        if (! $activity instanceof Activity) {
-            $activity = new Activity($activity);
+        if (! $activity instanceof TinCanAPI_Activity) {
+            $activity = new TinCanAPI_Activity($activity);
         }
-        if (! $agent instanceof Agent) {
-            $agent = new Agent($agent);
+        if (! $agent instanceof TinCanAPI_Agent) {
+            $agent = new TinCanAPI_Agent($agent);
         }
         $registration = null;
 
@@ -435,7 +433,7 @@ class RemoteLRS implements LRSInterface
         $response = $this->sendRequest('GET', 'activities/state', $requestCfg);
 
         if ($response->success) {
-            $doc = new State(
+            $doc = new TinCanAPI_State(
                 array(
                     'id'       => $id,
                     'content'  => $response->content,
@@ -463,11 +461,11 @@ class RemoteLRS implements LRSInterface
     }
 
     public function saveState($activity, $agent, $id, $content) {
-        if (! $activity instanceof Activity) {
-            $activity = new Activity($activity);
+        if (! $activity instanceof TinCanAPI_Activity) {
+            $activity = new TinCanAPI_Activity($activity);
         }
-        if (! $agent instanceof Agent) {
-            $agent = new Agent($agent);
+        if (! $agent instanceof TinCanAPI_Agent) {
+            $agent = new TinCanAPI_Agent($agent);
         }
 
         $contentType = 'application/octet-stream';
@@ -502,7 +500,7 @@ class RemoteLRS implements LRSInterface
         $response = $this->sendRequest('PUT', 'activities/state', $requestCfg);
 
         if ($response->success) {
-            $doc = new State(
+            $doc = new TinCanAPI_State(
                 array(
                     'id'          => $id,
                     'content'     => $content,
@@ -535,11 +533,11 @@ class RemoteLRS implements LRSInterface
     //
     // TODO: Etag?
     private function _deleteState($activity, $agent, $id) {
-        if (! $activity instanceof Activity) {
-            $activity = new Activity($activity);
+        if (! $activity instanceof TinCanAPI_Activity) {
+            $activity = new TinCanAPI_Activity($activity);
         }
-        if (! $agent instanceof Agent) {
-            $agent = new Agent($agent);
+        if (! $agent instanceof TinCanAPI_Agent) {
+            $agent = new TinCanAPI_Agent($agent);
         }
 
         $requestCfg = array(
@@ -582,8 +580,8 @@ class RemoteLRS implements LRSInterface
     }
 
     public function retrieveActivityProfileIds($activity) {
-        if (! $activity instanceof Activity) {
-            $activity = new Activity($activity);
+        if (! $activity instanceof TinCanAPI_Activity) {
+            $activity = new TinCanAPI_Activity($activity);
         }
 
         $requestCfg = array(
@@ -610,8 +608,8 @@ class RemoteLRS implements LRSInterface
     }
 
     public function retrieveActivityProfile($activity, $id) {
-        if (! $activity instanceof Activity) {
-            $activity = new Activity($activity);
+        if (! $activity instanceof TinCanAPI_Activity) {
+            $activity = new TinCanAPI_Activity($activity);
         }
         $response = $this->sendRequest(
             'GET',
@@ -626,7 +624,7 @@ class RemoteLRS implements LRSInterface
         );
 
         if ($response->success) {
-            $doc = new ActivityProfile(
+            $doc = new TinCanAPI_ActivityProfile(
                 array(
                     'id'       => $id,
                     'content'  => $response->content,
@@ -650,8 +648,8 @@ class RemoteLRS implements LRSInterface
     }
 
     public function saveActivityProfile($activity, $id, $content) {
-        if (! $activity instanceof Activity) {
-            $activity = new Activity($activity);
+        if (! $activity instanceof TinCanAPI_Activity) {
+            $activity = new TinCanAPI_Activity($activity);
         }
 
         $contentType = 'application/octet-stream';
@@ -681,7 +679,7 @@ class RemoteLRS implements LRSInterface
         $response = $this->sendRequest('PUT', 'activities/profile', $requestCfg);
 
         if ($response->success) {
-            $doc = new ActivityProfile(
+            $doc = new TinCanAPI_ActivityProfile(
                 array(
                     'id'          => $id,
                     'content'     => $content,
@@ -702,8 +700,8 @@ class RemoteLRS implements LRSInterface
 
     // TODO: Etag?
     public function deleteActivityProfile($activity, $id) {
-        if (! $activity instanceof Activity) {
-            $activity = new Activity($activity);
+        if (! $activity instanceof TinCanAPI_Activity) {
+            $activity = new TinCanAPI_Activity($activity);
         }
         $response = $this->sendRequest(
             'DELETE',
@@ -721,8 +719,8 @@ class RemoteLRS implements LRSInterface
 
     // TODO: groups?
     public function retrieveAgentProfileIds($agent) {
-        if (! $agent instanceof Agent) {
-            $agent = new Agent($agent);
+        if (! $agent instanceof TinCanAPI_Agent) {
+            $agent = new TinCanAPI_Agent($agent);
         }
 
         $requestCfg = array(
@@ -750,8 +748,8 @@ class RemoteLRS implements LRSInterface
 
     public function retrieveAgentProfile($agent, $id) {
         // TODO: Group
-        if (! $agent instanceof Agent) {
-            $agent = new Agent($agent);
+        if (! $agent instanceof TinCanAPI_Agent) {
+            $agent = new TinCanAPI_Agent($agent);
         }
         $response = $this->sendRequest(
             'GET',
@@ -766,7 +764,7 @@ class RemoteLRS implements LRSInterface
         );
 
         if ($response->success) {
-            $doc = new AgentProfile(
+            $doc = new TinCanAPI_AgentProfile(
                 array(
                     'id'      => $id,
                     'content' => $response->content,
@@ -791,8 +789,8 @@ class RemoteLRS implements LRSInterface
 
     public function saveAgentProfile($agent, $id, $content) {
         // TODO: Group
-        if (! $agent instanceof Agent) {
-            $agent = new Agent($agent);
+        if (! $agent instanceof TinCanAPI_Agent) {
+            $agent = new TinCanAPI_Agent($agent);
         }
 
         $contentType = 'application/octet-stream';
@@ -822,7 +820,7 @@ class RemoteLRS implements LRSInterface
         $response = $this->sendRequest('PUT', 'agents/profile', $requestCfg);
 
         if ($response->success) {
-            $doc = new AgentProfile(
+            $doc = new TinCanAPI_AgentProfile(
                 array(
                     'id' => $id,
                     'content' => $content,
@@ -844,8 +842,8 @@ class RemoteLRS implements LRSInterface
     // TODO: Etag?
     public function deleteAgentProfile($agent, $id) {
         // TODO: Group
-        if (! $agent instanceof Agent) {
-            $agent = new Agent($agent);
+        if (! $agent instanceof TinCanAPI_Agent) {
+            $agent = new TinCanAPI_Agent($agent);
         }
         $response = $this->sendRequest(
             'DELETE',
@@ -882,8 +880,8 @@ class RemoteLRS implements LRSInterface
     }
 
     public function setVersion($value) {
-        if (! in_array($value, Version::supported(), true)) {
-            throw new \InvalidArgumentException("Unsupported version: $value");
+        if (! in_array($value, TinCanAPI_Version::supported(), true)) {
+            throw new InvalidArgumentException("Unsupported version: $value");
         }
         $this->version = $value;
         return $this;
@@ -899,7 +897,7 @@ class RemoteLRS implements LRSInterface
             $this->auth = 'Basic ' . base64_encode(func_get_arg(0) . ':' . func_get_arg(1));
         }
         else {
-            throw new \BadMethodCallException('setAuth requires 1 or 2 arguments');
+            throw new BadMethodCallException('setAuth requires 1 or 2 arguments');
         }
         return $this;
     }

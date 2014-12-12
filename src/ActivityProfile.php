@@ -14,16 +14,15 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class ActivityProfile extends Document
+class TinCanAPI_ActivityProfile extends TinCanAPI_Document
 {
     protected $activity;
 
     public function setActivity($value) {
-        if (! $value instanceof Activity && is_array($value)) {
-            $value = new Activity($value);
+        if (! $value instanceof TinCanAPI_Activity && is_array($value)) {
+            $value = new TinCanAPI_Activity($value);
         }
 
         $this->activity = $value;

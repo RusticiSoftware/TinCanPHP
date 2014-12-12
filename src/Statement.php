@@ -14,10 +14,9 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class Statement extends StatementBase
+class TinCanAPI_Statement extends TinCanAPI_StatementBase
 {
     protected $id;
 
@@ -34,13 +33,13 @@ class Statement extends StatementBase
     protected $version;
     protected $attachments;
 
-    protected static $directProps = array(
+    public static $directProps = array(
         'id',
         'timestamp',
         'stored',
         'version',
     );
-    protected static $versionedProps = array(
+    public static $versionedProps = array(
         'actor',
         'verb',
         'result',
@@ -68,8 +67,10 @@ class Statement extends StatementBase
         }
     }
 
-    private function _asVersion(&$result, $version) {
-        $result = parent::_asVersion($result, $version);
+    public function _asVersion(&$result, $version) {
+	    //$result = $this->asVersion( $version );
+        parent::_asVersion($result, $version);
+	    $x = 'x';
 
         if (count($this->attachments) > 0) {
             $result['attachments'] = array();
@@ -80,6 +81,12 @@ class Statement extends StatementBase
         }
     }
 
+	//public function asVersion( $version ) {
+	//	$result = parent::asVersion( $version );
+	//	$this->_asVersion($result, $version);
+	//	return $result;
+	//}
+
     public function stamp() {
         $this->setId(Util::getUUID());
         $this->setTimestamp(Util::getTimestamp());
@@ -88,8 +95,8 @@ class Statement extends StatementBase
     }
 
     public function setId($value) {
-        if (isset($value) && ! preg_match(Util::UUID_REGEX, $value)) {
-            throw new \InvalidArgumentException('arg1 must be a UUID "' . $value . '"');
+        if (isset($value) && ! preg_match(TinCanAPI_Util::UUID_REGEX, $value)) {
+            throw new InvalidArgumentException('arg1 must be a UUID "' . $value . '"');
         }
         $this->id = $value;
         return $this;
@@ -99,14 +106,14 @@ class Statement extends StatementBase
 
     public function setStored($value) {
         if (isset($value)) {
-            if ($value instanceof \DateTime) {
-                $value = $value->format(\DateTime::ISO8601);
+            if ($value instanceof DateTime) {
+                $value = $value->format(DateTime::ISO8601);
             }
             elseif (is_string($value)) {
                 $value = $value;
             }
             else {
-                throw new \InvalidArgumentException('type of arg1 must be string or DateTime');
+                throw new InvalidArgumentException('type of arg1 must be string or DateTime');
             }
         }
 
@@ -117,8 +124,8 @@ class Statement extends StatementBase
     public function getStored() { return $this->stored; }
 
     public function setAuthority($value) {
-        if (! $value instanceof Agent && is_array($value)) {
-            $value = new Agent($value);
+        if (! $value instanceof TinCanAPI_Agent && is_array($value)) {
+            $value = new TinCanAPI_Agent($value);
         }
 
         $this->authority = $value;
@@ -132,8 +139,8 @@ class Statement extends StatementBase
 
     public function setAttachments($value) {
         foreach ($value as $k => $v) {
-            if (! $value[$k] instanceof Attachment) {
-                $value[$k] = new Attachment($value[$k]);
+            if (! $value[$k] instanceof TinCanAPI_Attachment) {
+                $value[$k] = new TinCanAPI_Attachment($value[$k]);
             }
         }
 
@@ -143,8 +150,8 @@ class Statement extends StatementBase
     }
     public function getAttachments() { return $this->attachments; }
     public function addAttachment($value) {
-        if (! $value instanceof Attachment) {
-            $value = new Attachment($value);
+        if (! $value instanceof TinCanAPI_Attachment) {
+            $value = new TinCanAPI_Attachment($value);
         }
 
         array_push($this->attachments, $value);

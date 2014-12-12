@@ -15,12 +15,12 @@
     limitations under the License.
 */
 
-use TinCan\Activity;
+require_once( 'TinCanApi_Autoloader.php' );
 
-class ActivityTest extends PHPUnit_Framework_TestCase {
+class ActivityTest extenrequire_once( 'TinCanApi_Autoloader.php' );ase {
     public function testInstantiation() {
-        $obj = new Activity();
-        $this->assertInstanceOf('TinCan\Activity', $obj);
+        $obj = new TinCanAPI_Activity();
+        $this->assertInstanceOf('TinCanAPI_Activity', $obj);
         $this->assertAttributeEmpty('id', $obj, 'id empty');
         $this->assertAttributeEmpty('definition', $obj, 'definition empty');
     }
@@ -30,7 +30,7 @@ class ActivityTest extends PHPUnit_Framework_TestCase {
             'InvalidArgumentException',
             'Invalid JSON: ' . JSON_ERROR_NONE
         );
-        $obj = Activity::fromJSON(null);
+        $obj = TinCanAPI_Activity::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
@@ -38,7 +38,7 @@ class ActivityTest extends PHPUnit_Framework_TestCase {
             'InvalidArgumentException',
             'Invalid JSON: ' . JSON_ERROR_NONE
         );
-        $obj = Activity::fromJSON('');
+        $obj = TinCanAPI_Activity::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
@@ -46,26 +46,26 @@ class ActivityTest extends PHPUnit_Framework_TestCase {
             'InvalidArgumentException',
             'Invalid JSON: ' . JSON_ERROR_SYNTAX
         );
-        $obj = Activity::fromJSON('{id:"some value"}');
+        $obj = TinCanAPI_Activity::fromJSON('{id:"some value"}');
     }
 
     public function testFromJSONIDOnly() {
-        $obj = Activity::fromJSON('{"id":"' . COMMON_ACTIVITY_ID . '"}');
-        $this->assertInstanceOf('TinCan\Activity', $obj);
+        $obj = TinCanAPI_Activity::fromJSON('{"id":"' . COMMON_ACTIVITY_ID . '"}');
+        $this->assertInstanceOf('TinCanAPI_Activity', $obj);
         $this->assertAttributeEquals(COMMON_ACTIVITY_ID, 'id', $obj, 'id matches');
         $this->assertAttributeEmpty('definition', $obj, 'definition empty');
     }
 
     // TODO: need to loop versions
     public function testAsVersion() {
-        $obj = new Activity(
+        $obj = new TinCanAPI_Activity(
             array('id' => COMMON_ACTIVITY_ID)
         );
         $versioned = $obj->asVersion('1.0.0');
 
         $this->assertEquals(
             $versioned,
-            [ 'objectType' => 'Activity', 'id' => COMMON_ACTIVITY_ID ],
+            [ 'objectType' => 'TinCanAPI_Activity', 'id' => COMMON_ACTIVITY_ID ],
             "id only: 1.0.0"
         );
     }

@@ -14,12 +14,9 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class Context implements VersionableInterface
-{
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
+class TinCanAPI_Context extends TinCanAPI_VersionableInterface {
 
     protected $registration;
     protected $instructor;
@@ -31,13 +28,13 @@ class Context implements VersionableInterface
     protected $statement;
     protected $extensions;
 
-    private static $directProps = array(
+    public static $directProps = array(
         'registration',
         'revision',
         'platform',
         'language',
     );
-    private static $versionedProps = array(
+    public static $versionedProps = array(
         'instructor',
         'team',
         'contextActivities',
@@ -67,7 +64,7 @@ class Context implements VersionableInterface
     }
 
     public function setRegistration($value) {
-        if (isset($value) && ! preg_match(Util::UUID_REGEX, $value)) {
+        if (isset($value) && ! preg_match(TinCanAPI_Util::UUID_REGEX, $value)) {
             throw new InvalidArgumentException('arg1 must be a UUID');
         }
         $this->registration = $value;
@@ -76,12 +73,12 @@ class Context implements VersionableInterface
     public function getRegistration() { return $this->registration; }
 
     public function setInstructor($value) {
-        if (! ($value instanceof Agent || $value instanceof Group) && is_array($value)) {
-            if (isset($value['objectType']) && $value['objectType'] === "Group") {
-                $value = new Group($value);
+        if (! ($value instanceof TinCanAPI_Agent || $value instanceof TinCanAPI_Group) && is_array($value)) {
+            if (isset($value['objectType']) && $value['objectType'] === "TinCanAPI_Group") {
+                $value = new TinCanAPI_Group($value);
             }
             else {
-                $value = new Agent($value);
+                $value = new TinCanAPI_Agent($value);
             }
         }
 
@@ -92,8 +89,8 @@ class Context implements VersionableInterface
     public function getInstructor() { return $this->instructor; }
 
     public function setTeam($value) {
-        if (! $value instanceof Group && is_array($value)) {
-            $value = new Group($value);
+        if (! $value instanceof TinCanAPI_Group && is_array($value)) {
+            $value = new TinCanAPI_Group($value);
         }
 
         $this->team = $value;
@@ -103,8 +100,8 @@ class Context implements VersionableInterface
     public function getTeam() { return $this->team; }
 
     public function setContextActivities($value) {
-        if (! $value instanceof ContextActivities) {
-            $value = new ContextActivities($value);
+        if (! $value instanceof TinCanAPI_ContextActivities) {
+            $value = new TinCanAPI_ContextActivities($value);
         }
 
         $this->contextActivities = $value;
@@ -121,8 +118,8 @@ class Context implements VersionableInterface
     public function getLanguage() { return $this->language; }
 
     public function setStatement($value) {
-        if (! $value instanceof StatementRef && is_array($value)) {
-            $value = new StatementRef($value);
+        if (! $value instanceof TinCanAPI_StatementRef && is_array($value)) {
+            $value = new TinCanAPI_StatementRef($value);
         }
 
         $this->statement = $value;
@@ -132,8 +129,8 @@ class Context implements VersionableInterface
     public function getStatement() { return $this->statement; }
 
     public function setExtensions($value) {
-        if (! $value instanceof Extensions) {
-            $value = new Extensions($value);
+        if (! $value instanceof TinCanAPI_Extensions) {
+            $value = new TinCanAPI_Extensions($value);
         }
 
         $this->extensions = $value;
@@ -141,4 +138,5 @@ class Context implements VersionableInterface
         return $this;
     }
     public function getExtensions() { return $this->extensions; }
+		
 }

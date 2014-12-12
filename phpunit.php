@@ -2,15 +2,18 @@
 
 date_default_timezone_set('UTC');
 
+require_once('TinCanApi_Autoloader.php');
+
 require_once('tests/Constants.php');
+
+require_once('src/Object.php');
+require_once('src/VersionableInterface.php');
+require_once('src/StatementBase.php');
+
 
 require_once('src/LRSInterface.php');
 require_once('src/StatementTargetInterface.php');
-require_once('src/VersionableInterface.php');
 
-require_once('src/ArraySetterTrait.php');
-require_once('src/FromJSONTrait.php');
-require_once('src/AsVersionTrait.php');
 
 require_once('src/Map.php');
 require_once('src/LRSResponse.php');
@@ -30,7 +33,7 @@ require_once('src/Context.php');
 require_once('src/Score.php');
 require_once('src/Result.php');
 require_once('src/StatementRef.php');
-require_once('src/StatementBase.php');
+
 require_once('src/SubStatement.php');
 require_once('src/Statement.php');
 

@@ -14,19 +14,16 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class Score implements VersionableInterface
+class Score extends TinCanAPI_VersionableInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
-
     protected $scaled;
     protected $raw;
     protected $min;
     protected $max;
 
-    private static $directProps = array(
+    public static $directProps = array(
         'scaled',
         'raw',
         'min',

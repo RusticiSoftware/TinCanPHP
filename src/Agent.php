@@ -14,12 +14,9 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class Agent implements VersionableInterface, StatementTargetInterface
-{
-    use ArraySetterTrait, FromJSONTrait;
+class TinCanAPI_Agent extends TinCanAPI_StatementTargetInterface {
     protected $objectType = 'Agent';
 
     protected $name;
@@ -84,8 +81,8 @@ class Agent implements VersionableInterface, StatementTargetInterface
     public function getOpenid() { return $this->openid; }
 
     public function setAccount($value) {
-        if (! $value instanceof AgentAccount && is_array($value)) {
-            $value = new AgentAccount($value);
+        if (! $value instanceof TinCanAPI_AgentAccount && is_array($value)) {
+            $value = new TinCanAPI_AgentAccount($value);
         }
 
         $this->account = $value;
@@ -93,4 +90,5 @@ class Agent implements VersionableInterface, StatementTargetInterface
         return $this;
     }
     public function getAccount() { return $this->account; }
+	
 }

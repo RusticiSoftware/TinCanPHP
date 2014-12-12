@@ -14,20 +14,18 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class Verb implements VersionableInterface
+class TinCanAPI_Verb extends TinCanAPI_VersionableInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
 
     protected $id;
     protected $display;
 
-    private static $directProps = array(
+    public static $directProps = array(
         'id',
     );
-    private static $versionedProps = array(
+    public static $versionedProps = array(
         'display',
     );
 
@@ -48,8 +46,8 @@ class Verb implements VersionableInterface
     public function getId() { return $this->id; }
 
     public function setDisplay($value) {
-        if (! $value instanceof LanguageMap) {
-            $value = new LanguageMap($value);
+        if (! $value instanceof TinCanAPI_LanguageMap) {
+            $value = new TinCanAPI_LanguageMap($value);
         }
 
         $this->display = $value;

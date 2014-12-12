@@ -14,13 +14,11 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-interface StatementTargetInterface
-{
-    public function getObjectType();
-    public function asVersion($version);
-
-    public static function fromJSON($jsonStr);
+class TinCanAPI_StatementTargetInterface extends TinCanAPI_StatementBase {
+    //public function getObjectType() {}
+    //public function asVersion($version) {}
+    //
+    //public static function fromJSON($jsonStr) {}
 }

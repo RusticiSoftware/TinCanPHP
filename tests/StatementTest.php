@@ -15,12 +15,12 @@
     limitations under the License.
 */
 
-use TinCan\Statement;
+require_once( 'TinCanApi_Autoloader.php' );
 
-class StatementTest extends PHPUnit_Framework_TestCase {
+class StatementTest extends require_once( 'TinCanApi_Autoloader.php' ); {
     public function testInstantiation() {
         $obj = new Statement();
-        $this->assertInstanceOf('TinCan\Statement', $obj);
+        $this->assertInstanceOf('TinCanAPI_Statement', $obj);
         $this->assertAttributeEmpty('id', $obj, 'id empty');
         $this->assertAttributeEmpty('actor', $obj, 'actor empty');
         $this->assertAttributeEmpty('verb', $obj, 'verb empty');
@@ -38,7 +38,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             'InvalidArgumentException',
             'Invalid JSON: ' . JSON_ERROR_NONE
         );
-        $obj = Statement::fromJSON(null);
+        $obj = TinCanAPI_Statement::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
@@ -46,7 +46,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             'InvalidArgumentException',
             'Invalid JSON: ' . JSON_ERROR_NONE
         );
-        $obj = Statement::fromJSON('');
+        $obj = TinCanAPI_Statement::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
@@ -54,15 +54,15 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             'InvalidArgumentException',
             'Invalid JSON: ' . JSON_ERROR_SYNTAX
         );
-        $obj = Statement::fromJSON('{id:"some value"}');
+        $obj = TinCanAPI_Statement::fromJSON('{id:"some value"}');
     }
 
     public function testStamp() {
-        $obj = new Statement();
+        $obj = new TinCanAPI_Statement();
         $obj->stamp();
 
         $this->assertAttributeInternalType('string', 'timestamp', $obj, 'timestamp is string');
-        $this->assertRegExp(TinCan\Util::UUID_REGEX, $obj->getId(), 'id is UUId');
+        $this->assertRegExp(TinCanAPI_Util::UUID_REGEX, $obj->getId(), 'id is UUId');
     }
 
     public function testSetId() {
@@ -71,7 +71,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             'arg1 must be a UUID "some invalid id"'
         );
 
-        $obj = new Statement();
+        $obj = new TinCanAPI_Statement();
         $obj->setId('some invalid id');
     }
 
@@ -79,14 +79,14 @@ class StatementTest extends PHPUnit_Framework_TestCase {
     // TODO: need to loop possible configs
     public function testFromJSONInstantiations() {
         $obj = Statement::fromJSON('{"id":"' . COMMON_MBOX . '"}');
-        $this->assertInstanceOf('TinCan\Statement', $obj);
+        $this->assertInstanceOf('TinCanAPI_Statement', $obj);
         $this->assertSame(COMMON_MBOX, $obj->getMbox(), 'mbox value');
     }
     */
 
     // TODO: need to loop versions
     public function testAsVersion() {
-        $obj = new Statement(
+        $obj = new TinCanAPI_Statement(
             [
                 'actor' => [
                     'mbox' => COMMON_MBOX
@@ -97,7 +97,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
                         'en-US' => 'experienced'
                     ]
                 ],
-                'object' => new TinCan\Activity(
+                'object' => new TinCanAPI_Activity(
                     [
                         'id' => COMMON_ACTIVITY_ID,
                         'definition' => [
@@ -117,7 +117,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
                 'context' => [
                     'contextActivities' => [
                         'parent' => [
-                            new TinCan\Activity(
+                            new TinCanAPI_Activity(
                                 [
                                     'id' => COMMON_ACTIVITY_ID . '/1',
                                     'definition' => [
@@ -129,7 +129,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
                             )
                         ],
                     ],
-                    'registration' => TinCan\Util::getUUID(),
+                    'registration' => TinCanAPI_Util::getUUID(),
                 ],
                 'result' => [
                     'completion' => true,

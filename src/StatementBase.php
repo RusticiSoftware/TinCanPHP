@@ -14,12 +14,9 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-abstract class StatementBase implements VersionableInterface
-{
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
+class TinCanAPI_StatementBase extends TinCanAPI_VersionableInterface {
 
     protected $actor;
     protected $verb;
@@ -36,10 +33,10 @@ abstract class StatementBase implements VersionableInterface
     //
     protected $timestamp;
 
-    protected static $directProps = array(
+    public static $directProps = array(
         'timestamp',
     );
-    protected static $versionedProps = array(
+    public static $versionedProps = array(
         'actor',
         'verb',
         'result',
@@ -63,19 +60,19 @@ abstract class StatementBase implements VersionableInterface
         }
     }
 
-    private function _asVersion(&$result, $version) {
+    public function _asVersion(&$result, $version) {
         if (isset($this->target)) {
             $result['object'] = $this->target->asVersion($version);
         }
     }
 
     public function setActor($value) {
-        if ((! $value instanceof Agent && ! $value instanceof Group) && is_array($value)) {
-            if (isset($value['objectType']) && $value['objectType'] === 'Group') {
-                $value = new Group($value);
+        if ((! $value instanceof TinCanAPI_Agent && ! $value instanceof TinCanAPI_Group) && is_array($value)) {
+            if (isset($value['objectType']) && $value['objectType'] === 'TinCanAPI_Group') {
+                $value = new TinCanAPI_Group($value);
             }
             else {
-                $value = new Agent($value);
+                $value = new TinCanAPI_Agent($value);
             }
         }
 
@@ -86,8 +83,8 @@ abstract class StatementBase implements VersionableInterface
     public function getActor() { return $this->actor; }
 
     public function setVerb($value) {
-        if (! $value instanceof Verb) {
-            $value = new Verb($value);
+        if (! $value instanceof TinCanAPI_Verb) {
+            $value = new TinCanAPI_Verb($value);
         }
 
         $this->verb = $value;
@@ -97,29 +94,29 @@ abstract class StatementBase implements VersionableInterface
     public function getVerb() { return $this->verb; }
 
     public function setTarget($value) {
-        if (! $value instanceof StatementTargetInterface && is_array($value)) {
+        if (! $value instanceof TinCanAPI_StatementTargetInterface && is_array($value)) {
             if (isset($value['objectType'])) {
                 if ($value['objectType'] === 'Activity') {
-                    $value = new Activity($value);
+                    $value = new TinCanAPI_Activity($value);
                 }
                 elseif ($value['objectType'] === 'Agent') {
-                    $value = new Agent($value);
+                    $value = new TinCanAPI_Agent($value);
                 }
                 elseif ($value['objectType'] === 'Group') {
-                    $value = new Group($value);
+                    $value = new TinCanAPI_Group($value);
                 }
                 elseif ($value['objectType'] === 'StatementRef') {
-                    $value = new StatementRef($value);
+                    $value = new TinCanAPI_StatementRef($value);
                 }
                 elseif ($value['objectType'] === 'SubStatement') {
-                    $value = new SubStatement($value);
+                    $value = new TinCanAPI_SubStatement($value);
                 }
                 else {
-                    throw new \InvalidArgumentException('arg1 must implement the StatementTargetInterface objectType not recognized:' . $value['objectType']);
+                    throw new InvalidArgumentException('arg1 must implement the StatementTargetInterface objectType not recognized:' . $value['objectType']);
                 }
             }
             else {
-                $value = new Activity($value);
+                $value = new TinCanAPI_Activity($value);
             }
         }
 
@@ -134,8 +131,8 @@ abstract class StatementBase implements VersionableInterface
     public function getObject() { return $this->getTarget(); }
 
     public function setResult($value) {
-        if (! $value instanceof Result && is_array($value)) {
-            $value = new Result($value);
+        if (! $value instanceof TinCanAPI_Result && is_array($value)) {
+            $value = new TinCanAPI_Result($value);
         }
 
         $this->result = $value;
@@ -145,8 +142,8 @@ abstract class StatementBase implements VersionableInterface
     public function getResult() { return $this->result; }
 
     public function setContext($value) {
-        if (! $value instanceof Context && is_array($value)) {
-            $value = new Context($value);
+        if (! $value instanceof TinCanAPI_Context && is_array($value)) {
+            $value = new TinCanAPI_Context($value);
         }
 
         $this->context = $value;
@@ -157,14 +154,14 @@ abstract class StatementBase implements VersionableInterface
 
     public function setTimestamp($value) {
         if (isset($value)) {
-            if ($value instanceof \DateTime) {
-                $value = $value->format(\DateTime::ISO8601);
+            if ($value instanceof DateTime) {
+                $value = $value->format(DateTime::ISO8601);
             }
             elseif (is_string($value)) {
                 $value = $value;
             }
             else {
-                throw new \InvalidArgumentException('type of arg1 must be string or DateTime');
+                throw new InvalidArgumentException('type of arg1 must be string or DateTime');
             }
         }
 

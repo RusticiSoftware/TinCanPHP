@@ -15,19 +15,17 @@
     limitations under the License.
 */
 
-use TinCan\Context;
-
 class ContextTest extends PHPUnit_Framework_TestCase {
     public function testInstantiation() {
-        $obj = new Context();
-        $this->assertInstanceOf('TinCan\Context', $obj);
+        $obj = new TinCanAPI_Context();
+        $this->assertInstanceOf('TinCanAPI_Context', $obj);
     }
 
     /*
     // TODO: need to loop possible configs
     public function testFromJSONInstantiations() {
         $obj = Context::fromJSON('{"mbox":"' . COMMON_GROUP_MBOX . '", "member":[{"mbox":"' . COMMON_MBOX . '"}]}');
-        $this->assertInstanceOf('TinCan\Context', $obj);
+        $this->assertInstanceOf('Context', $obj);
         $this->assertSame(COMMON_GROUP_MBOX, $obj->getMbox(), 'mbox value');
         $this->assertEquals([['mbox' => COMMON_MBOX]], $obj->getMember(), 'member list');
     }
@@ -35,7 +33,7 @@ class ContextTest extends PHPUnit_Framework_TestCase {
 
     // TODO: need to loop versions
     public function testAsVersion() {
-        $obj = new Context();
+        $obj = new TinCanAPI_Context();
         $versioned = $obj->asVersion('1.0.0');
 
         //$this->assertEquals(
@@ -47,11 +45,11 @@ class ContextTest extends PHPUnit_Framework_TestCase {
 
     public function testSetInstructor() {
         $common_agent_cfg = [ 'mbox' => COMMON_MBOX ];
-        $common_agent     = new TinCan\Agent($common_agent_cfg);
+        $common_agent     = new TinCanAPI_Agent($common_agent_cfg);
         $common_group_cfg = [ 'mbox' => COMMON_MBOX, 'objectType' => 'Group' ];
-        $common_group     = new TinCan\Group($common_agent_cfg);
+        $common_group     = new TinCanAPI_Group($common_agent_cfg);
 
-        $obj = new Context();
+        $obj = new TinCanAPI_Context();
 
         $obj->setInstructor($common_agent_cfg);
         $this->assertEquals($common_agent, $obj->getInstructor(), "agent config");

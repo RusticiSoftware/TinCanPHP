@@ -14,11 +14,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class Util
-{
+class TinCanAPI_Util extends TinCanAPI_Object {
+	
     const UUID_REGEX = '/[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}/i';
 
     //
@@ -26,7 +25,7 @@ class Util
     // http://stackoverflow.com/questions/2040240/php-function-to-generate-v4-uuid
     //
     public static function getUUID() {
-        $randomString = openssl_random_pseudo_bytes(16);
+        $randomString = $this->random_pseudo_bytes(16);
         $time_low = bin2hex(substr($randomString, 0, 4));
         $time_mid = bin2hex(substr($randomString, 4, 2));
         $time_hi_and_version = bin2hex(substr($randomString, 6, 2));
