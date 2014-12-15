@@ -14,23 +14,21 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
+class TinCanAPI_Activity extends TinCanAPI_StatementTargetInterface {
 
-class Activity implements VersionableInterface, StatementTargetInterface
-{
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
     private $objectType = 'Activity';
 
     protected $id;
     protected $definition;
 
-    private static $directProps = array(
+    public static $directProps = array(
         'objectType',
         'id',
     );
 
-    private static $versionedProps = array(
+    public static $versionedProps = array(
         'definition',
     );
 
@@ -49,8 +47,8 @@ class Activity implements VersionableInterface, StatementTargetInterface
     public function getId() { return $this->id; }
 
     public function setDefinition($value) {
-        if (! $value instanceof ActivityDefinition && is_array($value)) {
-            $value = new ActivityDefinition($value);
+        if (! $value instanceof TinCanAPI_ActivityDefinition && is_array($value)) {
+            $value = new TinCanAPI_ActivityDefinition($value);
         }
 
         $this->definition = $value;
@@ -58,4 +56,6 @@ class Activity implements VersionableInterface, StatementTargetInterface
         return $this;
     }
     public function getDefinition() { return $this->definition; }
+	
+	
 }

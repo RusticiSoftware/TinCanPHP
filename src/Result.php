@@ -14,12 +14,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class Result implements VersionableInterface
+class TinCanAPI_Result extends TinCanAPI_VersionableInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
 
     protected $score;
     protected $success;
@@ -28,13 +26,13 @@ class Result implements VersionableInterface
     protected $response;
     protected $extensions;
 
-    private static $directProps = array(
+    public static $directProps = array(
         'success',
         'completion',
         'duration',
         'response',
     );
-    private static $versionedProps = array(
+    public static $versionedProps = array(
         'score',
         'extensions',
     );
@@ -52,8 +50,8 @@ class Result implements VersionableInterface
     }
 
     public function setScore($value) {
-        if (! $value instanceof Score && is_array($value)) {
-            $value = new Score($value);
+        if (! $value instanceof TinCanAPI_Score && is_array($value)) {
+            $value = new TinCanAPI_Score($value);
         }
 
         $this->score = $value;
@@ -72,8 +70,8 @@ class Result implements VersionableInterface
     public function getResponse() { return $this->response; }
 
     public function setExtensions($value) {
-        if (! $value instanceof Extensions) {
-            $value = new Extensions($value);
+        if (! $value instanceof TinCanAPI_Extensions) {
+            $value = new TinCanAPI_Extensions($value);
         }
 
         $this->extensions = $value;

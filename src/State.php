@@ -14,18 +14,16 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class State extends Document
-{
+class TinCanAPI_State extends TinCanAPI_Document {
     protected $activity;
     protected $agent;
     protected $registration;
 
     public function setActivity($value) {
-        if (! $value instanceof Activity && is_array($value)) {
-            $value = new Activity($value);
+        if (! $value instanceof TinCanAPI_Activity && is_array($value)) {
+            $value = new TinCanAPI_Activity($value);
         }
 
         $this->activity = $value;
@@ -35,12 +33,12 @@ class State extends Document
     public function getActivity() { return $this->activity; }
 
     public function setAgent($value) {
-        if ((! $value instanceof Agent && ! $value instanceof Group) && is_array($value)) {
-            if (isset($value['objectType']) && $value['objectType'] === 'Group') {
-                $value = new Group($value);
+        if ((! $value instanceof TinCanAPI_Agent && ! $value instanceof TinCanAPI_Group) && is_array($value)) {
+            if (isset($value['objectType']) && $value['objectType'] === 'TinCanAPI_Group') {
+                $value = new TinCanAPI_Group($value);
             }
             else {
-                $value = new Agent($value);
+                $value = new TinCanAPI_Agent($value);
             }
         }
 
@@ -51,7 +49,7 @@ class State extends Document
     public function getAgent() { return $this->agent; }
 
     public function setRegistration($value) {
-        if (isset($value) && ! preg_match(Util::UUID_REGEX, $value)) {
+        if (isset($value) && ! preg_match(TinCanAPI_Util::UUID_REGEX, $value)) {
             throw new InvalidArgumentException('arg1 must be a UUID');
         }
 

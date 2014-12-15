@@ -14,10 +14,8 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-interface VersionableInterface
-{
-    public function asVersion($version);
+class TinCanAPI_VersionableInterface extends TinCanAPI_Object {
+    //public function asVersion($version) { return $version; }
 }

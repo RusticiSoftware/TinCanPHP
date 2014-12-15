@@ -14,13 +14,9 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-// TODO: should this be an implementation of an interface?
-abstract class Document
-{
-    use ArraySetterTrait;
+class TinCanAPI_Document extends TinCanAPI_Object {
 
     protected $id;
     protected $contentType;
@@ -47,14 +43,14 @@ abstract class Document
 
     public function setTimestamp($value) {
         if (isset($value)) {
-            if ($value instanceof \DateTime) {
-                $value = $value->format(\DateTime::ISO8601);
+            if ($value instanceof DateTime) {
+                $value = $value->format(DateTime::ISO8601);
             }
             elseif (is_string($value)) {
                 $value = $value;
             }
             else {
-                throw new \InvalidArgumentException('type of arg1 must be string or DateTime');
+                throw new InvalidArgumentException('type of arg1 must be string or DateTime');
             }
         }
 
@@ -63,4 +59,5 @@ abstract class Document
         return $this;
     }
     public function getTimestamp() { return $this->timestamp; }
+	
 }

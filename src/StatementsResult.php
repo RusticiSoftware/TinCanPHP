@@ -14,12 +14,9 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class StatementsResult
-{
-    use ArraySetterTrait, FromJSONTrait;
+class TinCanAPI_StatementsResult extends TinCanAPI_Object {
 
     protected $statements;
     protected $more;
@@ -34,8 +31,8 @@ class StatementsResult
 
     public function setStatements($value) {
         foreach ($value as $k => $v) {
-            if (! $value[$k] instanceof Statement) {
-                $value[$k] = new Statement($v);
+            if (! $value[$k] instanceof TinCanAPI_Statement) {
+                $value[$k] = new TinCanAPI_Statement($v);
             }
         }
 

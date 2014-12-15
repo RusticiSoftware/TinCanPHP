@@ -14,17 +14,14 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class AgentAccount implements VersionableInterface
-{
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
+class TinCanAPI_AgentAccount extends TinCanAPI_VersionableInterface {
 
     protected $name;
     protected $homePage;
 
-    private static $directProps = array(
+    public static $directProps = array(
         'name',
         'homePage',
     );
@@ -41,4 +38,5 @@ class AgentAccount implements VersionableInterface
     public function getName() { return $this->name; }
     public function setHomePage($value) { $this->homePage = $value; return $this; }
     public function getHomePage() { return $this->homePage; }
+		
 }

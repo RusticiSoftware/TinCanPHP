@@ -15,10 +15,12 @@
     limitations under the License.
 */
 
-class UtilTest extends PHPUnit_Framework_TestCase {
-    public function testGetUUID() {
-        $result = TinCan\Util::getUUID();
+require_once( 'TinCanApi_Autoloader.php' );
 
-        $this->assertRegExp(TinCan\Util::UUID_REGEX, $result);
+class UtilTest extends require_once( 'TinCanApi_Autoloader.php' ); {
+    public function testGetUUID() {
+        $result = TinCanAPI_Util::getUUID();
+
+        $this->assertRegExp(TinCanAPI_Util::UUID_REGEX, $result);
     }
 }

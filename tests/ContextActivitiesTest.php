@@ -15,24 +15,24 @@
     limitations under the License.
 */
 
-use TinCan\ContextActivities;
+require_once( 'TinCanApi_Autoloader.php' );
 
-class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
+class ContextActivitiesTest extends require_once( 'TinCanApi_Autoloader.php' ); {
     static private $listProps = ['category', 'parent', 'grouping', 'other'];
     static private $common_activity_cfg = [
         'id' => COMMON_ACTIVITY_ID
     ];
 
     public function testInstantiation() {
-        $obj = new ContextActivities();
-        $this->assertInstanceOf('TinCan\ContextActivities', $obj);
+        $obj = new TinCanAPI_ContextActivities();
+        $this->assertInstanceOf('TinCanAPI_ContextActivities', $obj);
         foreach (self::$listProps as $k) {
             $this->assertAttributeEquals([], $k, $obj, "$k empty array");
         }
     }
 
     public function testFromJSONInstantiations() {
-        $common_activity = new TinCan\Activity(self::$common_activity_cfg);
+        $common_activity = new TinCanAPI_Activity(self::$common_activity_cfg);
 
         $all_json = array();
         foreach (self::$listProps as $k) {
@@ -42,15 +42,15 @@ class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
 
             array_push($all_json, $prop_json);
 
-            $obj = ContextActivities::fromJSON('{' . $prop_json . '}');
+            $obj = TinCanAPI_ContextActivities::fromJSON('{' . $prop_json . '}');
 
-            $this->assertInstanceOf('TinCan\ContextActivities', $obj);
+            $this->assertInstanceOf('TinCanAPI_ContextActivities', $obj);
             $this->assertEquals([$common_activity], $obj->$getMethod(), "$k list");
         }
 
-        $obj = ContextActivities::fromJSON('{' . join(",", $all_json) . "}");
+        $obj = TinCanAPI_ContextActivities::fromJSON('{' . join(",", $all_json) . "}");
 
-        $this->assertInstanceOf('TinCan\ContextActivities', $obj);
+        $this->assertInstanceOf('TinCanAPI_ContextActivities', $obj);
         $this->assertEquals([$common_activity], $obj->getCategory(), "all props: category list");
         $this->assertEquals([$common_activity], $obj->getParent(), "all props: parent list");
         $this->assertEquals([$common_activity], $obj->getGrouping(), "all props: grouping list");
@@ -59,7 +59,7 @@ class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
 
     // TODO: need to loop versions
     public function testAsVersion() {
-        $obj = new ContextActivities();
+        $obj = new TinCanAPI_ContextActivities();
         $versioned = $obj->asVersion('1.0.0');
 
         //$this->assertEquals(
@@ -70,13 +70,13 @@ class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testListSetters() {
-        $common_activity = new TinCan\Activity(self::$common_activity_cfg);
+        $common_activity = new TinCanAPI_Activity(self::$common_activity_cfg);
 
         foreach (self::$listProps as $k) {
             $setMethod = 'set' . ucfirst($k);
             $getMethod = 'get' . ucfirst($k);
 
-            $obj = new ContextActivities();
+            $obj = new TinCanAPI_ContextActivities();
 
             $obj->$setMethod($common_activity);
             $this->assertEquals([$common_activity], $obj->$getMethod(), "$k: single Activity");

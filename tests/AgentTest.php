@@ -15,12 +15,12 @@
     limitations under the License.
 */
 
-use TinCan\Agent;
+require_once( 'TinCanApi_Autoloader.php' );
 
-class AgentTest extends PHPUnit_Framework_TestCase {
+class AgentTest extends require_once( 'TinCanApi_Autoloader.php' ); {
     public function testInstantiation() {
-        $obj = new Agent();
-        $this->assertInstanceOf('TinCan\Agent', $obj);
+        $obj = new TinCanAPI_Agent();
+        $this->assertInstanceOf('TinCanAPI_Agent', $obj);
         $this->assertAttributeEmpty('name', $obj, 'name empty');
         $this->assertAttributeEmpty('mbox', $obj, 'mbox empty');
         $this->assertAttributeEmpty('mbox_sha1sum', $obj, 'mbox_sha1sum empty');
@@ -33,7 +33,7 @@ class AgentTest extends PHPUnit_Framework_TestCase {
             'InvalidArgumentException',
             'Invalid JSON: ' . JSON_ERROR_NONE
         );
-        $obj = Agent::fromJSON(null);
+        $obj = TinCanAPI_Agent::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
@@ -41,7 +41,7 @@ class AgentTest extends PHPUnit_Framework_TestCase {
             'InvalidArgumentException',
             'Invalid JSON: ' . JSON_ERROR_NONE
         );
-        $obj = Agent::fromJSON('');
+        $obj = TinCanAPI_Agent::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
@@ -49,19 +49,19 @@ class AgentTest extends PHPUnit_Framework_TestCase {
             'InvalidArgumentException',
             'Invalid JSON: ' . JSON_ERROR_SYNTAX
         );
-        $obj = Agent::fromJSON('{name:"some value"}');
+        $obj = TinCanAPI_Agent::fromJSON('{name:"some value"}');
     }
 
     // TODO: need to loop possible configs
     public function testFromJSONInstantiations() {
-        $obj = Agent::fromJSON('{"mbox":"' . COMMON_MBOX . '"}');
-        $this->assertInstanceOf('TinCan\Agent', $obj);
+        $obj = TinCanAPI_Agent::fromJSON('{"mbox":"' . COMMON_MBOX . '"}');
+        $this->assertInstanceOf('TinCanAPI_Agent', $obj);
         $this->assertSame(COMMON_MBOX, $obj->getMbox(), 'mbox value');
     }
 
     // TODO: need to loop versions
     public function testAsVersion() {
-        $obj = new Agent(
+        $obj = new TinCanAPI_Agent(
             [ 'mbox' => COMMON_MBOX ]
         );
         $versioned = $obj->asVersion('1.0.0');
@@ -74,7 +74,7 @@ class AgentTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testSetMbox() {
-        $obj = new Agent();
+        $obj = new TinCanAPI_Agent();
 
         $obj->setMbox(COMMON_MBOX);
         $this->assertSame(COMMON_MBOX, $obj->getMbox());

@@ -14,10 +14,9 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class Group extends Agent
+class TinCanAPI_Group extends TinCanAPI_Agent
 {
     protected $objectType = 'Group';
 
@@ -47,8 +46,8 @@ class Group extends Agent
 
     public function setMember($value) {
         foreach ($value as $k => $v) {
-            if (! $v instanceof Agent) {
-                $value[$k] = new Agent($v);
+            if (! $v instanceof TinCanAPI_Agent) {
+                $value[$k] = new TinCanAPI_Agent($v);
             }
         }
 
@@ -58,8 +57,8 @@ class Group extends Agent
     }
     public function getMember() { return $this->member; }
     public function addMember($value) {
-        if (! $value instanceof Agent) {
-            $value = new Agent($value);
+        if (! $value instanceof TinCanAPI_Agent) {
+            $value = new TinCanAPI_Agent($value);
         }
 
         array_push($this->member, $value);

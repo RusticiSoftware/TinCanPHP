@@ -14,12 +14,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class Version
-{
-    private static $_supported = array(
+class TinCanAPI_Version extends TinCanAPI_Object {
+    public static $_supported = array(
         "1.0.1",
         "1.0.0"
         //, "0.95"

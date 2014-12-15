@@ -14,14 +14,12 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class SubStatement extends StatementBase implements StatementTargetInterface
-{
+class TinCanAPI_SubStatement extends TinCanAPI_StatementTargetInterface {
     private $objectType = 'SubStatement';
 
-    protected static $directProps = array(
+    public static $directProps = array(
         'objectType',
         'timestamp',
     );

@@ -14,18 +14,16 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class StatementRef implements VersionableInterface, StatementTargetInterface
+class TinCanAPI_StatementRef extends TinCanAPI_StatementTargetInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
 
     private $objectType = 'StatementRef';
 
     protected $id;
 
-    private static $directProps = array(
+    public static $directProps = array(
         'objectType',
         'id',
     );

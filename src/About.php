@@ -14,20 +14,18 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-class About implements VersionableInterface
+class TinCanAPI_About extends TinCanAPI_VersionableInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
 
     protected $version;
     protected $extensions;
 
-    private static $directProps = array(
+    public static $directProps = array(
         'version',
     );
-    private static $versionedProps = array(
+    public static $versionedProps = array(
         'extensions',
     );
 
@@ -50,8 +48,8 @@ class About implements VersionableInterface
     public function getVersion() { return $this->version; }
 
     public function setExtensions($value) {
-        if (! $value instanceof Extensions) {
-            $value = new Extensions($value);
+        if (! $value instanceof TinCanAPI_Extensions) {
+            $value = new TinCanAPI_Extensions($value);
         }
 
         $this->extensions = $value;
@@ -59,4 +57,5 @@ class About implements VersionableInterface
         return $this;
     }
     public function getExtensions() { return $this->extensions; }
+		
 }

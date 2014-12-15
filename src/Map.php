@@ -14,13 +14,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+/*  API Modified for CoursePress and WordPress minimum requirements. */
 
-namespace TinCan;
-
-abstract class Map implements VersionableInterface
+class TinCanAPI_Map extends TinCanAPI_VersionableInterface
 {
-    use FromJSONTrait;
-
     protected $_map;
 
     public function __construct() {
