@@ -10,7 +10,7 @@ For more information about the Tin Can API visit:
 
 http://tincanapi.com/
 
-Requires PHP 5.4 or later.
+Requires PHP 5.4 or later. (If you must run something older you should look at the PHP_5_2 branch.)
 
 ### Installation
 
@@ -28,7 +28,9 @@ require 'vendor/autoload.php';
 
 ### Testing
 
-Tests are implemented using PHPUnit.
+Tests are implemented using PHPUnit. Configure the LRS endpoint and credentials by copying the `tests/Config.php.template` to `tests/Config.php` then setting the values for your LRS.
+
+Once configured run:
 
 ```
 phpunit tests
