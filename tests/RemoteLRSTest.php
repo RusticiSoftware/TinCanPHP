@@ -18,10 +18,17 @@
 use TinCan\RemoteLRS;
 
 class RemoteLRSTest extends PHPUnit_Framework_TestCase {
-    static private $endpoint = 'http://cloud.scorm.com/tc/3HYPTQLAI9/sandbox';
-    static private $version  = '1.0.1';
-    static private $username = '';
-    static private $password = '';
+    static private $endpoint;
+    static private $version;
+    static private $username;
+    static private $password;
+
+    public static function setUpBeforeClass() {
+        self::$endpoint = $GLOBALS['LRSs'][0]['endpoint'];
+        self::$version = $GLOBALS['LRSs'][0]['version'];
+        self::$username = $GLOBALS['LRSs'][0]['username'];
+        self::$password = $GLOBALS['LRSs'][0]['password'];
+    }
 
     public function testInstantiation() {
         $lrs = new RemoteLRS();
@@ -98,16 +105,20 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
 
     public function testMoreStatements() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
-        $queryResponse = $lrs->queryStatements(['limit' => 4]);
+        $queryResponse = $lrs->queryStatements(['limit' => 1]);
 
         if ($queryResponse->success) {
+            if (! $queryResponse->content->getMore()) {
+                $this->markTestSkipped('No more property in StatementsResult (not enough statements in endpoint?)');
+            }
+
             $response = $lrs->moreStatements($queryResponse->content);
 
             $this->assertInstanceOf('TinCan\LRSResponse', $response);
             $this->assertInstanceOf('TinCan\StatementsResult', $response->content);
         }
         else {
-            // TODO: skipped? throw?
+            $this->markTestSkipped('Query to get "more" URL failed');
         }
     }
 

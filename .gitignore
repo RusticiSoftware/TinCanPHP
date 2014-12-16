@@ -1,3 +1,5 @@
+tests/Config.php
+
 # Third party libraries
 phpdoc.xml
 php.ini
