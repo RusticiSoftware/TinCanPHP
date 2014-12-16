@@ -48,7 +48,8 @@ abstract class Document
     public function setTimestamp($value) {
         if (isset($value)) {
             if ($value instanceof \DateTime) {
-                $value = $value->format(\DateTime::ISO8601);
+                // Use format('c') instead of format(\DateTime::ISO8601) due to bug in format(\DateTime::ISO8601) that generates an invalid timestamp.
+                $value = $value->format('c');
             }
             elseif (is_string($value)) {
                 $value = $value;
