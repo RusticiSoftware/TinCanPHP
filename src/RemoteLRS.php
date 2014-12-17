@@ -387,7 +387,7 @@ class RemoteLRS implements LRSInterface
             $response = $this->queryStatements($query, $isEnsureStatementReturnedCalled);
 
             if ($response->success) {
-                $statements = &$response->content->getStatements();
+                $statements = $response->content->getStatements();
                 $is_more_results = ($response->content->getMore() != null);
 
                 while (count($statements) <= $originalLimit && $is_more_results) {
