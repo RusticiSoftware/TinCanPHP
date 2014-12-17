@@ -1,6 +1,6 @@
 <?php
 
-$loader = require '../vendor/autoload.php';
+$loader = require 'vendor/autoload.php';
 
 $lrs = new TinCan\RemoteLRS(
     'http://cloud.scorm.com/tc/public',
