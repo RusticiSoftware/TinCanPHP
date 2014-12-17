@@ -17,6 +17,8 @@
 
 namespace TinCan;
 
+use InvalidArgumentException;
+
 class Context implements VersionableInterface
 {
     use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
@@ -133,9 +135,6 @@ class Context implements VersionableInterface
         foreach ($result as $property => $value) {
             if (empty($value)) {
                 unset($result[$property]);
-            } elseif (is_array($value)) {
-                $this->_asVersion($value, $version);
-                $result[$property] = $value;
             } elseif ($value instanceof VersionableInterface) {
                 $result[$property] = $value->asVersion($version);
             }

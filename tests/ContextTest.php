@@ -16,6 +16,7 @@
 */
 
 use TinCan\Context;
+use TinCan\Util;
 
 class ContextTest extends PHPUnit_Framework_TestCase {
     private $emptyProperties = array(
@@ -42,18 +43,15 @@ class ContextTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testUsesArraySetterTrait() {
-        $obj = new Context();
-        $this->assertTrue(method_exists($obj, '_fromArray'));
+        $this->assertContains('TinCan\ArraySetterTrait', class_uses('TinCan\Context'));
     }
 
     public function testUsesFromJSONTrait() {
-        $obj = new Context();
-        $this->assertTrue(method_exists($obj, 'fromJSON'));
+        $this->assertContains('TinCan\FromJSONTrait', class_uses('TinCan\Context'));
     }
 
     public function testUsesAsVersionTrait() {
-        $obj = new Context();
-        $this->assertTrue(method_exists($obj, 'asVersion'));
+        $this->assertContains('TinCan\AsVersionTrait', class_uses('TinCan\Context'));
     }
 
     /*
@@ -66,9 +64,35 @@ class ContextTest extends PHPUnit_Framework_TestCase {
     }
     */
 
-    // TODO: need more robust test (happy-path)
     public function testAsVersion() {
-        $args      = ['platform' => 'testPlatform'];
+        $args = [
+            'registration' => Util::getUUID(),
+            'instructor'   => [
+                'objectType' => 'Agent',
+                'name'       => 'test agent'
+            ],
+            'team' => [
+                'objectType' => 'Group',
+                'name'       => 'test group'
+            ],
+            'contextActivities' => [
+                'category' => [
+                    [
+                        'objectType' => 'Activity',
+                        'id'         => 'test category'
+                    ]
+                ]
+            ],
+            'revision'   => 'test revision',
+            'platform'   => 'test platform',
+            'language'   => 'test language',
+            'statement'  => [
+                'objectType' => 'StatementRef',
+                'id'         => Util::getUUID()
+            ],
+            'extensions' => ['test extension'],
+        ];
+
         $obj       = new Context($args);
         $versioned = $obj->asVersion('1.0.0');
 
