@@ -133,7 +133,7 @@ class Context implements VersionableInterface
     private function _asVersion(array &$result, $version)
     {
         foreach ($result as $property => $value) {
-            if (empty($value)) {
+            if (! isset($value)) {
                 unset($result[$property]);
             } elseif ($value instanceof VersionableInterface) {
                 $result[$property] = $value->asVersion($version);
