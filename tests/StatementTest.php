@@ -142,10 +142,11 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             'version' => '1.0.0',
             'attachments' => [
                 [
-                    'description' => [
-                        'en-US' => 'Attachment description'
-                    ],
-                    'length' => 0,
+                    'usageType'   => 'http://test',
+                    'display'     => ['en-US' => 'test display'],
+                    'contentType' => 'text/plain; charset=ascii',
+                    'length'      => 0,
+                    'sha2'        => hash('sha256', json_encode(['foo', 'bar']))
                 ]
             ]
         ];
