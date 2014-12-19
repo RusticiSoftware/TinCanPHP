@@ -17,8 +17,10 @@
 
 namespace TinCan;
 
+use DomainException;
+
 /**
- * Basic implementation of the {@link VersionableInterface}
+ * Basic implementation of the VersionableInterface
  */
 trait AsVersionTrait
 {
@@ -46,5 +48,17 @@ trait AsVersionTrait
         }
 
         return $result;
+    }
+
+    /**
+     * Prevent external mutation
+     *
+     * @param  string $property
+     * @param  mixed  $value
+     * @throws DomainException
+     */
+    final public function __set($property, $value)
+    {
+        throw new DomainException(__CLASS__ . ' is immutable');
     }
 }
