@@ -2,7 +2,7 @@
 
 date_default_timezone_set('UTC');
 
-require_once('vendor/autoload.php');
+require_once('autoload.php');
 require_once('tests/Config.php');
 require_once('tests/Constants.php');
 
