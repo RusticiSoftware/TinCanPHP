@@ -44,19 +44,19 @@ class AttachmentTest extends PHPUnit_Framework_TestCase {
         }
     }
 
-    public function testUsesArraySetterTrait() {
-        $obj = new Attachment();
-        $this->assertTrue(method_exists($obj, '_fromArray'));
+    public function testUsesArraySetterTrait()
+    {
+        $this->assertContains('TinCan\ArraySetterTrait', class_uses('TinCan\Attachment'));
     }
 
-    public function testUsesFromJSONTrait() {
-        $obj = new Attachment();
-        $this->assertTrue(method_exists($obj, 'fromJSON'));
+    public function testUsesFromJSONTrait()
+    {
+        $this->assertContains('TinCan\FromJSONTrait', class_uses('TinCan\Attachment'));
     }
 
-    public function testUsesAsVersionTrait() {
-        $obj = new Attachment();
-        $this->assertTrue(method_exists($obj, 'asVersion'));
+    public function testUsesAsVersionTrait()
+    {
+        $this->assertContains('TinCan\AsVersionTrait', class_uses('TinCan\Attachment'));
     }
 
     // TODO: need more robust test (happy-path)

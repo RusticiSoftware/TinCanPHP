@@ -25,19 +25,19 @@ class AgentAccountTest extends PHPUnit_Framework_TestCase {
         $this->assertAttributeEmpty('name', $obj, 'name empty');
     }
 
-    public function testUsesArraySetterTrait() {
-        $obj = new AgentAccount();
-        $this->assertTrue(method_exists($obj, '_fromArray'));
+    public function testUsesArraySetterTrait()
+    {
+        $this->assertContains('TinCan\ArraySetterTrait', class_uses('TinCan\AgentAccount'));
     }
 
-    public function testUsesFromJSONTrait() {
-        $obj = new AgentAccount();
-        $this->assertTrue(method_exists($obj, 'fromJSON'));
+    public function testUsesFromJSONTrait()
+    {
+        $this->assertContains('TinCan\FromJSONTrait', class_uses('TinCan\AgentAccount'));
     }
 
-    public function testUsesAsVersionTrait() {
-        $obj = new AgentAccount();
-        $this->assertTrue(method_exists($obj, 'asVersion'));
+    public function testUsesAsVersionTrait()
+    {
+        $this->assertContains('TinCan\AsVersionTrait', class_uses('TinCan\AgentAccount'));
     }
 
     public function testName() {
