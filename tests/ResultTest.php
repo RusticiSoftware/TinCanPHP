@@ -41,18 +41,15 @@ class ResultTest extends PHPUnit_Framework_TestCase {
         }
     }
 
-    public function testUsesArraySetterTrait()
-    {
+    public function testUsesArraySetterTrait() {
         $this->assertContains('TinCan\ArraySetterTrait', class_uses('TinCan\Result'));
     }
 
-    public function testUsesFromJSONTrait()
-    {
+    public function testUsesFromJSONTrait() {
         $this->assertContains('TinCan\FromJSONTrait', class_uses('TinCan\Result'));
     }
 
-    public function testUsesAsVersionTrait()
-    {
+    public function testUsesAsVersionTrait() {
         $this->assertContains('TinCan\AsVersionTrait', class_uses('TinCan\Result'));
     }
 

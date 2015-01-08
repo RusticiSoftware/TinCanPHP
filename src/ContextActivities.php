@@ -34,15 +34,16 @@ class ContextActivities implements VersionableInterface
         }
     }
 
-    private function _asVersion(array &$result, $version)
-    {
+    private function _asVersion(array &$result, $version) {
         foreach ($result as $property => $value) {
             if (empty($value)) {
                 unset($result[$property]);
-            } elseif (is_array($value)) {
+            }
+            elseif (is_array($value)) {
                 $this->_asVersion($value, $version);
                 $result[$property] = $value;
-            } elseif ($value instanceof VersionableInterface) {
+            }
+            elseif ($value instanceof VersionableInterface) {
                 $result[$property] = $value->asVersion($version);
             }
         }

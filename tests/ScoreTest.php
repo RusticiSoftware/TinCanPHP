@@ -25,8 +25,7 @@ class ScoreTest extends PHPUnit_Framework_TestCase {
         'max',
     );
 
-    public function testInstantiation()
-    {
+    public function testInstantiation() {
         $obj = new Score();
         $this->assertInstanceOf('TinCan\Score', $obj);
         foreach ($this->emptyProperties as $property) {
@@ -34,23 +33,19 @@ class ScoreTest extends PHPUnit_Framework_TestCase {
         }
     }
 
-    public function testUsesArraySetterTrait()
-    {
+    public function testUsesArraySetterTrait() {
         $this->assertContains('TinCan\ArraySetterTrait', class_uses('TinCan\Score'));
     }
 
-    public function testUsesFromJSONTrait()
-    {
+    public function testUsesFromJSONTrait() {
         $this->assertContains('TinCan\FromJSONTrait', class_uses('TinCan\Score'));
     }
 
-    public function testUsesAsVersionTrait()
-    {
+    public function testUsesAsVersionTrait() {
         $this->assertContains('TinCan\AsVersionTrait', class_uses('TinCan\Score'));
     }
 
-    public function testSetScaledThrowsException()
-    {
+    public function testSetScaledThrowsException() {
         $this->setExpectedException(
             'InvalidArgumentException',
             sprintf('Scale must be between %s and %s [5]', Score::SCALE_MIN, Score::SCALE_MAX)
@@ -59,21 +54,18 @@ class ScoreTest extends PHPUnit_Framework_TestCase {
         $score->setScaled(5);
     }
 
-    public function testSetMinThrowsException()
-    {
+    public function testSetMinThrowsException() {
         $this->setExpectedException('InvalidArgumentException', 'Min must be less than max');
         $score = new Score(['max' => 3.7]);
         $score->setMin(8.1);
     }
 
-    public function testSetMaxThrowsException()
-    {
+    public function testSetMaxThrowsException() {
         $this->setExpectedException('InvalidArgumentException', 'Max must be greater than min');
         $score = new Score(['min' => 5.3, 'max' => 3.7]);
     }
 
-    public function testSetRawThrowsException()
-    {
+    public function testSetRawThrowsException() {
         $score = new Score(['min' => 1.5, 'max' => 4.3]);
         $this->setExpectedException(
             'InvalidArgumentException',
@@ -82,38 +74,32 @@ class ScoreTest extends PHPUnit_Framework_TestCase {
         $score->setRaw(1);
     }
 
-    public function testGetRawReturnsFloat()
-    {
+    public function testGetRawReturnsFloat() {
         $score = new Score('1.5');
         $this->assertInternalType('float', $score->getRaw());
     }
 
-    public function testGetMinReturnsFloat()
-    {
+    public function testGetMinReturnsFloat() {
         $score = new Score(null, '1.5');
         $this->assertInternalType('float', $score->getMin());
     }
 
-    public function testGetMaxReturnsFloat()
-    {
+    public function testGetMaxReturnsFloat() {
         $score = new Score(null, null, '1.5');
         $this->assertInternalType('float', $score->getMax());
     }
 
-    public function testGetScaledReturnsFloat()
-    {
+    public function testGetScaledReturnsFloat() {
         $score = new Score(null, null, null, '0.5');
         $this->assertInternalType('float', $score->getScaled());
     }
 
-    public function testGetValueWithoutRawReturnsNull()
-    {
+    public function testGetValueWithoutRawReturnsNull() {
         $score = new Score;
         $this->assertNull($score->getValue());
     }
 
-    public function testGetValueWithoutScaledReturnsRoundedRaw()
-    {
+    public function testGetValueWithoutScaledReturnsRoundedRaw() {
         $raw   = 3.92013;
         $score = new Score($raw);
         $this->assertEquals(
@@ -122,8 +108,7 @@ class ScoreTest extends PHPUnit_Framework_TestCase {
         );
     }
 
-    public function testGetValueWithScaledReturnsScaledAndRoundedRaw()
-    {
+    public function testGetValueWithScaledReturnsScaledAndRoundedRaw() {
         $raw    = 3.92013;
         $scaled = 0.8;
         $score  = new Score($raw, null, null, $scaled);
@@ -133,8 +118,7 @@ class ScoreTest extends PHPUnit_Framework_TestCase {
         );
     }
 
-    public function testAsVersion()
-    {
+    public function testAsVersion() {
         $args = [
             'raw'    => '1.5',
             'min'    => '1.0',

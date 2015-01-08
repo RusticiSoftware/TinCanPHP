@@ -66,7 +66,6 @@ class Score implements VersionableInterface
      */
     protected $max;
 
-
     /**
      * Constructor
      *
@@ -75,8 +74,7 @@ class Score implements VersionableInterface
      * @param float       $aMax           the score maximum
      * @param float       $aScalingFactor the score scaling factor
      */
-    public function __construct($aRawValue = null, $aMin = null, $aMax = null, $aScalingFactor = null)
-    {
+    public function __construct($aRawValue = null, $aMin = null, $aMax = null, $aScalingFactor = null) {
         if (!is_array($aRawValue)) {
             $aRawValue = [
                 'raw'    => $aRawValue,
@@ -93,8 +91,7 @@ class Score implements VersionableInterface
      * @throws InvalidArgumentException
      * @return null
      */
-    public function validate($aValue)
-    {
+    public function validate($aValue) {
         if (!isset($this->min, $this->max)) {
             return;
         }
@@ -109,8 +106,7 @@ class Score implements VersionableInterface
      * @param  int $aPrecision a rounding precision integer
      * @return null|float
      */
-    public function getValue($aPrecision = self::DEFAULT_PRECISION)
-    {
+    public function getValue($aPrecision = self::DEFAULT_PRECISION) {
         if (!isset($this->raw)) {
             return null;
         }
@@ -125,8 +121,7 @@ class Score implements VersionableInterface
      * @throws InvalidArgumentException
      * @return self
      */
-    public function setScaled($value)
-    {
+    public function setScaled($value) {
         if ($value < static::SCALE_MIN || $value > static::SCALE_MAX) {
             throw new InvalidArgumentException(sprintf(
                 "Scale must be between %s and %s [%s]",
@@ -142,8 +137,7 @@ class Score implements VersionableInterface
     /**
      * @return null|float
      */
-    public function getScaled()
-    {
+    public function getScaled() {
         return $this->scaled;
     }
 
@@ -151,8 +145,7 @@ class Score implements VersionableInterface
      * @param  float $value
      * @return self
      */
-    public function setRaw($value)
-    {
+    public function setRaw($value) {
         $this->validate($value);
         $this->raw = (float) $value;
         return $this;
@@ -161,8 +154,7 @@ class Score implements VersionableInterface
     /**
      * @return null|float
      */
-    public function getRaw()
-    {
+    public function getRaw() {
         return $this->raw;
     }
 
@@ -171,8 +163,7 @@ class Score implements VersionableInterface
      * @throws InvalidArgumentException
      * @return self
      */
-    public function setMin($value)
-    {
+    public function setMin($value) {
         if (isset($this->max) && $value >= $this->max) {
             throw new InvalidArgumentException("Min must be less than max");
         }
@@ -183,8 +174,7 @@ class Score implements VersionableInterface
     /**
      * @return null|float
      */
-    public function getMin()
-    {
+    public function getMin() {
         return $this->min;
     }
 
@@ -193,8 +183,7 @@ class Score implements VersionableInterface
      * @throws InvalidArgumentException
      * @return self
      */
-    public function setMax($value)
-    {
+    public function setMax($value) {
         if (isset($this->min) && $value <= $this->min) {
             throw new InvalidArgumentException("Max must be greater than min");
         }
@@ -205,8 +194,7 @@ class Score implements VersionableInterface
     /**
      * @return null|float
      */
-    public function getMax()
-    {
+    public function getMax() {
         return $this->max;
     }
 }

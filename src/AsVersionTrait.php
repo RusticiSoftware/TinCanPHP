@@ -30,8 +30,7 @@ trait AsVersionTrait
      * @param  mixed $version
      * @return array
      */
-    public function asVersion($version)
-    {
+    public function asVersion($version) {
         $result = array();
 
         foreach (get_object_vars($this) as $property => $value) {
@@ -57,8 +56,7 @@ trait AsVersionTrait
      * @param  mixed  $value
      * @throws DomainException
      */
-    final public function __set($property, $value)
-    {
+    final public function __set($property, $value) {
         throw new DomainException(__CLASS__ . ' is immutable');
     }
 }

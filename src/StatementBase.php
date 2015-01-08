@@ -57,10 +57,12 @@ abstract class StatementBase implements VersionableInterface
         foreach ($result as $property => $value) {
             if ($value !== false && empty($value)) {
                 unset($result[$property]);
-            } elseif (is_array($value)) {
+            }
+            elseif (is_array($value)) {
                 $this->_asVersion($value, $version);
                 $result[$property] = $value;
-            } elseif ($value instanceof VersionableInterface) {
+            }
+            elseif ($value instanceof VersionableInterface) {
                 $result[$property] = $value->asVersion($version);
             }
         }

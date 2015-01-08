@@ -17,19 +17,16 @@
 
 class AsVersionTraitTest extends PHPUnit_Framework_TestCase
 {
-    public function testTraitExists()
-    {
+    public function testTraitExists() {
         $this->assertTrue(trait_exists('TinCan\AsVersionTrait'));
     }
 
-    public function testAsVersionReturnsArray()
-    {
+    public function testAsVersionReturnsArray() {
         $trait = $this->getMockForTrait('TinCan\AsVersionTrait');
         $this->assertInternalType('array', $trait->asVersion('test'));
     }
 
-    public function testMagicSetThrowsException()
-    {
+    public function testMagicSetThrowsException() {
         $this->setExpectedException('DomainException');
         $trait = $this->getMockForTrait('TinCan\AsVersionTrait');
         $trait->foo = 'bar';

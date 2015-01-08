@@ -27,18 +27,15 @@ class AboutTest extends PHPUnit_Framework_TestCase {
         $this->assertAttributeNotEmpty('extensions', $obj, 'extenstions not empty');
     }
 
-    public function testUsesArraySetterTrait()
-    {
+    public function testUsesArraySetterTrait() {
         $this->assertContains('TinCan\ArraySetterTrait', class_uses('TinCan\About'));
     }
 
-    public function testUsesFromJSONTrait()
-    {
+    public function testUsesFromJSONTrait() {
         $this->assertContains('TinCan\FromJSONTrait', class_uses('TinCan\About'));
     }
 
-    public function testUsesAsVersionTrait()
-    {
+    public function testUsesAsVersionTrait() {
         $this->assertContains('TinCan\AsVersionTrait', class_uses('TinCan\About'));
     }
 

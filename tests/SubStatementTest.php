@@ -23,8 +23,7 @@ class SubStatementTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('TinCan\StatementBase', $obj);
     }
 
-    public function testGetObjectType()
-    {
+    public function testGetObjectType() {
         $obj = new SubStatement();
         $this->assertSame('SubStatement', $obj->getObjectType());
     }

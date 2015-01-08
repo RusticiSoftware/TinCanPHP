@@ -26,22 +26,19 @@ class StatementRefTest extends PHPUnit_Framework_TestCase {
         $this->assertAttributeNotEmpty('objectType', $obj, 'objectType not empty');
     }
 
-    public function testGetObjectType()
-    {
+    public function testGetObjectType() {
         $obj = new StatementRef();
         $this->assertSame('StatementRef', $obj->getObjectType());
     }
 
-    public function testId()
-    {
+    public function testId() {
         $obj = new StatementRef();
         $id  = Util::getUUID();
         $this->assertSame($obj, $obj->setId($id));
         $this->assertSame($id, $obj->getId());
     }
 
-    public function testSetIdThrowsException()
-    {
+    public function testSetIdThrowsException() {
         $this->setExpectedException(
             'InvalidArgumentException',
             'arg1 must be a UUID'
