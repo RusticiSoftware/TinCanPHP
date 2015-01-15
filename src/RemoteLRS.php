@@ -342,7 +342,7 @@ class RemoteLRS implements LRSInterface
         return $result;
     }
 
-    public function queryStatements($query) {
+    public function queryStatements($query, $isEnsureStatementReturnedCalled = false) {
         $requestCfg = array(
             'params' => $this->queryStatementsRequestParams($query),
         );
@@ -351,12 +351,59 @@ class RemoteLRS implements LRSInterface
 
         if ($response->success) {
             $response->content = StatementsResult::fromJSON($response->content);
+            if (!$isEnsureStatementReturnedCalled) {
+                $response = $this->ensureStatementsReturned($response, $query);
+            }
         }
 
         return $response;
     }
 
-    public function moreStatements($moreUrl) {
+    private function ensureStatementsReturned($initialResponse, $initialQuery) {
+
+        $response = &$initialResponse;
+        $isEnsureStatementReturnedCalled = true;
+
+        $is_more_results = ($response->content->getMore() != null);
+        if (!$is_more_results) {
+            return $response;
+        }
+
+        $statements = $response->content->getStatements();
+
+        $originalLimit = (array_key_exists('limit', $initialQuery))? $initialQuery['limit']: null;
+
+        if ($originalLimit == null) {
+            while (0 == count($statements) && $is_more_results) {
+                $response = $this->moreStatements($response->content->getMore(), $isEnsureStatementReturnedCalled);
+                $statements = &$response->content->getStatements();
+                $is_more_results = ($response->content->getMore() != null);
+            }
+        } else if ($originalLimit > 0 && count($statements) <= $originalLimit && $is_more_results) {
+            // reissue the original request without the limit filter
+            $query = $initialQuery;
+            unset ($query['limit']);
+
+            $response = $this->queryStatements($query, $isEnsureStatementReturnedCalled);
+
+            if ($response->success) {
+                $statements = $response->content->getStatements();
+                $is_more_results = ($response->content->getMore() != null);
+
+                while (count($statements) <= $originalLimit && $is_more_results) {
+                    $response = $this->moreStatements($response->content->getMore(), $isEnsureStatementReturnedCalled);
+                    $is_more_results = ($response->content->getMore() != null);
+                    $statements = array_merge($statements, $response->content->getStatements());
+                }
+
+                $response->content->setStatements($statements);
+            }
+        }
+
+        return $response;
+    }
+
+    public function moreStatements($moreUrl, $isEnsureStatementReturnedCalled = false) {
         if ($moreUrl instanceof StatementsResult) {
             $moreUrl = $moreUrl->getMore();
         }
@@ -366,6 +413,9 @@ class RemoteLRS implements LRSInterface
 
         if ($response->success) {
             $response->content = StatementsResult::fromJSON($response->content);
+            if (!$isEnsureStatementReturnedCalled) {
+                $response = $this->ensureStatementsReturned($response, $query);
+            }
         }
 
         return $response;
