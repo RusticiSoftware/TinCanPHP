@@ -17,31 +17,28 @@
 
 namespace TinCan;
 
+use DomainException;
+
+/**
+ * Basic implementation of the VersionableInterface
+ */
 trait AsVersionTrait
 {
+    /**
+     * Collects defined object properties for a given version into an array
+     *
+     * @param  mixed $version
+     * @return array
+     */
     public function asVersion($version) {
         $result = array();
 
-        $klass = get_class($this);
-        if (property_exists($klass, 'directProps')) {
-            foreach ($klass::$directProps as $key) {
-                //print "AsVersionTrait::asVersion - " . get_class($this) . " - $key:" . $this->$key . "\n";
-
-                // TODO: should this be a prop name -> method map instead?
-                if (isset($this->$key) && ((! is_array($this->$key)) || (count($this->$key) > 0))) {
-                    $result[$key] = $this->$key;
-                }
+        foreach (get_object_vars($this) as $property => $value) {
+            if ($value instanceof VersionableInterface) {
+                $value = $value->asVersion($version);
             }
-        }
-        if (property_exists($klass, 'versionedProps')) {
-            foreach ($klass::$versionedProps as $key) {
-                if (isset($this->$key)) {
-                    //print "AsVersionTrait::asVersion: " . get_class($this) . " - $key\n";
-                    $versioned = $this->$key->asVersion($version);
-                    if (isset($versioned)) {
-                        $result[$key] = $versioned;
-                    }
-                }
+            if (isset($value)) {
+                $result[$property] = $value;
             }
         }
 
@@ -50,5 +47,16 @@ trait AsVersionTrait
         }
 
         return $result;
+    }
+
+    /**
+     * Prevent external mutation
+     *
+     * @param  string $property
+     * @param  mixed  $value
+     * @throws DomainException
+     */
+    final public function __set($property, $value) {
+        throw new DomainException(__CLASS__ . ' is immutable');
     }
 }

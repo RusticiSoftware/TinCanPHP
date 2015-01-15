@@ -15,25 +15,19 @@
     limitations under the License.
 */
 
-namespace TinCan;
-
-class AgentAccount implements VersionableInterface
-{
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
-
-    protected $name;
-    protected $homePage;
-
-    public function __construct() {
-        if (func_num_args() == 1) {
-            $arg = func_get_arg(0);
-
-            $this->_fromArray($arg);
-        }
-    }
-
-    public function setName($value) { $this->name = $value; return $this; }
-    public function getName() { return $this->name; }
-    public function setHomePage($value) { $this->homePage = $value; return $this; }
-    public function getHomePage() { return $this->homePage; }
+if (file_exists('vendor/autoload.php')) {
+    // prefer the composer autoloader
+    return require_once('vendor/autoload.php');
 }
+
+spl_autoload_register(function($className) {
+    $namespace = 'TinCan\\';
+    if (stripos($className, $namespace) === false) {
+        return;
+    }
+    $sourceDir = __DIR__ . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR;
+    $fileName  = str_replace([$namespace, '\\'], [$sourceDir, DIRECTORY_SEPARATOR], $className) . '.php';
+    if (is_readable($fileName)) {
+        include $fileName;
+    }
+});

@@ -24,10 +24,11 @@
         "issues": "https://github.com/RusticiSoftware/TinCanPHP/issues"
     },
     "require": {
-        "php": ">=5.4.0"
+        "php": "~5.4"
     },
     "require-dev": {
-        "phpdocumentor/phpdocumentor": "2.*"
+        "phpdocumentor/phpdocumentor": "2.*",
+        "phpunit/phpunit": "@stable"
     },
     "autoload": {
         "psr-4": {

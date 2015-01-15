@@ -58,15 +58,15 @@ class VerbTest extends PHPUnit_Framework_TestCase {
 
     // TODO: need to loop versions
     public function testAsVersion() {
-        $obj = new Verb(
-            ['id' => COMMON_VERB_ID]
-        );
+        $args = [
+            'id' => COMMON_VERB_ID,
+            'display' => [
+                'en-US' => 'Test display'
+            ]
+        ];
+        $obj = new Verb($args);
         $versioned = $obj->asVersion('1.0.0');
 
-        $this->assertEquals(
-            $versioned,
-            [ 'id' => COMMON_VERB_ID ],
-            "id only: 1.0.0"
-        );
+        $this->assertEquals($versioned, $args, "version 1.0.0");
     }
 }

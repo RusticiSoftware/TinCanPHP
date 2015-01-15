@@ -24,13 +24,6 @@ class Verb implements VersionableInterface
     protected $id;
     protected $display;
 
-    private static $directProps = array(
-        'id',
-    );
-    private static $versionedProps = array(
-        'display',
-    );
-
     public function __construct() {
         if (func_num_args() == 1) {
             $arg = func_get_arg(0);

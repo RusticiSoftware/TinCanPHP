@@ -34,20 +34,6 @@ class Statement extends StatementBase
     protected $version;
     protected $attachments;
 
-    protected static $directProps = array(
-        'id',
-        'timestamp',
-        'stored',
-        'version',
-    );
-    protected static $versionedProps = array(
-        'actor',
-        'verb',
-        'result',
-        'context',
-        'authority',
-    );
-
     public function __construct() {
         call_user_func_array('parent::__construct', func_get_args());
 
@@ -65,18 +51,6 @@ class Statement extends StatementBase
         }
         if (! isset($this->attachments)) {
             $this->setAttachments(array());
-        }
-    }
-
-    private function _asVersion(&$result, $version) {
-        $result = parent::_asVersion($result, $version);
-
-        if (count($this->attachments) > 0) {
-            $result['attachments'] = array();
-
-            foreach ($this->attachments as $k) {
-                array_push($result['attachments'], $k->asVersion($version));
-            }
         }
     }
 

@@ -86,70 +86,84 @@ class StatementTest extends PHPUnit_Framework_TestCase {
 
     // TODO: need to loop versions
     public function testAsVersion() {
-        $obj = new Statement(
-            [
-                'actor' => [
-                    'mbox' => COMMON_MBOX
-                ],
-                'verb' => [
-                    'id' => COMMON_VERB_ID,
-                    'display' => [
-                        'en-US' => 'experienced'
-                    ]
-                ],
-                'object' => new TinCan\Activity(
-                    [
-                        'id' => COMMON_ACTIVITY_ID,
-                        'definition' => [
-                            'type' => 'Invalid type',
-                            'name' => [
-                                'en-US' => 'Test',
-                            ],
-                            //'description' => [
-                                //'en-US' => 'Test description',
-                            //],
-                            'extensions' => [
-                                'http://someuri' => 'some value'
+        $args = [
+            'actor' => [
+                'mbox' => COMMON_MBOX,
+                'objectType' => 'Agent',
+            ],
+            'verb' => [
+                'id' => COMMON_VERB_ID,
+                'display' => [
+                    'en-US' => 'experienced'
+                ]
+            ],
+            'object' => [
+                'objectType' => 'Activity',
+                'id' => COMMON_ACTIVITY_ID,
+                'definition' => [
+                    'type' => 'Invalid type',
+                    'name' => [
+                        'en-US' => 'Test',
+                    ],
+                    //'description' => [
+                        //'en-US' => 'Test description',
+                    //],
+                    'extensions' => [
+                        'http://someuri' => 'some value'
+                    ],
+                ]
+            ],
+            'context' => [
+                'contextActivities' => [
+                    'parent' => [
+                        [
+                            'objectType' => 'Activity',
+                            'id' => COMMON_ACTIVITY_ID . '/1',
+                            'definition' => [
+                                'name' => [
+                                    'en-US' => 'Test: 1',
+                                ],
                             ],
                         ]
-                    ]
-                ),
-                'context' => [
-                    'contextActivities' => [
-                        'parent' => [
-                            new TinCan\Activity(
-                                [
-                                    'id' => COMMON_ACTIVITY_ID . '/1',
-                                    'definition' => [
-                                        'name' => [
-                                            'en-US' => 'Test: 1',
-                                        ],
-                                    ],
-                                ]
-                            )
-                        ],
                     ],
-                    'registration' => TinCan\Util::getUUID(),
                 ],
-                'result' => [
-                    'completion' => true,
-                    'success' => false,
-                    'score' => [
-                        'raw' => '97',
-                        'min' => '65',
-                        'max' => '100',
-                        'scaled' => '.97'
-                    ]
+                'registration' => TinCan\Util::getUUID(),
+            ],
+            'result' => [
+                'completion' => true,
+                'success' => false,
+                'score' => [
+                    'raw' => '97',
+                    'min' => '65',
+                    'max' => '100',
+                    'scaled' => '.97'
                 ]
-
+            ],
+            'version' => '1.0.0',
+            'attachments' => [
+                [
+                    'usageType'   => 'http://test',
+                    'display'     => ['en-US' => 'test display'],
+                    'contentType' => 'text/plain; charset=ascii',
+                    'length'      => 0,
+                    'sha2'        => hash('sha256', json_encode(['foo', 'bar']))
+                ]
             ]
-        );
+        ];
+        $obj = new Statement($args);
+
         $obj->stamp();
+        $args['id']        = $obj->getId();
+        $args['timestamp'] = $obj->getTimestamp();
+
         $obj->getTarget()->getDefinition()->getDescription()->set('en-ES', 'Testo descriptiono');
+        $args['object']['definition']['description'] = ['en-ES' => 'Testo descriptiono'];
+
         $obj->getTarget()->getDefinition()->getName()->unset('en-US');
+        unset($args['object']['definition']['name']);
 
         $versioned = $obj->asVersion('1.0.0');
 
-        //print json_encode($versioned, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $this->assertEquals($args, $versioned, 'version 1.0.0');
     }
 }

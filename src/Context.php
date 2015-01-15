@@ -17,6 +17,8 @@
 
 namespace TinCan;
 
+use InvalidArgumentException;
+
 class Context implements VersionableInterface
 {
     use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
@@ -30,20 +32,6 @@ class Context implements VersionableInterface
     protected $language;
     protected $statement;
     protected $extensions;
-
-    private static $directProps = array(
-        'registration',
-        'revision',
-        'platform',
-        'language',
-    );
-    private static $versionedProps = array(
-        'instructor',
-        'team',
-        'contextActivities',
-        'statement',
-        'extensions',
-    );
 
     public function __construct() {
         if (func_num_args() == 1) {
@@ -141,4 +129,15 @@ class Context implements VersionableInterface
         return $this;
     }
     public function getExtensions() { return $this->extensions; }
+
+    private function _asVersion(array &$result, $version) {
+        foreach ($result as $property => $value) {
+            if (! isset($value)) {
+                unset($result[$property]);
+            }
+            elseif ($value instanceof VersionableInterface) {
+                $result[$property] = $value->asVersion($version);
+            }
+        }
+    }
 }

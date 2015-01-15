@@ -17,13 +17,13 @@ Requires PHP 5.4 or later. (If you must run something older you should look at t
 TinCanPHP is available via [Composer](http://getcomposer.org).
 
 ```
-php composer.phar require rusticisoftware/tincan:~0.0
+php composer.phar require rusticisoftware/tincan:@stable
 ```
 
-With the package installed require the Composer autoloader:
+When not using Composer, require the autoloader:
 
 ```php
-require 'vendor/autoload.php';
+require 'path/to/TinCan/autoload.php';
 ```
 
 ### Testing

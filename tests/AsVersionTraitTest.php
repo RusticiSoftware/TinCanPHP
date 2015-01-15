@@ -15,25 +15,20 @@
     limitations under the License.
 */
 
-namespace TinCan;
-
-class AgentAccount implements VersionableInterface
+class AsVersionTraitTest extends PHPUnit_Framework_TestCase
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
-
-    protected $name;
-    protected $homePage;
-
-    public function __construct() {
-        if (func_num_args() == 1) {
-            $arg = func_get_arg(0);
-
-            $this->_fromArray($arg);
-        }
+    public function testTraitExists() {
+        $this->assertTrue(trait_exists('TinCan\AsVersionTrait'));
     }
 
-    public function setName($value) { $this->name = $value; return $this; }
-    public function getName() { return $this->name; }
-    public function setHomePage($value) { $this->homePage = $value; return $this; }
-    public function getHomePage() { return $this->homePage; }
+    public function testAsVersionReturnsArray() {
+        $trait = $this->getMockForTrait('TinCan\AsVersionTrait');
+        $this->assertInternalType('array', $trait->asVersion('test'));
+    }
+
+    public function testMagicSetThrowsException() {
+        $this->setExpectedException('DomainException');
+        $trait = $this->getMockForTrait('TinCan\AsVersionTrait');
+        $trait->foo = 'bar';
+    }
 }

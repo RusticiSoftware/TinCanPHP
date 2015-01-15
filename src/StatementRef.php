@@ -17,6 +17,8 @@
 
 namespace TinCan;
 
+use InvalidArgumentException;
+
 class StatementRef implements VersionableInterface, StatementTargetInterface
 {
     use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
@@ -24,11 +26,6 @@ class StatementRef implements VersionableInterface, StatementTargetInterface
     private $objectType = 'StatementRef';
 
     protected $id;
-
-    private static $directProps = array(
-        'objectType',
-        'id',
-    );
 
     public function __construct() {
         if (func_num_args() == 1) {

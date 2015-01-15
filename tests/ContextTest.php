@@ -16,11 +16,42 @@
 */
 
 use TinCan\Context;
+use TinCan\Util;
 
 class ContextTest extends PHPUnit_Framework_TestCase {
+    private $emptyProperties = array(
+        'registration',
+        'revision',
+        'platform',
+        'language',
+    );
+
+    private $nonEmptyProperties = array(
+        'contextActivities',
+        'extensions',
+    );
+
     public function testInstantiation() {
         $obj = new Context();
         $this->assertInstanceOf('TinCan\Context', $obj);
+        foreach ($this->emptyProperties as $property) {
+            $this->assertAttributeEmpty($property, $obj, "$property empty");
+        }
+        foreach ($this->nonEmptyProperties as $property) {
+            $this->assertAttributeNotEmpty($property, $obj, "$property not empty");
+        }
+    }
+
+    public function testUsesArraySetterTrait() {
+        $this->assertContains('TinCan\ArraySetterTrait', class_uses('TinCan\Context'));
+    }
+
+    public function testUsesFromJSONTrait() {
+        $this->assertContains('TinCan\FromJSONTrait', class_uses('TinCan\Context'));
+    }
+
+    public function testUsesAsVersionTrait() {
+        $this->assertContains('TinCan\AsVersionTrait', class_uses('TinCan\Context'));
     }
 
     /*
@@ -33,16 +64,39 @@ class ContextTest extends PHPUnit_Framework_TestCase {
     }
     */
 
-    // TODO: need to loop versions
     public function testAsVersion() {
-        $obj = new Context();
+        $args = [
+            'registration' => Util::getUUID(),
+            'instructor'   => [
+                'objectType' => 'Agent',
+                'name'       => 'test agent'
+            ],
+            'team' => [
+                'objectType' => 'Group',
+                'name'       => 'test group'
+            ],
+            'contextActivities' => [
+                'category' => [
+                    [
+                        'objectType' => 'Activity',
+                        'id'         => 'test category'
+                    ]
+                ]
+            ],
+            'revision'   => 'test revision',
+            'platform'   => 'test platform',
+            'language'   => 'test language',
+            'statement'  => [
+                'objectType' => 'StatementRef',
+                'id'         => Util::getUUID()
+            ],
+            'extensions' => ['test extension'],
+        ];
+
+        $obj       = new Context($args);
         $versioned = $obj->asVersion('1.0.0');
 
-        //$this->assertEquals(
-            //[ 'objectType' => 'Context' ],
-            //$versioned,
-            //"empty: 1.0.0"
-        //);
+        $this->assertEquals($versioned, $args, "platform only: 1.0.0");
     }
 
     public function testSetInstructor() {

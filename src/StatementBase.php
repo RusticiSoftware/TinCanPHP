@@ -36,16 +36,6 @@ abstract class StatementBase implements VersionableInterface
     //
     protected $timestamp;
 
-    protected static $directProps = array(
-        'timestamp',
-    );
-    protected static $versionedProps = array(
-        'actor',
-        'verb',
-        'result',
-        'context',
-    );
-
     public function __construct() {
         if (func_num_args() == 1) {
             $arg = func_get_arg(0);
@@ -64,8 +54,21 @@ abstract class StatementBase implements VersionableInterface
     }
 
     private function _asVersion(&$result, $version) {
-        if (isset($this->target)) {
-            $result['object'] = $this->target->asVersion($version);
+        foreach ($result as $property => $value) {
+            if ($value !== false && empty($value)) {
+                unset($result[$property]);
+            }
+            elseif (is_array($value)) {
+                $this->_asVersion($value, $version);
+                $result[$property] = $value;
+            }
+            elseif ($value instanceof VersionableInterface) {
+                $result[$property] = $value->asVersion($version);
+            }
+        }
+        if (isset($result['target'])) {
+            $result['object'] = $result['target'];
+            unset($result['target']);
         }
     }
 

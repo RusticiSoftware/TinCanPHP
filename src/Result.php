@@ -28,17 +28,6 @@ class Result implements VersionableInterface
     protected $response;
     protected $extensions;
 
-    private static $directProps = array(
-        'success',
-        'completion',
-        'duration',
-        'response',
-    );
-    private static $versionedProps = array(
-        'score',
-        'extensions',
-    );
-
     public function __construct() {
         if (func_num_args() == 1) {
             $arg = func_get_arg(0);
