@@ -18,6 +18,8 @@
 use TinCan\Group;
 
 class GroupTest extends PHPUnit_Framework_TestCase {
+    use TinCanTest\TestCompareWithSignatureTrait;
+
     public function testInstantiation() {
         $obj = new Group();
         $this->assertInstanceOf('TinCan\Agent', $obj);
@@ -57,5 +59,182 @@ class GroupTest extends PHPUnit_Framework_TestCase {
 
         $obj->addMember($common_agent);
         $this->assertEquals([$common_agent], $obj->getMember(), 'member list existing Agent');
+    }
+
+    public function testCompareWithSignature() {
+        $name = 'Test Group Name';
+        $acct1 = new TinCan\AgentAccount(
+            [
+                'homePage' => COMMON_ACCT_HOMEPAGE,
+                'name'     => COMMON_ACCT_NAME
+            ]
+        );
+        $acct2 = new TinCan\AgentAccount(
+            [
+                'homePage' => COMMON_ACCT_HOMEPAGE,
+                'name'     => COMMON_ACCT_NAME . '-diff'
+            ]
+        );
+
+        $member1 = new TinCan\Agent(
+            [ 'mbox' => COMMON_MBOX ]
+        );
+        $member2 = new TinCan\Agent(
+            [ 'account' => $acct1 ]
+        );
+
+        $cases = [
+            [
+                'description' => 'all null',
+                'objArgs'     => []
+            ],
+            [
+                'description' => 'mbox',
+                'objArgs'     => ['mbox' => COMMON_GROUP_MBOX]
+            ],
+            [
+                'description' => 'mbox_sha1sum',
+                'objArgs'     => ['mbox_sha1sum' => COMMON_GROUP_MBOX_SHA1]
+            ],
+            [
+                'description' => 'openid',
+                'objArgs'     => ['openid' => COMMON_OPENID]
+            ],
+            [
+                'description' => 'account',
+                'objArgs'     => ['account' => $acct1]
+            ],
+            [
+                'description' => 'mbox with name',
+                'objArgs'     => ['mbox' => COMMON_GROUP_MBOX, 'name' => $name]
+            ],
+            [
+                'description' => 'mbox_sha1sum with name',
+                'objArgs'     => ['mbox_sha1sum' => COMMON_GROUP_MBOX_SHA1, 'name' => $name]
+            ],
+            [
+                'description' => 'openid with name',
+                'objArgs'     => ['openid' => COMMON_OPENID, 'name' => $name]
+            ],
+            [
+                'description' => 'account with name',
+                'objArgs'     => ['account' => $acct1, 'name' => $name]
+            ],
+            [
+                'description' => 'mbox with mismatch name',
+                'objArgs'     => ['mbox' => COMMON_GROUP_MBOX, 'name' => $name],
+                'sigArgs'     => ['mbox' => COMMON_GROUP_MBOX, 'name' => $name . ' diff']
+            ],
+            [
+                'description' => 'mbox_sha1sum with mismatch name',
+                'objArgs'     => ['mbox_sha1sum' => COMMON_GROUP_MBOX_SHA1, 'name' => $name],
+                'sigArgs'     => ['mbox_sha1sum' => COMMON_GROUP_MBOX_SHA1, 'name' => $name . ' diff']
+            ],
+            [
+                'description' => 'openid with mismatch name',
+                'objArgs'     => ['openid' => COMMON_OPENID, 'name' => $name],
+                'sigArgs'     => ['openid' => COMMON_OPENID, 'name' => $name . ' diff']
+            ],
+            [
+                'description' => 'account with mismatch name',
+                'objArgs'     => ['account' => $acct1, 'name' => $name],
+                'sigArgs'     => ['account' => $acct1, 'name' => $name . ' diff']
+            ],
+            [
+                'description' => 'mbox only: mismatch',
+                'objArgs'     => ['mbox' => COMMON_GROUP_MBOX ],
+                'sigArgs'     => ['mbox' => 'diff-' . COMMON_GROUP_MBOX ],
+                'reason'      => 'Comparison of mbox failed: value is not the same'
+            ],
+            [
+                'description' => 'mbox_sha1sum only: mismatch',
+                'objArgs'     => ['mbox_sha1sum' => COMMON_GROUP_MBOX_SHA1 ],
+                'sigArgs'     => ['mbox_sha1sum' => 'diff-' . COMMON_GROUP_MBOX_SHA1 ],
+                'reason'      => 'Comparison of mbox_sha1sum failed: value is not the same'
+            ],
+            [
+                'description' => 'openid only: mismatch',
+                'objArgs'     => ['openid' => COMMON_OPENID ],
+                'sigArgs'     => ['openid' => COMMON_OPENID . 'diff/' ],
+                'reason'      => 'Comparison of openid failed: value is not the same'
+            ],
+            [
+                'description' => 'account only: mismatch',
+                'objArgs'     => ['account' => $acct1 ],
+                'sigArgs'     => ['account' => $acct2 ],
+                'reason'      => 'Comparison of account failed: Comparison of name failed: value is not the same'
+            ],
+
+            //
+            // special cases where we can try to equate an mbox and an mbox SHA1 sum
+            //
+            [
+                'description' => 'this.mbox to signature.mbox_sha1sum',
+                'objArgs'     => ['mbox' => COMMON_GROUP_MBOX],
+                'sigArgs'     => ['mbox_sha1sum' => COMMON_GROUP_MBOX_SHA1]
+            ],
+            [
+                'description' => 'this.mbox_sha1sum to signature.mbox',
+                'objArgs'     => ['mbox_sha1sum' => COMMON_GROUP_MBOX_SHA1],
+                'sigArgs'     => ['mbox' => COMMON_GROUP_MBOX]
+            ],
+            [
+                'description' => 'this.mbox to signature.mbox_sha1sum non-matching',
+                'objArgs'     => ['mbox' => COMMON_GROUP_MBOX],
+                'sigArgs'     => ['mbox_sha1sum' => COMMON_GROUP_MBOX_SHA1 . '-diff'],
+                'reason'      => 'Comparison of this.mbox to signature.mbox_sha1sum failed: no match'
+            ],
+            [
+                'description' => 'this.mbox_sha1sum to signature.mbox non-matching',
+                'objArgs'     => ['mbox_sha1sum' => COMMON_GROUP_MBOX_SHA1 . '-diff'],
+                'sigArgs'     => ['mbox' => COMMON_GROUP_MBOX],
+                'reason'      => 'Comparison of this.mbox_sha1sum to signature.mbox failed: no match'
+            ],
+
+            // special cases for unidentified groups, member list needs to match
+            [
+                'description' => 'anonymous match: empty member list',
+                'objArgs' => ['member' => []],
+            ],
+            [
+                'description' => 'anonymous match: single member',
+                'objArgs' => ['member' => [$member1]],
+            ],
+            [
+                'description' => 'anonymous match: multiple members',
+                'objArgs' => ['member' => [$member1, $member2]],
+            ],
+            [
+                'description' => 'anonymous non-match: sig member missing (empty)',
+                'objArgs' => ['member' => [$member1]],
+                'sigArgs' => ['member' => []],
+                'reason' => 'Comparison of member list failed: array lengths differ'
+            ],
+            [
+                'description' => 'anonymous non-match: this member missing (empty)',
+                'objArgs' => ['member' => []],
+                'sigArgs' => ['member' => [$member1]],
+                'reason' => 'Comparison of member list failed: array lengths differ'
+            ],
+            [
+                'description' => 'anonymous non-match: sig member missing',
+                'objArgs' => ['member' => [$member1, $member2]],
+                'sigArgs' => ['member' => [$member1]],
+                'reason' => 'Comparison of member list failed: array lengths differ'
+            ],
+            [
+                'description' => 'anonymous non-match: this member missing',
+                'objArgs' => ['member' => [$member1]],
+                'sigArgs' => ['member' => [$member1, $member2]],
+                'reason' => 'Comparison of member list failed: array lengths differ'
+            ],
+            [
+                'description' => 'anonymous non-match: different order',
+                'objArgs' => ['member' => [$member2, $member1]],
+                'sigArgs' => ['member' => [$member1, $member2]],
+                'reason' => 'Comparison of member 0 failed: Comparison of mbox failed: value is not the same'
+            ]
+        ];
+        $this->runSignatureCases("TinCan\Group", $cases);
     }
 }

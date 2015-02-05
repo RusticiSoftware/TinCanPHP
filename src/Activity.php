@@ -17,9 +17,12 @@
 
 namespace TinCan;
 
-class Activity implements VersionableInterface, StatementTargetInterface
+class Activity implements VersionableInterface, StatementTargetInterface, ComparableInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
+    use ArraySetterTrait, FromJSONTrait, AsVersionTrait, SignatureComparisonTrait;
+
+    static private $signatureSkipProperties = array('definition');
+
     private $objectType = 'Activity';
 
     protected $id;

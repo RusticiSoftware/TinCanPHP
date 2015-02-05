@@ -17,6 +17,30 @@
 
 namespace TinCan;
 
-class Extensions extends Map
+class Extensions extends Map implements ComparableInterface
 {
+    public function compareWithSignature($fromSig) {
+        $sigMap = $fromSig->_map;
+
+        $keys = array_unique(
+            array_merge(
+                isset($this->_map) ? array_keys($this->_map) : array(),
+                isset($sigMap) ? array_keys($sigMap) : array()
+            )
+        );
+
+        foreach ($keys as $key) {
+            if (! isset($sigMap[$key])) {
+                return array('success' => false, 'reason' => "$key not in signature");
+            }
+            if (! isset($this->_map[$key])) {
+                return array('success' => false, 'reason' => "$key not in this");
+            }
+            if ($this->_map[$key] != $sigMap[$key]) {
+                return array('success' => false, 'reason' => "$key does not match");
+            }
+        }
+
+        return array('success' => true, 'reason' => null);
+    }
 }

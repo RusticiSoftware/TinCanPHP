@@ -17,9 +17,9 @@
 
 namespace TinCan;
 
-class ContextActivities implements VersionableInterface
+class ContextActivities implements VersionableInterface, ComparableInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
+    use ArraySetterTrait, FromJSONTrait, AsVersionTrait, SignatureComparisonTrait;
 
     protected $category = array();
     protected $parent = array();

@@ -59,3 +59,23 @@ And set the timezone in that file using:
 
 date.timezone = "US/Central"
 ```
+
+### Certificate Generation
+
+These instructions are for creating the requisite public/private key pair and certificate on a Mac with OpenSSL installed. See <https://www.openssl.org/docs/HOWTO/certificates.txt> and <https://www.openssl.org/docs/HOWTO/keys.txt>.
+
+Generate a private key (which contains a public key) without a password (not recommended):
+
+    openssl genrsa -out privkey.pem 2048
+
+To generate a private key with a password:
+
+    openssl genrsa -des3 -out privkey.pem 2048
+
+Create a certificate signing request:
+
+     openssl req -new -key privkey.pem -out cert.csr
+
+To create a self signed certificate (as opposed to one signed by a CA), primarily for testing purposes:
+
+    openssl req -new -x509 -key privkey.pem -out cacert.pem -days 1095

@@ -45,6 +45,33 @@ class Group extends Agent
         return $result;
     }
 
+    public function compareWithSignature($fromSig) {
+        //
+        // if this group is identified then it is the comparison
+        // of the identifier that matters
+        //
+        if ($this->isIdentified() || $fromSig->isIdentified()) {
+            return parent::compareWithSignature($fromSig);
+        }
+
+        //
+        // anonymous groups get their member list compared,
+        // short circuit when they don't have the same length
+        //
+        if (count($this->member) !== count($fromSig->member)) {
+            return array('success' => false, 'reason' => 'Comparison of member list failed: array lengths differ');
+        }
+
+        for ($i = 0; $i < count($this->member); $i++) {
+            $comparison = $this->member[$i]->compareWithSignature($fromSig->member[$i]);
+            if (! $comparison['success']) {
+                return array('success' => false, 'reason' => "Comparison of member $i failed: " . $comparison['reason']);
+            }
+        }
+
+        return array('success' => true, 'reason' => null);
+    }
+
     public function setMember($value) {
         foreach ($value as $k => $v) {
             if (! $v instanceof Agent) {

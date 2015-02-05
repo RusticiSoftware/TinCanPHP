@@ -8,3 +8,8 @@ $LRSs = [
         'version'  => '1.0.1'
     ]
 ];
+$KEYs = [
+    'public'   => 'tests/keys/travis/cacert.pem',
+    'private'  => 'tests/keys/travis/privkey.pem',
+    'password' => 'travis'
+];

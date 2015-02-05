@@ -18,6 +18,8 @@
 use TinCan\Result;
 
 class ResultTest extends PHPUnit_Framework_TestCase {
+    use TinCanTest\TestCompareWithSignatureTrait;
+
     private $emptyProperties = array(
         'success',
         'completion',
@@ -55,10 +57,173 @@ class ResultTest extends PHPUnit_Framework_TestCase {
 
     // TODO: need more robust test (happy-path)
     public function testAsVersion() {
-        $args      = ['success' => true];
+        $args      = [
+            'success'    => true,
+            'completion' => true,
+            'duration'   => 'PT15S',
+            'response'   => 'a',
+            'score'      => [
+                'raw'    => 100,
+                'scaled' => 1,
+                'min'    => 0,
+                'max'    => 100
+            ]
+        ];
         $obj       = new Result($args);
         $versioned = $obj->asVersion('1.0.0');
 
         $this->assertEquals($versioned, $args, "success only: 1.0.0");
+    }
+
+    public function testCompareWithSignature() {
+        $score1 = new TinCan\Score(
+            [
+                'raw'    => 97,
+                'scaled' => 0.97,
+                'min'    => 0,
+                'max'    => 100
+            ]
+        );
+        $score2 = new TinCan\Score(
+            [
+                'raw'    => 15,
+                'scaled' => 0.50
+            ]
+        );
+        $extensions1 = new TinCan\Extensions(
+            [
+                COMMON_EXTENSION_ID_1 => 'test1',
+                COMMON_EXTENSION_ID_2 => 'test2'
+            ]
+        );
+        $extensions2 = new TinCan\Extensions(
+            [
+                COMMON_EXTENSION_ID_1 => 'test1'
+            ]
+        );
+
+        $full = [
+            'success'    => true,
+            'completion' => true,
+            'duration'   => 'PT15S',
+            'response'   => 'a',
+            'score'      => $score1,
+            'extensions' => $extensions1
+        ];
+
+        $cases = [
+            [
+                'description' => 'all null',
+                'objArgs'     => []
+            ],
+            [
+                'description' => 'success',
+                'objArgs'     => ['success' => true]
+            ],
+            [
+                'description' => 'completion',
+                'objArgs'     => ['completion' => true]
+            ],
+            [
+                'description' => 'duration',
+                'objArgs'     => ['duration' => 'PT15S']
+            ],
+            [
+                'description' => 'response',
+                'objArgs'     => ['response' => 'a']
+            ],
+            [
+                'description' => 'score',
+                'objArgs'     => ['score' => $score1]
+            ],
+            [
+                'description' => 'extensions',
+                'objArgs'     => ['extensions' => $extensions1]
+            ],
+            [
+                'description' => 'all',
+                'objArgs'     => [
+                    'success'    => false,
+                    'completion' => false,
+                    'duration'   => 'PT15S',
+                    'response'   => 'b',
+                    'score'      => $score2,
+                    'extensions' => $extensions2
+                ]
+            ],
+            [
+                'description' => 'success only: mismatch',
+                'objArgs'     => ['success' => true ],
+                'sigArgs'     => ['success' => false ],
+                'reason'      => 'Comparison of success failed: value is not the same'
+            ],
+            [
+                'description' => 'completion only: mismatch',
+                'objArgs'     => ['completion' => true ],
+                'sigArgs'     => ['completion' => false ],
+                'reason'      => 'Comparison of completion failed: value is not the same'
+            ],
+            [
+                'description' => 'duration only: mismatch',
+                'objArgs'     => ['duration' => 'PT15S' ],
+                'sigArgs'     => ['duration' => 'PT180S' ],
+                'reason'      => 'Comparison of duration failed: value is not the same'
+            ],
+            [
+                'description' => 'response only: mismatch',
+                'objArgs'     => ['response' => 'a' ],
+                'sigArgs'     => ['response' => 'b' ],
+                'reason'      => 'Comparison of response failed: value is not the same'
+            ],
+            [
+                'description' => 'score only: mismatch',
+                'objArgs'     => ['score' => $score1 ],
+                'sigArgs'     => ['score' => $score2 ],
+                'reason'      => 'Comparison of score failed: Comparison of scaled failed: value is not the same'
+            ],
+            [
+                'description' => 'extensions only: mismatch',
+                'objArgs'     => ['extensions' => $extensions1 ],
+                'sigArgs'     => ['extensions' => $extensions2 ],
+                'reason'      => 'Comparison of extensions failed: http://id.tincanapi.com/extension/location not in signature'
+            ],
+            [
+                'description' => 'full: success mismatch',
+                'objArgs'     => $full,
+                'sigArgs'     => array_replace($full, ['success' => false]),
+                'reason'      => 'Comparison of success failed: value is not the same'
+            ],
+            [
+                'description' => 'full: completion mismatch',
+                'objArgs'     => $full,
+                'sigArgs'     => array_replace($full, ['completion' => false]),
+                'reason'      => 'Comparison of completion failed: value is not the same'
+            ],
+            [
+                'description' => 'full: duration mismatch',
+                'objArgs'     => $full,
+                'sigArgs'     => array_replace($full, ['duration' => 'PT150S']),
+                'reason'      => 'Comparison of duration failed: value is not the same'
+            ],
+            [
+                'description' => 'full: response mismatch',
+                'objArgs'     => $full,
+                'sigArgs'     => array_replace($full, ['response' => 'b']),
+                'reason'      => 'Comparison of response failed: value is not the same'
+            ],
+            [
+                'description' => 'full: score mismatch',
+                'objArgs'     => $full,
+                'sigArgs'     => array_replace($full, ['score' => $score2]),
+                'reason'      => 'Comparison of score failed: Comparison of scaled failed: value is not the same'
+            ],
+            [
+                'description' => 'full: extensions mismatch',
+                'objArgs'     => $full,
+                'sigArgs'     => array_replace($full, ['extensions' => $extensions2]),
+                'reason'      => 'Comparison of extensions failed: http://id.tincanapi.com/extension/location not in signature'
+            ]
+        ];
+        $this->runSignatureCases("TinCan\Result", $cases);
     }
 }
