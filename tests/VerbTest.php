@@ -25,7 +25,7 @@ class VerbTest extends PHPUnit_Framework_TestCase {
     static public function setUpBeforeClass() {
         self::$DISPLAY = [
             'en-US' => 'experienced',
-            'en-UK' => 'experienced',
+            'en-GB' => 'experienced',
             'es' => 'experimentado',
             'fr' => 'expérimenté',
             'it' => 'esperto'

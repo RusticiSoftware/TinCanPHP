@@ -252,7 +252,7 @@ class ContextTest extends PHPUnit_Framework_TestCase {
             [
                 'description' => 'language only: mismatch',
                 'objArgs'     => ['language' => 'en-US' ],
-                'sigArgs'     => ['language' => 'en-UK' ],
+                'sigArgs'     => ['language' => 'en-GB' ],
                 'reason'      => 'Comparison of language failed: value is not the same'
             ],
             [
@@ -306,7 +306,7 @@ class ContextTest extends PHPUnit_Framework_TestCase {
             [
                 'description' => 'full: language mismatch',
                 'objArgs'     => $full,
-                'sigArgs'     => array_replace($full, ['language' => 'en-UK']),
+                'sigArgs'     => array_replace($full, ['language' => 'en-GB']),
                 'reason'      => 'Comparison of language failed: value is not the same'
             ],
             [

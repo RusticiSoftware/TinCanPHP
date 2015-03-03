@@ -27,7 +27,7 @@ class ActivityTest extends PHPUnit_Framework_TestCase {
             'type' => 'http://id.tincanapi.com/activitytype/unit-test',
             'name' => [
                 'en-US' => 'test',
-                'en-UK' => 'test',
+                'en-GB' => 'test',
                 'es'    => 'prueba'
             ]
         ];
