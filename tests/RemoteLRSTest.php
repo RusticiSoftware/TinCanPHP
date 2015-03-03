@@ -222,14 +222,12 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
                     'id' => COMMON_ACTIVITY_ID
                 ]),
                 'attachments' => [
-                    new TinCan\Attachment(
-                        [
-                            'usageType'   => 'http://id.tincanapi.com/attachment/supporting_media',
-                            'display'     => ['en-US' => 'Test Display'],
-                            'contentType' => 'application/json',
-                            'content'     => $content,
-                        ]
-                    )
+                    new TinCan\Attachment([
+                        'usageType'   => 'http://id.tincanapi.com/attachment/supporting_media',
+                        'display'     => ['en-US' => 'Test Display'],
+                        'contentType' => 'application/json',
+                        'content'     => $content,
+                    ])
                 ]
             ]
         );
