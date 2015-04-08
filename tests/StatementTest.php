@@ -582,9 +582,9 @@ class StatementTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testSignInvalidPassword() {
-        $this->setExpectedException(
+        $this->setExpectedExceptionRegExp(
             'Exception',
-            'Unable to get private key: error:06065064:digital envelope routines:EVP_DecryptFinal_ex:bad decrypt'
+            '/Unable to get private key: error:.*:bad decrypt/'
         );
 
         $obj = new Statement(
@@ -618,9 +618,9 @@ class StatementTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testSignInvalidX5cNoError() {
-        $this->setExpectedException(
+        $this->setExpectedExceptionRegExp(
             'Exception',
-            'Unable to read certificate for x5c inclusion: error:0906A065:PEM routines:PEM_do_header:bad decrypt'
+            '/Unable to read certificate for x5c inclusion: .*/'
         );
 
         $obj = new Statement(
