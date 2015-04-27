@@ -107,10 +107,10 @@ class Agent implements VersionableInterface, StatementTargetInterface, Comparabl
         }
         if (isset($this->account) || isset($fromSig->account)) {
             if (! isset($fromSig->account)) {
-                return array('success' => false, 'reason' => "Comparison of $property failed: value not in signature");
+                return array('success' => false, 'reason' => "Comparison of account failed: value not in signature");
             }
             if (! isset($this->account)) {
-                return array('success' => false, 'reason' => "Comparison of $property failed: value not in this");
+                return array('success' => false, 'reason' => "Comparison of account failed: value not in this");
             }
 
             $acctResult = $this->account->compareWithSignature($fromSig->account);
