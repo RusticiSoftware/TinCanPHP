@@ -19,9 +19,9 @@ namespace TinCan;
 
 use InvalidArgumentException;
 
-class Context implements VersionableInterface
+class Context implements VersionableInterface, ComparableInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
+    use ArraySetterTrait, FromJSONTrait, AsVersionTrait, SignatureComparisonTrait;
 
     protected $registration;
     protected $instructor;

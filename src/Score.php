@@ -23,9 +23,9 @@ use InvalidArgumentException;
  * An optional field that represents the outcome of a graded Activity achieved
  * by an Agent.
  */
-class Score implements VersionableInterface
+class Score implements VersionableInterface, ComparableInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
+    use ArraySetterTrait, FromJSONTrait, AsVersionTrait, SignatureComparisonTrait;
 
     /**#@+
      * Class constants

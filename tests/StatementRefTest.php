@@ -57,4 +57,20 @@ class StatementRefTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals($versioned, $args, "version 1.0.0");
     }
+
+    public function testCompareWithSignature() {
+        $success = ['success' => true, 'reason' => null];
+        $failure = ['success' => false, 'reason' => null];
+
+        $id = Util::getUUID();
+        $obj = new StatementRef(['id' => $id]);
+        $sig = new StatementRef(['id' => $id]);
+
+        $this->assertSame($success, $obj->compareWithSignature($sig), 'id only: match');
+
+        $sig->setId(Util::getUUID());
+        $failure['reason'] = 'Comparison of id failed: value is not the same';
+
+        $this->assertSame($failure, $obj->compareWithSignature($sig), 'id only: mismatch');
+    }
 }

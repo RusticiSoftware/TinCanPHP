@@ -19,9 +19,9 @@ namespace TinCan;
 
 use InvalidArgumentException;
 
-class StatementRef implements VersionableInterface, StatementTargetInterface
+class StatementRef implements VersionableInterface, StatementTargetInterface, ComparableInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
+    use ArraySetterTrait, FromJSONTrait, AsVersionTrait, SignatureComparisonTrait;
 
     private $objectType = 'StatementRef';
 

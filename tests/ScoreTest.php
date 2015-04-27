@@ -18,6 +18,8 @@
 use TinCan\Score;
 
 class ScoreTest extends PHPUnit_Framework_TestCase {
+    use TinCanTest\TestCompareWithSignatureTrait;
+
     private $emptyProperties = array(
         'scaled',
         'raw',
@@ -129,5 +131,89 @@ class ScoreTest extends PHPUnit_Framework_TestCase {
         $versioned = $obj->asVersion('1.0.0');
 
         $this->assertEquals($versioned, $args, "version: 1.0.0");
+    }
+
+    public function testCompareWithSignature() {
+        $full = [
+            'raw'    => 97,
+            'scaled' => 0.97,
+            'min'    => 0,
+            'max'    => 100
+        ];
+        $cases = [
+            [
+                'description' => 'all null',
+                'objArgs'     => []
+            ],
+            [
+                'description' => 'raw',
+                'objArgs'     => ['raw' => 97]
+            ],
+            [
+                'description' => 'scaled',
+                'objArgs'     => ['scaled' => 0.97]
+            ],
+            [
+                'description' => 'min',
+                'objArgs'     => ['min' => 60]
+            ],
+            [
+                'description' => 'max',
+                'objArgs'     => ['max' => 99]
+            ],
+            [
+                'description' => 'all',
+                'objArgs'     => $full
+            ],
+            [
+                'description' => 'raw only: mismatch',
+                'objArgs'     => ['raw' => 97 ],
+                'sigArgs'     => ['raw' => 87 ],
+                'reason'      => 'Comparison of raw failed: value is not the same'
+            ],
+            [
+                'description' => 'scaled only: mismatch',
+                'objArgs'     => ['scaled' => 0.97 ],
+                'sigArgs'     => ['scaled' => 0.87 ],
+                'reason'      => 'Comparison of scaled failed: value is not the same'
+            ],
+            [
+                'description' => 'min only: mismatch',
+                'objArgs'     => ['min' => 0 ],
+                'sigArgs'     => ['min' => 1 ],
+                'reason'      => 'Comparison of min failed: value is not the same'
+            ],
+            [
+                'description' => 'max only: mismatch',
+                'objArgs'     => ['max' => 97 ],
+                'sigArgs'     => ['max' => 100 ],
+                'reason'      => 'Comparison of max failed: value is not the same'
+            ],
+            [
+                'description' => 'full: raw mismatch',
+                'objArgs'     => $full,
+                'sigArgs'     => array_replace($full, ['raw' => 79]),
+                'reason'      => 'Comparison of raw failed: value is not the same'
+            ],
+            [
+                'description' => 'full: scaled mismatch',
+                'objArgs'     => $full,
+                'sigArgs'     => array_replace($full, ['scaled' => 0.96]),
+                'reason'      => 'Comparison of scaled failed: value is not the same'
+            ],
+            [
+                'description' => 'full: min mismatch',
+                'objArgs'     => $full,
+                'sigArgs'     => array_replace($full, ['min' => 1]),
+                'reason'      => 'Comparison of min failed: value is not the same'
+            ],
+            [
+                'description' => 'full: max mismatch',
+                'objArgs'     => $full,
+                'sigArgs'     => array_replace($full, ['max' => 10]),
+                'reason'      => 'Comparison of max failed: value is not the same'
+            ]
+        ];
+        $this->runSignatureCases("TinCan\Score", $cases);
     }
 }

@@ -17,9 +17,11 @@
 
 namespace TinCan;
 
-class Attachment implements VersionableInterface
+class Attachment implements VersionableInterface, ComparableInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
+    use ArraySetterTrait, FromJSONTrait, AsVersionTrait, SignatureComparisonTrait;
+
+    static private $signatureSkipProperties = array('display', 'description');
 
     protected $usageType;
     protected $display;
@@ -28,12 +30,17 @@ class Attachment implements VersionableInterface
     protected $length;
     protected $sha2;
     protected $fileUrl;
+    protected $_content;
 
     public function __construct() {
         if (func_num_args() == 1) {
             $arg = func_get_arg(0);
 
             $this->_fromArray($arg);
+
+            if (isset($arg['content'])) {
+                $this->setContent($arg['content']);
+            }
         }
 
         foreach (
@@ -83,4 +90,13 @@ class Attachment implements VersionableInterface
     public function getSha2() { return $this->sha2; }
     public function setFileUrl($value) { $this->fileUrl = $value; return $this; }
     public function getFileUrl() { return $this->fileUrl; }
+
+    public function setContent($value) {
+        $this->_content = $value;
+        $this->setLength(strlen($value));
+        $this->setSha2(hash("sha256", $value));
+        return $this;
+    }
+    public function getContent() { return $this->_content; }
+    public function hasContent() { return isset($this->_content); }
 }

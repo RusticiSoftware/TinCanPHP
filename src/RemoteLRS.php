@@ -123,9 +123,6 @@ class RemoteLRS implements LRSInterface
             throw new \Exception("Request failed: $php_errormsg");
         }
 
-        //
-        // FEATURE: handle attachments via multipart
-        //
         $metadata = stream_get_meta_data($fp);
         $content  = stream_get_contents($fp);
 
@@ -142,6 +139,13 @@ class RemoteLRS implements LRSInterface
         //
         $response['_content']  = $content;
         $response['_metadata'] = $metadata;
+
+        //
+        // Content-Type won't be set in the case of a 204 (and potentially others)
+        //
+        if (isset($response['headers']['contentType']) && $response['headers']['contentType'] === "multipart/mixed") {
+            $content = $this->_parseMultipart($response['headers']['contentTypeBoundary'], $content);
+        }
 
         $success = false;
         if (($response['status'] >= 200 && $response['status'] < 300) || ($response['status'] === 404 && $options['ignore404'])) {
@@ -173,17 +177,127 @@ class RemoteLRS implements LRSInterface
             }
         }
 
-        // TODO: handle content type stripping the charset:
         if (isset($result['headers']['contentType'])) {
-            $contentType_parts = explode(';', $result['headers']['contentType']);
+            $contentType_parts = array_map('trim', explode(';', $result['headers']['contentType']));
 
             $result['headers']['contentType'] = $contentType_parts[0];
-            if (isset($contentType_parts[1]) && preg_match('/^charset/', $contentType_parts[1])) {
-                $result['headers']['contentTypeCharset'] = ltrim($contentType_parts[1]);
+            for ($i = 1; $i < count($contentType_parts); $i++) {
+                $pair = array_map('trim', explode("=", $contentType_parts[$i], 2));
+                if ($pair[0] === 'charset') {
+                    $result['headers']['contentTypeCharset'] = $pair[1];
+                }
+                else if ($pair[0] === 'boundary') {
+                    $result['headers']['contentTypeBoundary'] = $pair[1];
+                }
             }
         }
 
         return $result;
+    }
+
+    private function _parseMultipart($boundary, $content) {
+        $parts = array();
+
+        foreach (explode("--$boundary", $content) as $part) {
+            $part = ltrim($part, "\r\n");
+            if ($part === '') {
+                continue;
+            }
+            else if ($part === '--') {
+                break;
+            }
+            list($header, $body) = explode("\r\n\r\n", $part, 2);
+
+            //
+            // the body has a CRLF on it before the boundary per the RFC
+            // so we need to remove it, but we only want to remove one
+            // because the body itself may include a trailing CRLF so
+            // PHP's rtrim function won't work in this case because it
+            // removes all of them
+            //
+            $body = preg_replace('/\r\n$/', '', $body, 1);
+
+            array_push(
+                $parts,
+                array(
+                    'headers' => $this->_parseHeaders($header),
+                    'body'    => $body
+                )
+            );
+        }
+
+        return $parts;
+    }
+
+    //
+    // Taken from http://www.php.net/manual/en/function.http-parse-headers.php#112917
+    // and modified to: make folded work too, return status in first key.
+    //
+    // as suggested here: http://php.net/manual/en/function.http-parse-headers.php#112986
+    //
+    // adapted to private method, and force headers to lowercase for easy detection
+    //
+    private function _parseHeaders($raw_headers) {
+        $headers = array();
+        $key = ''; // [+]
+
+        foreach(explode("\n", $raw_headers) as $i => $h) {
+            $h = explode(':', $h, 2);
+            $h[0] = strtolower($h[0]);
+
+            if (isset($h[1])) {
+                if (! isset($headers[$h[0]])) {
+                    $headers[$h[0]] = trim($h[1]);
+                }
+                elseif (is_array($headers[$h[0]])) {
+                    // $tmp = array_merge($headers[$h[0]], array(trim($h[1]))); // [-]
+                    // $headers[$h[0]] = $tmp; // [-]
+                    $headers[$h[0]] = array_merge($headers[$h[0]], array(trim($h[1]))); // [+]
+                }
+                else {
+                    // $tmp = array_merge(array($headers[$h[0]]), array(trim($h[1]))); // [-]
+                    // $headers[$h[0]] = $tmp; // [-]
+                    $headers[$h[0]] = array_merge(array($headers[$h[0]]), array(trim($h[1]))); // [+]
+                }
+
+                $key = $h[0]; // [+]
+            }
+            else { // [+]
+                if (substr($h[0], 0, 1) == "\t") {// [+]
+                    $headers[$key] .= "\r\n\t".trim($h[0]); // [+]
+                }
+                elseif (! $key) {// [+]
+                    $headers[0] = trim($h[0]);trim($h[0]); // [+]
+                }
+            } // [+]
+        }
+
+        return $headers;
+    }
+
+    private function _buildAttachmentContent(&$requestCfg, $attachments) {
+        $boundary = Util::getUUID();
+        $origContent = $requestCfg['content'];
+
+        $requestCfg['content'] = '--' . $boundary . "\r\n";
+        $requestCfg['content'] .= "Content-Type: application/json\r\n";
+        $requestCfg['content'] .= "\r\n";
+        $requestCfg['content'] .= $origContent;
+
+        $attachmentContent = '';
+        foreach ($attachments as $attachment) {
+            $attachmentContent .= '--' . $boundary . "\r\n";
+            $attachmentContent .= 'Content-Type: ' . $attachment->getContentType() . "\r\n";
+            $attachmentContent .= "Content-Transfer-Encoding: binary\r\n";
+            $attachmentContent .= "X-Experience-API-Hash: " . $attachment->getSha2() . "\r\n";
+            $attachmentContent .= "\r\n";
+            $attachmentContent .= $attachment->getContent();
+            $attachmentContent .= "\r\n";
+        }
+        $attachmentContent .= '--' . $boundary . '--';
+
+        $requestCfg['headers']['Content-Type'] = 'multipart/mixed; boundary=' . $boundary;
+        $requestCfg['content'] .= "\r\n" . $attachmentContent;
     }
 
     public function about() {
@@ -205,8 +319,12 @@ class RemoteLRS implements LRSInterface
             'headers' => array(
                 'Content-Type' => 'application/json'
             ),
-            'content' => json_encode($statement->asVersion($this->version), JSON_UNESCAPED_SLASHES),
+            'content' => json_encode($statement->asVersion($this->version), JSON_UNESCAPED_SLASHES)
         );
+
+        if ($statement->hasAttachmentsWithContent()) {
+            $this->_buildAttachmentContent($requestCfg, $statement->getAttachments());
+        }
 
         $method = 'POST';
         if ($statement->hasId()) {
@@ -238,12 +356,21 @@ class RemoteLRS implements LRSInterface
 
     public function saveStatements($statements) {
         $versioned_statements = array();
+        $attachments_map = array();
         foreach ($statements as $i => $st) {
             if (! $st instanceof Statement) {
                 $st = new Statement($st);
                 $statements[$i] = $st;
             }
             $versioned_statements[$i] = $st->asVersion($this->version);
+
+            if ($st->hasAttachmentsWithContent()) {
+                foreach ($st->getAttachments() as $attachment) {
+                    if (! isset($attachments_map[$attachment->getSha2()])) {
+                        $attachments_map[$attachment->getSha2()] = $attachment;
+                    }
+                }
+            }
         }
 
         $requestCfg = array(
@@ -252,6 +379,9 @@ class RemoteLRS implements LRSInterface
             ),
             'content' => json_encode($versioned_statements, JSON_UNESCAPED_SLASHES),
         );
+        if (! empty($attachments_map)) {
+            $this->_buildAttachmentContent($requestCfg, array_values($attachments_map));
+        }
 
         $response = $this->sendRequest('POST', 'statements', $requestCfg);
 
@@ -267,43 +397,62 @@ class RemoteLRS implements LRSInterface
         return $response;
     }
 
-    public function retrieveStatement($id) {
+    public function retrieveStatement($id, $options = array()) {
+        if (! isset($options['voided'])) {
+            $options['voided'] = false;
+        }
+        if (! isset($options['attachments'])) {
+            $options['attachments'] = false;
+        }
+
+        $params = array();
+        if ($options['voided']) {
+            $params['voidedStatementId'] = $id;
+        }
+        else {
+            $params['statementId'] = $id;
+        }
+        if ($options['attachments']) {
+            $params['attachments'] = 'true';
+        }
+
         $response = $this->sendRequest(
             'GET',
             'statements',
             array(
-                'params' => array(
-                    'statementId' => $id
-                )
+                'params' => $params
             )
         );
 
         if ($response->success) {
-            $response->content = Statement::FromJSON($response->content);
+            if (is_array($response->content)) {
+                $orig = $response->httpResponse['_multipartContent'] = $response->content;
+
+                $response->content = Statement::FromJSON($orig[0]['body']);
+
+                $attachmentsByHash = array();
+                for ($i = 1; $i < count($orig); $i++) {
+                    $attachmentsByHash[$orig[$i]['headers']['x-experience-api-hash']] = $orig[$i];
+                }
+
+                foreach ($response->content->getAttachments() as $attachment) {
+                    $attachment->setContent($attachmentsByHash[$attachment->getSha2()]['body']);
+                }
+            }
+            else {
+                $response->content = Statement::FromJSON($response->content);
+            }
         }
 
         return $response;
     }
 
-    public function retrieveVoidedStatement($id) {
-        $response = $this->sendRequest(
-            'GET',
-            'statements',
-            array(
-                'params' => array(
-                    'voidedStatementId' => $id
-                )
-            )
-        );
-
-        if ($response->success) {
-            $response->content = Statement::FromJSON($response->content);
-        }
-
-        return $response;
+    public function retrieveVoidedStatement($id, $options = array()) {
+        $options['voided'] = true;
+        return $this->retrieveStatement($id, $options);
     }
 
-    private function queryStatementsRequestParams($query) {
+    private function _queryStatementsRequestParams($query) {
         $result = array();
 
         foreach (array('agent') as $k) {
@@ -323,15 +472,23 @@ class RemoteLRS implements LRSInterface
         }
         foreach (
             array(
+                'ascending',
+                'related_activities',
+                'related_agents',
+                'attachments',
+            ) as $k
+        ) {
+            if (isset($query[$k])) {
+                $result[$k] = $query[$k] ? 'true' : 'false';
+            }
+        }
+        foreach (
+            array(
                 'registration',
                 'since',
                 'until',
                 'limit',
-                'ascending',
-                'related_activities',
-                'related_agents',
                 'format',
-                'attachments',
             ) as $k
         ) {
             if (isset($query[$k])) {
@@ -342,15 +499,40 @@ class RemoteLRS implements LRSInterface
         return $result;
     }
 
+    private function _queryStatementsResult(&$response) {
+        if (is_array($response->content)) {
+            $orig = $response->httpResponse['_multipartContent'] = $response->content;
+
+            $response->content = StatementsResult::FromJSON($orig[0]['body']);
+
+            $attachmentsByHash = array();
+            for ($i = 1; $i < count($orig); $i++) {
+                $attachmentsByHash[$orig[$i]['headers']['x-experience-api-hash']] = $orig[$i];
+            }
+
+            foreach ($response->content->getStatements() as $st) {
+                foreach ($st->getAttachments() as $attachment) {
+                    $attachment->setContent($attachmentsByHash[$attachment->getSha2()]['body']);
+                }
+            }
+
+            return;
+        }
+
+        $response->content = StatementsResult::fromJSON($response->content);
+
+        return;
+    }
+
     public function queryStatements($query) {
         $requestCfg = array(
-            'params' => $this->queryStatementsRequestParams($query),
+            'params' => $this->_queryStatementsRequestParams($query),
         );
 
         $response = $this->sendRequest('GET', 'statements', $requestCfg);
 
         if ($response->success) {
-            $response->content = StatementsResult::fromJSON($response->content);
+            $this->_queryStatementsResult($response);
         }
 
         return $response;
@@ -365,7 +547,7 @@ class RemoteLRS implements LRSInterface
         $response = $this->sendRequest('GET', $moreUrl);
 
         if ($response->success) {
-            $response->content = StatementsResult::fromJSON($response->content);
+            $this->_queryStatementsResult($response);
         }
 
         return $response;
