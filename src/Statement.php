@@ -237,6 +237,15 @@ class Statement extends StatementBase
 
         $header = $jws->getHeader();
 
+        //
+        // there is a JWS spec security issue with allowing non-RS algorithms
+        // to be specified and it is against the Tin Can spec anyways so we
+        // want to fail hard on non-RS algorithms
+        //
+        if (! in_array($header['alg'], array('RS256', 'RS384', 'RS512'), true)) {
+            throw new \InvalidArgumentException("Refusing to verify signature: Invalid signing algorithm ('" . $options['algorithm'] . "')");
+        }
+
         if (isset($options['publicKey'])) {
             $publicKeyFile = $options['publicKey'];
         }

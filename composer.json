@@ -26,7 +26,7 @@
     "require": {
         "php": "~5.4",
         "ext-openssl": "*",
-        "namshi/jose": "~3.0"
+        "namshi/jose": "~4.0"
     },
     "require-dev": {
         "phpdocumentor/phpdocumentor": "2.*",
