@@ -489,6 +489,8 @@ class RemoteLRS implements LRSInterface
                 'until',
                 'limit',
                 'format',
+                'headers',
+                'params',
             ) as $k
         ) {
             if (isset($query[$k])) {
@@ -897,6 +899,29 @@ class RemoteLRS implements LRSInterface
                 ),
             )
         );
+
+        return $response;
+    }
+
+    public function retrieveActivity($activityid)
+    {
+        $response = $this->sendRequest(
+            'GET',
+            'activities',
+            array(
+                'params' => array(
+                    'activityId' => $activityid,
+                ),
+                'ignore404' => true,
+                'headers' => array(
+                    'Accept-language: ' . $_SERVER['HTTP_ACCEPT_LANGUAGE'] . ', *'
+                )
+            )
+        );
+
+        if ($response->success) {
+            $response->content = new \TinCan\Activity(json_decode($response->content, true));
+        }
 
         return $response;
     }
