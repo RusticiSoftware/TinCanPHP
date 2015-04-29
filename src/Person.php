@@ -44,7 +44,13 @@ class Person implements VersionableInterface, StatementTargetInterface
             $result['name'] = $this->name;
         }
         if (isset($this->account)) {
-            $result['account'] = $this->account->asVersion($version);
+            $result['account'] = array();
+            foreach ($this->account as $account) {
+                if (! $account instanceof AgentAccount && is_array($account)) {
+                    $account = new AgentAccount($account);
+                }
+                array_push($result['account'], $account->asVersion($version));
+            }
         }
         if (isset($this->mbox_sha1sum)) {
             $result['mbox_sha1sum'] = $this->mbox_sha1sum;
