@@ -76,13 +76,13 @@ class Util
         return date('Y-m-d\TH:i:s.' . $micro . 'O', $t);
     }
 
-     /*
-    determine which language out of an available set the user prefers most 
-    
-    @method preferedLanguage returns the client's preferred language from a list of options. 
-    @param $available_languages {Array} list of language-tag-strings (must be lowercase) that are available 
-    @param $http_accept_language {String} a HTTP_ACCEPT_LANGUAGE string 
-        (read from $_SERVER['HTTP_ACCEPT_LANGUAGE'] if left out) 
+    /**
+     * determine which language out of an available set the user prefers most
+     *
+     * @method preferedLanguage returns the client's preferred language from a list of options.
+     * @param $available_languages {Array} list of language-tag-strings (must be lowercase) that are available
+     * @param $http_accept_language {String} a HTTP_ACCEPT_LANGUAGE string
+     *   (read from $_SERVER['HTTP_ACCEPT_LANGUAGE'] if left out)
     */
     public function preferedLanguage($available_languages, $http_accept_language = "auto")
     {
@@ -130,12 +130,12 @@ class Util
         return $bestlang;
     }
 
-    /*
-    return the most appropriate option from a language map for the current client
-    
-    @method getAppropriateLanguageMapValue returns the client's preferred language from a list of options. 
-    @param $map {Object} Language map object to select a language from.
-    @return {String} String of text in the client's preferred language.
+    /**
+     * return the most appropriate option from a language map for the current client
+     *
+     * @method getAppropriateLanguageMapValue returns the client's preferred language from a list of options.
+     * @param $map {Object} Language map object to select a language from.
+     * @return {String} String of text in the client's preferred language.
     */
     public function getAppropriateLanguageMapValue($map)
     {
