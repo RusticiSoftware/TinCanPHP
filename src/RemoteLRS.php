@@ -903,8 +903,7 @@ class RemoteLRS implements LRSInterface
         return $response;
     }
 
-    public function retrieveActivity($activityid)
-    {
+    public function retrieveActivity($activityid) {
         $response = $this->sendRequest(
             'GET',
             'activities',
@@ -912,7 +911,6 @@ class RemoteLRS implements LRSInterface
                 'params' => array(
                     'activityId' => $activityid,
                 ),
-                'ignore404' => true,
                 'headers' => array(
                     'Accept-language: ' . $_SERVER['HTTP_ACCEPT_LANGUAGE'] . ', *'
                 )
@@ -956,7 +954,7 @@ class RemoteLRS implements LRSInterface
     }
 
     public function retrieveAgentProfile($agent, $id) {
-        // TODO: Group
+        // TODO: Group?
         if (! $agent instanceof Agent) {
             $agent = new Agent($agent);
         }
@@ -997,7 +995,7 @@ class RemoteLRS implements LRSInterface
     }
 
     public function saveAgentProfile($agent, $id, $content) {
-        // TODO: Group
+        // TODO: Group?
         if (! $agent instanceof Agent) {
             $agent = new Agent($agent);
         }
@@ -1050,7 +1048,7 @@ class RemoteLRS implements LRSInterface
 
     // TODO: Etag?
     public function deleteAgentProfile($agent, $id) {
-        // TODO: Group
+        // TODO: Group?
         if (! $agent instanceof Agent) {
             $agent = new Agent($agent);
         }
@@ -1064,6 +1062,28 @@ class RemoteLRS implements LRSInterface
                 ),
             )
         );
+
+        return $response;
+    }
+
+    public function retrievePerson($agent) {
+        // TODO: Group?
+        if (! $agent instanceof Agent) {
+            $agent = new Agent($agent);
+        }
+        $response = $this->sendRequest(
+            'GET',
+            'agents',
+            array(
+                'params' => array(
+                    'agent' => $agent,
+                )
+            )
+        );
+
+        if ($response->success) {
+            $response->content = new \TinCan\Activity(json_decode($response->content, true));
+        }
 
         return $response;
     }
