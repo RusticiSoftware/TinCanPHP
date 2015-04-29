@@ -1082,7 +1082,7 @@ class RemoteLRS implements LRSInterface
         );
 
         if ($response->success) {
-            $response->content = new \TinCan\Activity(json_decode($response->content, true));
+            $response->content = new \TinCan\Person(json_decode($response->content, true));
         }
 
         return $response;
