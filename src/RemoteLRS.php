@@ -904,6 +904,11 @@ class RemoteLRS implements LRSInterface
     }
 
     public function retrieveActivity($activityid) {
+        $headers = array('Accept-language: *');
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $headers = 'Accept-language: ' . $_SERVER['HTTP_ACCEPT_LANGUAGE'] . ', *';
+        }
+
         $response = $this->sendRequest(
             'GET',
             'activities',
@@ -911,9 +916,7 @@ class RemoteLRS implements LRSInterface
                 'params' => array(
                     'activityId' => $activityid,
                 ),
-                'headers' => array(
-                    'Accept-language: ' . $_SERVER['HTTP_ACCEPT_LANGUAGE'] . ', *'
-                )
+                'headers' => $headers
             )
         );
 
@@ -1076,7 +1079,7 @@ class RemoteLRS implements LRSInterface
             'agents',
             array(
                 'params' => array(
-                    'agent' => $agent,
+                    'agent' => json_encode($agent->asVersion($this->version)),
                 )
             )
         );
