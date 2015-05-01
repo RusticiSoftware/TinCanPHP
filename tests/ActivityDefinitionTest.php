@@ -69,4 +69,24 @@ class ActivityDefinitionTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals($versioned, $args, "name only: test");
     }
+
+    public function testGetNegotiatedLanguageString() {
+        $name = [
+            'en-GB' => 'petrol',
+            'en-US' => 'gas'
+        ];
+        $obj       = new ActivityDefinition(
+            [
+                'name' => $name
+            ]
+        );
+
+        $usName = $obj->getName()->getNegotiatedLanguageString('en-US;q=0.8, en-GB;q=0.6');
+        $ukName = $obj->getName()->getNegotiatedLanguageString('en-GB;q=0.8, en-US;q=0.6');
+
+        $this->assertEquals($usName, $name['en-US'], 'US name equal');
+        $this->assertEquals($ukName, $name['en-GB'], 'UK name equal');
+        $this->assertNotEquals($usName, $name['en-GB'], 'US name not equal');
+        $this->assertNotEquals($ukName, $name['en-US'], 'UK name not equal');
+    }
 }
