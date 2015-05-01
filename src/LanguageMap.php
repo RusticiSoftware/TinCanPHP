@@ -17,8 +17,6 @@
 
 namespace TinCan;
 
-use Negotiation\NegotiatorInterface;
-
 class LanguageMap extends Map
 {
     public function getNegotiatedLanguageString ($acceptLanguage = null) {
