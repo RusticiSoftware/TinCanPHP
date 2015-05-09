@@ -13,13 +13,24 @@
 >
     <testsuites>
         <testsuite name="TinCanPHP Test Suite">
-            <directory>./tests/</directory>
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
+    
+    <logging>
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"
+            lowUpperBound="50" highLowerBound="80" />
+    </logging>
 
     <filter>
-        <whitelist addUncoveredFilesFromWhitelist="false">
+        <whitelist addUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">src</directory>
+            <exclude>
+                <directory>doc</directory>
+                <directory>sample</directory>
+                <directory>tests</directory>
+                <directory>vendor</directory>
+            </exclude>
         </whitelist>
     </filter>
 </phpunit>
