@@ -2,6 +2,7 @@ tests/Config.php
 
 # Third party libraries
 phpdoc.xml
+phpunit.xml
 php.ini
 
 # buildables
@@ -23,3 +24,7 @@ todo.md
 .buildpath
 .project
 .settings
+
+# sublime project files
+*.sublime*
+
