@@ -1,5 +1,3 @@
-tests/Config.php
-
 # Third party libraries
 phpdoc.xml
 phpunit.xml

@@ -2,7 +2,7 @@
 <phpunit
     backupGlobals="false"
     backupStaticAttributes="false"
-    bootstrap="phpunit.php"
+    bootstrap="tests/config/bootstrap.php"
     colors="true"
     convertErrorsToExceptions="true"
     convertNoticesToExceptions="true"
@@ -13,7 +13,12 @@
 >
     <testsuites>
         <testsuite name="TinCanPHP Test Suite">
-            <directory>tests</directory>
+            <directory suffix="Test.php">tests</directory>
+            <exclude>
+                <directory>tests/config</directory>
+                <directory>tests/files</directory>
+                <directory>tests/keys</directory>
+            </exclude>
         </testsuite>
     </testsuites>
     

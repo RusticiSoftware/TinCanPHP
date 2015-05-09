@@ -3,7 +3,7 @@
 date_default_timezone_set('UTC');
 
 require_once('autoload.php');
-require_once('tests/Config.php');
+require_once(__DIR__ . '/config.php');
 require_once('tests/Constants.php');
 require_once('tests/TestCompareWithSignatureTrait.php');
 
