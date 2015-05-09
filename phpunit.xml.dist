@@ -38,4 +38,20 @@
             </exclude>
         </whitelist>
     </filter>
+    
+    <php>
+        <const name="COMMON_EMAIL"           value="tincanphp@tincanapi.com" />
+        <const name="COMMON_GROUP_EMAIL"     value="tincanphp+group@tincanapi.com" />
+        <const name="COMMON_MBOX"            value="mailto:tincanphp@tincanapi.com" />
+        <const name="COMMON_MBOX_SHA1"       value="6a7e95ee6c0e353e1eb71950a7f489c1dafa6065" />
+        <const name="COMMON_GROUP_MBOX"      value="mailto:tincanphp+group@tincanapi.com" />
+        <const name="COMMON_GROUP_MBOX_SHA1" value="cbea4c1e0d11d08e36d4e9823c5be97dd0a8b8f8" />
+        <const name="COMMON_ACCT_HOMEPAGE"   value="http://tincanapi.com" />
+        <const name="COMMON_ACCT_NAME"       value="tincanphp-test" />
+        <const name="COMMON_OPENID"          value="http://tincanapi.com/" />
+        <const name="COMMON_VERB_ID"         value="http://adlnet.gov/expapi/verbs/experienced" />
+        <const name="COMMON_ACTIVITY_ID"     value="http://tincanapi.com/TinCanPHP/Test/Activity" />
+        <const name="COMMON_EXTENSION_ID_1"  value="http://id.tincanapi.com/extension/topic" />
+        <const name="COMMON_EXTENSION_ID_2"  value="http://id.tincanapi.com/extension/location" />
+    </php>
 </phpunit>
