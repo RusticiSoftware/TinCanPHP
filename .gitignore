@@ -1,3 +1,5 @@
+tests/config/config.php
+
 # Third party libraries
 phpdoc.xml
 phpunit.xml
@@ -10,19 +12,6 @@ sample/vendor
 sample/composer.lock
 doc/api
 
-# bad.
-.DS_Store
-*.swp
-tmp/
-
 # wild
 todo.md
-
-# eclipse project files
-.buildpath
-.project
-.settings
-
-# sublime project files
-*.sublime*
 
