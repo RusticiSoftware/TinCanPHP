@@ -76,6 +76,14 @@ $stringOfJSON = '{"mbox":"mailto:info@tincanapi.com"}';
 $agent = TinCan\Agent::fromJSON($stringOfJSON);
 ```
 
+The opposite is also true, given an instance of one of the model structures a serialized representation of that model for encoding as JSON can be retrieved using the `asVersion` method. The `asVersion` method takes an optional string argument indicating the version of the specification used for serialization defaulting to the latest supported by the library. Such as:
+
+```php
+$serialized = $agent->asVersion();
+
+print json_encode($serialized);
+```
+
 All objects provide a get/set interface for their properties, and in most cases the setter can be chained. So we can construct an Activity like:
 
 ```php
