@@ -69,7 +69,7 @@ class Util
     // http://stackoverflow.com/a/4414060/1464957
     public static function getTimestamp() {
         $time = microtime(true);
-        $microeconds = sprintf('%06d', ($time - floor($time)) * 1000000);
+        $microseconds = sprintf('%06d', ($time - floor($time)) * 1000000);
         $millseconds = round($microseconds, -3)/1000;
         $millsecondsStr = str_pad($millseconds, 3, '0', STR_PAD_LEFT);
         $date = (new \DateTime())->format('c');
