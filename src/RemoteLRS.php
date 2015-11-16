@@ -148,7 +148,7 @@ class RemoteLRS implements LRSInterface
         }
 
         $success = false;
-        if (($response['status'] >= 200 && $response['status'] < 300) || ($response['status'] === 404 && $options['ignore404'])) {
+        if (($response['status'] >= 200 && $response['status'] < 300) || ($response['status'] === 404 && isset($options['ignore404']) && $options['ignore404'])) {
             $success = true;
         }
         elseif ($response['status'] >= 300 && $response['status'] < 400) {
