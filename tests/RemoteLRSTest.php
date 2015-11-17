@@ -452,6 +452,35 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('TinCan\LRSResponse', $response);
     }
 
+    public function testRetrieveActivity() {
+        $testActivity = new TinCan\Activity([
+            'id' => COMMON_ACTIVITY_ID. '/testRetrieveActivity',
+            'definition' => [
+                'name' => [
+                    'en' => 'This is a test activity.'
+                ]
+            ]
+        ]);
+
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $statement = new TinCan\Statement(
+            [
+                'actor' => [
+                    'mbox' => COMMON_MBOX
+                ],
+                'verb' => [
+                    'id' => COMMON_VERB_ID
+                ],
+                'object' => $testActivity
+            ]
+        );
+        $response = $lrs->saveStatement($statement);
+
+        $response = $lrs->retrieveActivity(COMMON_ACTIVITY_ID. '/testRetrieveActivity');
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertEquals($testActivity, $response->content, 'retrieved activity');
+    }
+
     public function testRetrieveAgentProfileIds() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->retrieveAgentProfileIds(
@@ -488,5 +517,28 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
         );
 
         $this->assertInstanceOf('TinCan\LRSResponse', $response);
+    }
+
+    public function testRetrievePerson() {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+
+        $testAgent = new TinCan\Agent(
+            [ 
+                'mbox' => COMMON_MBOX. '.testretrieveperson',
+                'name' => COMMON_NAME
+            ]
+        );
+
+        $testPerson = new TinCan\Person(
+            [ 
+                'mbox' => [ COMMON_MBOX. '.testretrieveperson' ],
+                'name' => [ COMMON_NAME ]
+            ]
+        );
+
+        $response = $lrs->retrievePerson($testAgent);
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        var_dump($response);
+        $this->assertEquals($testPerson, $response->content, 'retrieved person');
     }
 }
