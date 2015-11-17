@@ -67,12 +67,16 @@ class Util
     //
     // Based on code from
     // http://stackoverflow.com/a/4414060/1464957
-    //
-    // TODO: is this giving too much precision?
-    //
     public static function getTimestamp() {
-        $t = microtime(true);
-        $micro = sprintf("%06d", ($t - floor($t)) * 1000000);
-        return date('Y-m-d\TH:i:s.' . $micro . 'O', $t);
+        $time = microtime(true);
+        $microseconds = sprintf('%06d', ($time - floor($time)) * 1000000);
+        $millseconds = round($microseconds, -3)/1000;
+        $millsecondsStr = str_pad($millseconds, 3, '0', STR_PAD_LEFT);
+        $date = (new \DateTime())->format('c');
+
+        $position = strrpos($date, '+');
+        $date = substr($date,0,$position).'.'.$millsecondsStr.substr($date,$position);
+
+        return $date;
     }
 }

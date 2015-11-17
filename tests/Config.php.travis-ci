@@ -9,7 +9,7 @@ $LRSs = [
     ]
 ];
 $KEYs = [
-    'public'   => 'tests/keys/travis/cacert.pem',
-    'private'  => 'tests/keys/travis/privkey.pem',
+    'public'   => getenv('TRAVIS_BUILD_DIR') . '/tests/keys/travis/cacert.pem',
+    'private'  => getenv('TRAVIS_BUILD_DIR') . '/tests/keys/travis/privkey.pem',
     'password' => 'travis'
 ];

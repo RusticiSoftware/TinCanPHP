@@ -148,7 +148,7 @@ class RemoteLRS implements LRSInterface
         }
 
         $success = false;
-        if (($response['status'] >= 200 && $response['status'] < 300) || ($response['status'] === 404 && $options['ignore404'])) {
+        if (($response['status'] >= 200 && $response['status'] < 300) || ($response['status'] === 404 && isset($options['ignore404']) && $options['ignore404'])) {
             $success = true;
         }
         elseif ($response['status'] >= 300 && $response['status'] < 400) {
@@ -161,9 +161,15 @@ class RemoteLRS implements LRSInterface
     private function _parseMetadata($metadata) {
         $result = array();
 
-        $status_line = array_shift($metadata['wrapper_data']);
-        $status_parts = explode(' ', $status_line);
-        $result['status'] = intval($status_parts[1]);
+        // simulate a 100 Continue to cause our loop
+        // to run until it sets something other than a 100
+        $result['status'] = 100;
+
+        while ($result['status'] == 100) {
+            $status_line = array_shift($metadata['wrapper_data']);
+            $status_parts = explode(' ', $status_line);
+            $result['status'] = intval($status_parts[1]);
+        }
 
         //
         // pull out whitelisted headers
