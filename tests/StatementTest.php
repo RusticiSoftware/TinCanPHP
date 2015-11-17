@@ -491,7 +491,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
 
         $this->setExpectedException(
             'PHPUnit_Framework_Error_Warning',
-            'Missing argument 1'
+            (getenv('TRAVIS_PHP_VERSION') == "hhvm" ? 'sign() expects at least 2 parameters, 0 given' : 'Missing argument 1')
         );
         $obj->sign();
     }
@@ -501,7 +501,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
 
         $this->setExpectedException(
             'PHPUnit_Framework_Error_Warning',
-            'Missing argument 2'
+            (getenv('TRAVIS_PHP_VERSION') == "hhvm" ? 'sign() expects at least 2 parameters, 1 given' : 'Missing argument 2')
         );
         $obj->sign('test');
     }
@@ -600,9 +600,9 @@ class StatementTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testSignInvalidX5cErrorToException() {
-        $this->setExpectedException(
+        $this->setExpectedExceptionRegExp(
             'PHPUnit_Framework_Error',
-            'openssl_x509_read(): supplied parameter cannot be coerced into an X509 certificate!'
+            '/supplied parameter cannot be coerced into an X509 certificate!/'
         );
 
         $obj = new Statement(
@@ -676,9 +676,9 @@ class StatementTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testVerifyInvalidX5cErrorToException() {
-        $this->setExpectedException(
+        $this->setExpectedExceptionRegExp(
             'PHPUnit_Framework_Error',
-            'openssl_x509_read(): supplied parameter cannot be coerced into an X509 certificate!'
+            '/supplied parameter cannot be coerced into an X509 certificate!/'
         );
 
         $content = new JWS(
