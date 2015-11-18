@@ -17,7 +17,7 @@
 
 namespace TinCan;
 
-class Person implements VersionableInterface, StatementTargetInterface
+class Person implements VersionableInterface
 {
     use ArraySetterTrait, FromJSONTrait;
     protected $objectType = 'Person';
