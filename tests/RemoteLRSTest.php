@@ -476,7 +476,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
         );
         $response = $lrs->saveStatement($statement);
 
-        $response = $lrs->retrieveActivity(COMMON_ACTIVITY_ID. '/testRetrieveActivity');
+        $response = $lrs->retrieveActivity($testActivity->getId());
         $this->assertInstanceOf('TinCan\LRSResponse', $response);
         $this->assertEquals($testActivity, $response->content, 'retrieved activity');
     }
@@ -523,14 +523,14 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
 
         $testAgent = new TinCan\Agent(
-            [ 
+            [
                 'mbox' => COMMON_MBOX. '.testretrieveperson',
                 'name' => COMMON_NAME
             ]
         );
 
         $testPerson = new TinCan\Person(
-            [ 
+            [
                 'mbox' => [ COMMON_MBOX. '.testretrieveperson' ],
                 'name' => [ COMMON_NAME ]
             ]
@@ -538,7 +538,6 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
 
         $response = $lrs->retrievePerson($testAgent);
         $this->assertInstanceOf('TinCan\LRSResponse', $response);
-        var_dump($response);
         $this->assertEquals($testPerson, $response->content, 'retrieved person');
     }
 }
