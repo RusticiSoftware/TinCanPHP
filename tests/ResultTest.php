@@ -75,6 +75,20 @@ class ResultTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($versioned, $args, "success only: 1.0.0");
     }
 
+    // reported https://github.com/RusticiSoftware/TinCanPHP/issues/34
+    public function testAsVersionScoreZeroRaw() {
+        $args = [
+            'score' => [
+                'raw' => 0,
+            ]
+        ];
+
+        $obj       = Result::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
     public function testCompareWithSignature() {
         $score1 = new TinCan\Score(
             [

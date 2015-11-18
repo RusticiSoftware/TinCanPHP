@@ -216,4 +216,14 @@ class ScoreTest extends PHPUnit_Framework_TestCase {
         ];
         $this->runSignatureCases("TinCan\Score", $cases);
     }
+
+    public function testZeroValue() {
+        $args = [
+            'raw' => 0
+        ];
+        $obj = new Score($args);
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "raw with 0 as value");
+    }
 }
