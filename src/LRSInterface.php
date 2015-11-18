@@ -37,11 +37,13 @@ interface LRSInterface
 
     public function retrieveActivityProfileIds($activity);
     public function retrieveActivityProfile($activity, $id);
+    public function retrieveActivity($activityid);
     public function saveActivityProfile($activity, $id, $content);
     public function deleteActivityProfile($activity, $id);
 
     public function retrieveAgentProfileIds($agent);
     public function retrieveAgentProfile($agent, $id);
+    public function retrievePerson($agent);
     public function saveAgentProfile($agent, $id, $content);
     public function deleteAgentProfile($agent, $id);
 }

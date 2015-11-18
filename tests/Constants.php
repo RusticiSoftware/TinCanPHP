@@ -18,6 +18,7 @@
 //
 // Some constants used throughout the various test cases
 //
+define('COMMON_NAME',            'Example User');
 define('COMMON_EMAIL',           'tincanphp@tincanapi.com');
 define('COMMON_GROUP_EMAIL',     'tincanphp+group@tincanapi.com');
 define('COMMON_MBOX',            'mailto:tincanphp@tincanapi.com');

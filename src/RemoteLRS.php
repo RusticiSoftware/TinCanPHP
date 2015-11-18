@@ -907,6 +907,30 @@ class RemoteLRS implements LRSInterface
         return $response;
     }
 
+    public function retrieveActivity($activityid) {
+        $headers = array('Accept-language: *');
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $headers = 'Accept-language: ' . $_SERVER['HTTP_ACCEPT_LANGUAGE'] . ', *';
+        }
+
+        $response = $this->sendRequest(
+            'GET',
+            'activities',
+            array(
+                'params' => array(
+                    'activityId' => $activityid,
+                ),
+                'headers' => $headers
+            )
+        );
+
+        if ($response->success) {
+            $response->content = new Activity(json_decode($response->content, true));
+        }
+
+        return $response;
+    }
+
     // TODO: groups?
     public function retrieveAgentProfileIds($agent) {
         if (! $agent instanceof Agent) {
@@ -937,7 +961,7 @@ class RemoteLRS implements LRSInterface
     }
 
     public function retrieveAgentProfile($agent, $id) {
-        // TODO: Group
+        // TODO: Group?
         if (! $agent instanceof Agent) {
             $agent = new Agent($agent);
         }
@@ -978,7 +1002,7 @@ class RemoteLRS implements LRSInterface
     }
 
     public function saveAgentProfile($agent, $id, $content) {
-        // TODO: Group
+        // TODO: Group?
         if (! $agent instanceof Agent) {
             $agent = new Agent($agent);
         }
@@ -1031,7 +1055,7 @@ class RemoteLRS implements LRSInterface
 
     // TODO: Etag?
     public function deleteAgentProfile($agent, $id) {
-        // TODO: Group
+        // TODO: Group?
         if (! $agent instanceof Agent) {
             $agent = new Agent($agent);
         }
@@ -1045,6 +1069,28 @@ class RemoteLRS implements LRSInterface
                 ),
             )
         );
+
+        return $response;
+    }
+
+    public function retrievePerson($agent) {
+        // TODO: Group?
+        if (! $agent instanceof Agent) {
+            $agent = new Agent($agent);
+        }
+        $response = $this->sendRequest(
+            'GET',
+            'agents',
+            array(
+                'params' => array(
+                    'agent' => json_encode($agent->asVersion($this->version)),
+                )
+            )
+        );
+
+        if ($response->success) {
+            $response->content = new Person(json_decode($response->content, true));
+        }
 
         return $response;
     }
