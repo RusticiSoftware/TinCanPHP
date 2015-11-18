@@ -1,0 +1,49 @@
+<?php
+/*
+    Copyright 2015 Rustici Software
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+use TinCan\LanguageMap;
+
+class LanguageMapTest extends PHPUnit_Framework_TestCase {
+    const NAME = 'testName';
+
+    public function testInstantiation() {
+        $obj = new LanguageMap();
+        $this->assertInstanceOf('TinCan\LanguageMap', $obj);
+    }
+
+    public function testAsVersion() {
+        $args      = ['en' => [self::NAME]];
+        $obj       = new LanguageMap($args);
+        $versioned = $obj->asVersion();
+
+        $this->assertEquals($versioned, $args, "en only: test");
+    }
+
+    public function testGetNegotiatedLanguageString() {
+        $langs = [
+            'en-GB' => 'petrol',
+            'en-US' => 'gas'
+        ];
+        $obj = new LanguageMap($langs);
+
+        $usValue = $obj->getNegotiatedLanguageString('en-US;q=0.8, en-GB;q=0.6');
+        $ukValue = $obj->getNegotiatedLanguageString('en-GB;q=0.8, en-US;q=0.6');
+
+        $this->assertEquals($usValue, $langs['en-US'], 'US name equal');
+        $this->assertEquals($ukValue, $langs['en-GB'], 'UK name equal');
+    }
+}
