@@ -495,8 +495,6 @@ class RemoteLRS implements LRSInterface
                 'until',
                 'limit',
                 'format',
-                'headers',
-                'params',
             ) as $k
         ) {
             if (isset($query[$k])) {
