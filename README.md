@@ -28,12 +28,12 @@ require 'path/to/TinCan/autoload.php';
 
 ### Testing
 
-Tests are implemented using PHPUnit. Configure the LRS endpoint and credentials by copying the `tests/Config.php.template` to `tests/Config.php` then setting the values for your LRS.
+Tests are implemented using the latest stable version of PHPUnit.  It will be installed when using Composer. Configure the LRS endpoint and credentials by copying the `tests/config/config.dist.php` to `tests/config/config.php` then setting the values for your LRS.
 
 Once configured run:
 
 ```
-phpunit tests
+vendor/bin/phpunit
 ```
 
 ### API Doc Generation
@@ -41,7 +41,7 @@ phpunit tests
 Documentation can be output using [phpDocumentor2](http://phpdoc.org). It will be installed when using Composer. To generate documentation:
 
 ```
-./vendor/bin/phpdoc.php
+vendor/bin/phpdoc
 ```
 
 From the root of the repository after running `php composer.phar update`. Documentation will be output to `doc/api`.

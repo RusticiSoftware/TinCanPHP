@@ -18,7 +18,8 @@
 if (file_exists('vendor/autoload.php')) {
     // prefer the composer autoloader
     require_once('vendor/autoload.php');
-} elseif (!class_exists('TinCan\\Version')) {
+}
+else if (!class_exists('TinCan\\Version')) {
     tincan_register_autoloader('TinCan\\', 'src');
 }
 
