@@ -15,11 +15,13 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
 use TinCan\Attachment;
 use TinCan\Version;
 
-class AttachmentTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+class AttachmentTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     const USAGE_TYPE     = 'http://id.tincanapi.com/attachment/supporting_media';
     const DISPLAY        = 'testDisplay';

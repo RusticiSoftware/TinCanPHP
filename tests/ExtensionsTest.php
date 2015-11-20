@@ -15,10 +15,12 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
 use TinCan\Extensions;
 
-class ExtensionsTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+class ExtensionsTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     public function testInstantiation() {
         $obj = new Extensions();

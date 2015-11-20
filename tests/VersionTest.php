@@ -15,9 +15,13 @@
     limitations under the License.
 */
 
-class VersionTest extends PHPUnit_Framework_TestCase {
+namespace TinCanTest;
+
+use TinCan\Version;
+
+class VersionTest extends \PHPUnit_Framework_TestCase {
     public function testSupported() {
-        $result = TinCan\Version::supported();
+        $result = Version::supported();
 
         $this->assertEquals(
             [
@@ -31,7 +35,7 @@ class VersionTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testLatest() {
-        $result = TinCan\Version::latest();
+        $result = Version::latest();
 
         $this->assertSame("1.0.1", $result, "match latest");
     }

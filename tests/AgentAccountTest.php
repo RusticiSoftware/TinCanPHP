@@ -15,10 +15,12 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
 use TinCan\AgentAccount;
 
-class AgentAccountTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+class AgentAccountTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     const HOMEPAGE = 'http://tincanapi.com';
     const NAME = 'test';

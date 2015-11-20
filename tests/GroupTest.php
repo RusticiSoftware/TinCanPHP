@@ -15,10 +15,14 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
+use TinCan\Agent;
+use TinCan\AgentAccount;
 use TinCan\Group;
 
-class GroupTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+class GroupTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     public function testInstantiation() {
         $obj = new Group();
@@ -32,7 +36,7 @@ class GroupTest extends PHPUnit_Framework_TestCase {
         $obj = Group::fromJSON('{"mbox":"' . COMMON_GROUP_MBOX . '", "member":[{"mbox":"' . COMMON_MBOX . '"}]}');
         $this->assertInstanceOf('TinCan\Group', $obj);
         $this->assertSame(COMMON_GROUP_MBOX, $obj->getMbox(), 'mbox value');
-        $this->assertEquals([new TinCan\Agent(['mbox' => COMMON_MBOX])], $obj->getMember(), 'member list');
+        $this->assertEquals([new Agent(['mbox' => COMMON_MBOX])], $obj->getMember(), 'member list');
     }
 
     // TODO: need to loop versions
@@ -48,7 +52,7 @@ class GroupTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testAddMember() {
-        $common_agent = new TinCan\Agent(['mbox' => COMMON_MBOX]);
+        $common_agent = new Agent(['mbox' => COMMON_MBOX]);
 
         $obj = new Group();
 
@@ -63,23 +67,23 @@ class GroupTest extends PHPUnit_Framework_TestCase {
 
     public function testCompareWithSignature() {
         $name = 'Test Group Name';
-        $acct1 = new TinCan\AgentAccount(
+        $acct1 = new AgentAccount(
             [
                 'homePage' => COMMON_ACCT_HOMEPAGE,
                 'name'     => COMMON_ACCT_NAME
             ]
         );
-        $acct2 = new TinCan\AgentAccount(
+        $acct2 = new AgentAccount(
             [
                 'homePage' => COMMON_ACCT_HOMEPAGE,
                 'name'     => COMMON_ACCT_NAME . '-diff'
             ]
         );
 
-        $member1 = new TinCan\Agent(
+        $member1 = new Agent(
             [ 'mbox' => COMMON_MBOX ]
         );
-        $member2 = new TinCan\Agent(
+        $member2 = new Agent(
             [ 'account' => $acct1 ]
         );
 

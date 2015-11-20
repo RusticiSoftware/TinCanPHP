@@ -15,10 +15,12 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
 use TinCan\StatementRef;
 use TinCan\Util;
 
-class StatementRefTest extends PHPUnit_Framework_TestCase {
+class StatementRefTest extends \PHPUnit_Framework_TestCase {
     public function testInstantiation() {
         $obj = new StatementRef();
         $this->assertInstanceOf('TinCan\StatementRef', $obj);
