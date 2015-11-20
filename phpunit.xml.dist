@@ -40,6 +40,7 @@
     </filter>
     
     <php>
+        <const name="COMMON_NAME"            value="Example User" />
         <const name="COMMON_EMAIL"           value="tincanphp@tincanapi.com" />
         <const name="COMMON_GROUP_EMAIL"     value="tincanphp+group@tincanapi.com" />
         <const name="COMMON_MBOX"            value="mailto:tincanphp@tincanapi.com" />
