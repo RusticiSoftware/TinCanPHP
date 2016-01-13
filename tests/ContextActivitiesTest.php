@@ -18,6 +18,8 @@
 use TinCan\ContextActivities;
 
 class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
+    use TinCanTest\TestCompareWithSignatureTrait;
+
     static private $listProps = ['category', 'parent', 'grouping', 'other'];
     static private $common_activity_cfg = [
         'id' => COMMON_ACTIVITY_ID
@@ -29,6 +31,18 @@ class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
         foreach (self::$listProps as $k) {
             $this->assertAttributeEquals([], $k, $obj, "$k empty array");
         }
+    }
+
+    public function testUsesArraySetterTrait() {
+        $this->assertContains('TinCan\ArraySetterTrait', class_uses('TinCan\ContextActivities'));
+    }
+
+    public function testUsesFromJSONTrait() {
+        $this->assertContains('TinCan\FromJSONTrait', class_uses('TinCan\ContextActivities'));
+    }
+
+    public function testUsesAsVersionTrait() {
+        $this->assertContains('TinCan\AsVersionTrait', class_uses('TinCan\ContextActivities'));
     }
 
     public function testFromJSONInstantiations() {
@@ -60,13 +74,16 @@ class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
     // TODO: need to loop versions
     public function testAsVersion() {
         $obj = new ContextActivities();
+        $obj->setCategory(self::$common_activity_cfg);
         $versioned = $obj->asVersion('1.0.0');
 
-        //$this->assertEquals(
-            //[ 'objectType' => 'ContextActivities' ],
-            //$versioned,
-            //"empty: 1.0.0"
-        //);
+        $this->assertEquals(
+            ['category' => [
+                ['objectType' => 'Activity', 'id' => COMMON_ACTIVITY_ID]
+            ]],
+            $versioned,
+            "category only: 1.0.0"
+        );
     }
 
     public function testListSetters() {
@@ -97,5 +114,136 @@ class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
             $obj->$setMethod([self::$common_activity_cfg]);
             $this->assertEquals([$common_activity], $obj->$getMethod(), "$k: array of single Activity configuration");
         }
+    }
+
+    public function testCompareWithSignature() {
+        $acts = [
+            new TinCan\Activity(
+                ['id' => COMMON_ACTIVITY_ID . '/0']
+            ),
+            new TinCan\Activity(
+                ['id' => COMMON_ACTIVITY_ID . '/1']
+            ),
+            new TinCan\Activity(
+                ['id' => COMMON_ACTIVITY_ID . '/2']
+            ),
+            new TinCan\Activity(
+                ['id' => COMMON_ACTIVITY_ID . '/3']
+            )
+        ];
+
+        $cases = [
+            [
+                'description' => 'all null',
+                'objArgs'     => []
+            ]
+        ];
+        foreach (self::$listProps as $k) {
+            array_push(
+                $cases,
+                [
+                    'description' => "$k single",
+                    'objArgs'     => [$k => [ $acts[0] ]],
+                ],
+                [
+                    'description' => "$k multiple",
+                    'objArgs'     => [$k => [ $acts[0], $acts[1] ]],
+                ],
+                [
+                    'description' => "$k single empty sig (no $k set)",
+                    'objArgs'     => [$k => [ $acts[0] ]],
+                    'sigArgs'     => [],
+                    'reason'      => "Comparison of $k failed: array lengths differ"
+                ],
+                [
+                    'description' => "$k single empty sig",
+                    'objArgs'     => [$k => [ $acts[0] ]],
+                    'sigArgs'     => [$k => []],
+                    'reason'      => "Comparison of $k failed: array lengths differ"
+                ],
+                [
+                    'description' => "$k multiple single sig",
+                    'objArgs'     => [$k => [ $acts[0], $acts[1] ]],
+                    'sigArgs'     => [$k => [ $acts[1] ]],
+                    'reason'      => "Comparison of $k failed: array lengths differ"
+                ],
+                [
+                    'description' => "$k single multiple sig",
+                    'objArgs'     => [$k => [ $acts[0] ]],
+                    'sigArgs'     => [$k => [ $acts[0], $acts[1] ]],
+                    'reason'      => "Comparison of $k failed: array lengths differ"
+                ],
+                [
+                    'description' => "$k single diff sig",
+                    'objArgs'     => [$k => [ $acts[0] ]],
+                    'sigArgs'     => [$k => [ $acts[1] ]],
+                    'reason'      => 'Comparison of ' . $k . '[0] failed: Comparison of id failed: value is not the same'
+                ],
+                [
+                    'description' => "$k multiple diff order",
+                    'objArgs'     => [$k => [ $acts[0], $acts[1] ]],
+                    'sigArgs'     => [$k => [ $acts[1], $acts[0] ]],
+                    'reason'      => 'Comparison of ' . $k . '[0] failed: Comparison of id failed: value is not the same'
+                ]
+            );
+        }
+
+        foreach ([
+            ['category', 'parent'],
+            ['category', 'other'],
+            ['category', 'grouping'],
+            ['parent', 'other'],
+            ['parent', 'grouping'],
+            ['grouping', 'other'],
+            ['category', 'parent', 'other'],
+            ['category', 'parent', 'grouping'],
+            ['category', 'other', 'grouping'],
+            ['parent', 'other', 'grouping'],
+            self::$listProps
+        ] as $set) {
+            $prefix = implode(', ', $set);
+            $new_cases = [
+                [
+                    'description' => $prefix,
+                    'objArgs' => [],
+                    'sigArgs' => [],
+                ],
+                [
+                    'description' => "$prefix: empty sig",
+                    'objArgs' => [],
+                    'sigArgs' => [],
+                    'reason' => 'Comparison of ' . $set[0] . ' failed: array lengths differ'
+                ],
+                [
+                    'description' => "$prefix: one missing this",
+                    'objArgs' => [],
+                    'sigArgs' => [],
+                    'reason' => 'Comparison of ' . $set[0] . ' failed: array lengths differ'
+                ],
+                [
+                    'description' => "$prefix: one missing signature",
+                    'objArgs' => [],
+                    'sigArgs' => [],
+                    'reason' => 'Comparison of ' . $set[0] . ' failed: array lengths differ'
+                ]
+            ];
+
+            for ($i = 0; $i < count($set); $i++) {
+                $new_cases[0]['objArgs'][ $set[$i] ] = $acts[$i];
+                $new_cases[0]['sigArgs'][ $set[$i] ] = $acts[$i];
+
+                $new_cases[1]['objArgs'][ $set[$i] ] = $acts[$i];
+
+                $new_cases[2]['objArgs'][ $set[$i] ] = $acts[$i];
+                $new_cases[3]['objArgs'][ $set[$i] ] = $acts[$i];
+                if ($i !== 0) {
+                    $new_cases[2]['sigArgs'][ $set[$i] ] = $acts[$i];
+                    $new_cases[3]['sigArgs'][ $set[$i] ] = $acts[$i];
+                }
+            }
+
+            $cases = array_merge($cases, $new_cases);
+        }
+        $this->runSignatureCases("TinCan\ContextActivities", $cases);
     }
 }

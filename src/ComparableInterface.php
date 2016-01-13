@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright 2014 Rustici Software
+    Copyright 2015 Rustici Software
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -17,16 +17,7 @@
 
 namespace TinCan;
 
-class LanguageMap extends Map
+interface ComparableInterface
 {
-    public function getNegotiatedLanguageString ($acceptLanguage = null) {
-        $negotiator = new \Negotiation\Negotiator();
-        if ($acceptLanguage === null) {
-            $acceptLanguage = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE']. ', *' : '*';
-        }
-        $availableLanguages = array_keys ($this->_map);
-        $preferredLanguage = $negotiator->getBest($acceptLanguage, $availableLanguages);
-
-        return $this->_map[$preferredLanguage->getValue()];
-    }
+    public function compareWithSignature($fromSig);
 }

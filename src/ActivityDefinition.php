@@ -34,23 +34,6 @@ class ActivityDefinition implements VersionableInterface
     protected $target;
     protected $steps;
 
-    private static $directProps = array(
-        'type',
-        'moreInfo',
-        'interactionType',
-        'correctResponsesPattern',
-        'choices',
-        'scale',
-        'source',
-        'target',
-        'steps',
-    );
-    private static $versionedProps = array(
-        'name',
-        'description',
-        'extensions',
-    );
-
     public function __construct() {
         if (func_num_args() == 1) {
             $arg = func_get_arg(0);

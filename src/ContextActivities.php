@@ -17,21 +17,14 @@
 
 namespace TinCan;
 
-class ContextActivities implements VersionableInterface
+class ContextActivities implements VersionableInterface, ComparableInterface
 {
-    use ArraySetterTrait, FromJSONTrait;
+    use ArraySetterTrait, FromJSONTrait, AsVersionTrait, SignatureComparisonTrait;
 
     protected $category = array();
     protected $parent = array();
     protected $grouping = array();
     protected $other = array();
-
-    private static $directProps = array(
-        'category',
-        'parent',
-        'grouping',
-        'other',
-    );
 
     public function __construct() {
         if (func_num_args() == 1) {
@@ -41,22 +34,19 @@ class ContextActivities implements VersionableInterface
         }
     }
 
-    public function asVersion($version) {
-        $result = null;
-
-        foreach (self::$directProps as $k) {
-            $inner = $this->$k;
-            if (isset($inner) && count($inner) > 0) {
-                $result = $result ?: array();
-
-                $result[$k] = array();
-
-                foreach ($inner as $act) {
-                    array_push($result[$k], $act->asVersion($version));
-                }
+    private function _asVersion(array &$result, $version) {
+        foreach ($result as $property => $value) {
+            if (empty($value)) {
+                unset($result[$property]);
+            }
+            elseif (is_array($value)) {
+                $this->_asVersion($value, $version);
+                $result[$property] = $value;
+            }
+            elseif ($value instanceof VersionableInterface) {
+                $result[$property] = $value->asVersion($version);
             }
         }
-        return $result;
     }
 
     private function _listSetter($prop, $value) {

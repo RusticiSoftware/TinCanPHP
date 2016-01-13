@@ -15,18 +15,20 @@
     limitations under the License.
 */
 
-namespace TinCan;
-
-class LanguageMap extends Map
+class AsVersionTraitTest extends PHPUnit_Framework_TestCase
 {
-    public function getNegotiatedLanguageString ($acceptLanguage = null) {
-        $negotiator = new \Negotiation\Negotiator();
-        if ($acceptLanguage === null) {
-            $acceptLanguage = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE']. ', *' : '*';
-        }
-        $availableLanguages = array_keys ($this->_map);
-        $preferredLanguage = $negotiator->getBest($acceptLanguage, $availableLanguages);
+    public function testTraitExists() {
+        $this->assertTrue(trait_exists('TinCan\AsVersionTrait'));
+    }
 
-        return $this->_map[$preferredLanguage->getValue()];
+    public function testAsVersionReturnsArray() {
+        $trait = $this->getMockForTrait('TinCan\AsVersionTrait');
+        $this->assertInternalType('array', $trait->asVersion('test'));
+    }
+
+    public function testMagicSetThrowsException() {
+        $this->setExpectedException('DomainException');
+        $trait = $this->getMockForTrait('TinCan\AsVersionTrait');
+        $trait->foo = 'bar';
     }
 }

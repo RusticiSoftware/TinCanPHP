@@ -18,6 +18,21 @@
 use TinCan\Activity;
 
 class ActivityTest extends PHPUnit_Framework_TestCase {
+    use TinCanTest\TestCompareWithSignatureTrait;
+
+    static private $DEFINITION;
+
+    static public function setUpBeforeClass() {
+        self::$DEFINITION = [
+            'type' => 'http://id.tincanapi.com/activitytype/unit-test',
+            'name' => [
+                'en-US' => 'test',
+                'en-GB' => 'test',
+                'es'    => 'prueba'
+            ]
+        ];
+    }
+
     public function testInstantiation() {
         $obj = new Activity();
         $this->assertInstanceOf('TinCan\Activity', $obj);
@@ -68,5 +83,61 @@ class ActivityTest extends PHPUnit_Framework_TestCase {
             [ 'objectType' => 'Activity', 'id' => COMMON_ACTIVITY_ID ],
             "id only: 1.0.0"
         );
+    }
+
+    public function testCompareWithSignature() {
+        $full = [
+            'id' => COMMON_ACTIVITY_ID,
+            'definition' => self::$DEFINITION
+        ];
+        $definition2 = array_replace(self::$DEFINITION, ['type' => 'http://id.tincanapi.com/activitytype/unit-test-suite']);
+        $cases = [
+            [
+                'description' => 'all null',
+                'objArgs'     => []
+            ],
+            [
+                'description' => 'id',
+                'objArgs'     => ['id' => COMMON_ACTIVITY_ID]
+            ],
+            [
+                'description' => 'definition',
+                'objArgs'     => ['definition' => self::$DEFINITION]
+            ],
+            [
+                'description' => 'all',
+                'objArgs'     => $full
+            ],
+
+            //
+            // definitions are not matched for signature purposes because they
+            // are not supposed to affect the meaning of the statement and may
+            // be supplied in canonical format, etc.
+            //
+            [
+                'description' => 'definition only: mismatch (allowed)',
+                'objArgs'     => ['definition' => self::$DEFINITION ],
+                'sigArgs'     => ['definition' => $definition2 ]
+            ],
+            [
+                'description' => 'full: definition mismatch (allowed)',
+                'objArgs'     => $full,
+                'sigArgs'     => array_replace($full, ['definition' => $definition2 ])
+            ],
+
+            [
+                'description' => 'id only: mismatch',
+                'objArgs'     => ['id' => COMMON_ACTIVITY_ID ],
+                'sigArgs'     => ['id' => COMMON_ACTIVITY_ID . '/invalid' ],
+                'reason'      => 'Comparison of id failed: value is not the same'
+            ],
+            [
+                'description' => 'full: id mismatch',
+                'objArgs'     => $full,
+                'sigArgs'     => array_replace($full, ['id' => COMMON_ACTIVITY_ID . '/invalid']),
+                'reason'      => 'Comparison of id failed: value is not the same'
+            ]
+        ];
+        $this->runSignatureCases("TinCan\Activity", $cases);
     }
 }

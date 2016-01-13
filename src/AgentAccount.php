@@ -17,17 +17,12 @@
 
 namespace TinCan;
 
-class AgentAccount implements VersionableInterface
+class AgentAccount implements VersionableInterface, ComparableInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
+    use ArraySetterTrait, FromJSONTrait, AsVersionTrait, SignatureComparisonTrait;
 
     protected $name;
     protected $homePage;
-
-    private static $directProps = array(
-        'name',
-        'homePage',
-    );
 
     public function __construct() {
         if (func_num_args() == 1) {

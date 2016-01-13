@@ -1,5 +1,7 @@
 A PHP library for implementing Tin Can API.
 
+[![Build Status](https://travis-ci.org/RusticiSoftware/TinCanPHP.png)](https://travis-ci.org/RusticiSoftware/TinCanPHP)
+
 For hosted API documentation, basic usage instructions, supported version listing, etc. visit the main project website at:
 
 http://rusticisoftware.github.io/TinCanPHP/
@@ -8,25 +10,27 @@ For more information about the Tin Can API visit:
 
 http://tincanapi.com/
 
-Requires PHP 5.4 or later.
+Requires PHP 5.4 or later. (If you must run something older you should look at the PHP_5_2 branch.)
 
 ### Installation
 
 TinCanPHP is available via [Composer](http://getcomposer.org).
 
 ```
-php composer.phar require rusticisoftware/tincan:~0.0
+php composer.phar require rusticisoftware/tincan:@stable
 ```
 
-With the package installed require the Composer autoloader:
+When not using Composer, require the autoloader:
 
 ```php
-require 'vendor/autoload.php';
+require 'path/to/TinCan/autoload.php';
 ```
 
 ### Testing
 
-Tests are implemented using PHPUnit.
+Tests are implemented using PHPUnit. Configure the LRS endpoint and credentials by copying the `tests/Config.php.template` to `tests/Config.php` then setting the values for your LRS.
+
+Once configured run:
 
 ```
 phpunit tests
@@ -55,3 +59,23 @@ And set the timezone in that file using:
 
 date.timezone = "US/Central"
 ```
+
+### Certificate Generation
+
+These instructions are for creating the requisite public/private key pair and certificate on a Mac with OpenSSL installed. See <https://www.openssl.org/docs/HOWTO/certificates.txt> and <https://www.openssl.org/docs/HOWTO/keys.txt>.
+
+Generate a private key (which contains a public key) without a password (not recommended):
+
+    openssl genrsa -out privkey.pem 2048
+
+To generate a private key with a password:
+
+    openssl genrsa -des3 -out privkey.pem 2048
+
+Create a certificate signing request:
+
+     openssl req -new -key privkey.pem -out cert.csr
+
+To create a self signed certificate (as opposed to one signed by a CA), primarily for testing purposes:
+
+    openssl req -new -x509 -key privkey.pem -out cacert.pem -days 1095

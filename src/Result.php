@@ -17,9 +17,9 @@
 
 namespace TinCan;
 
-class Result implements VersionableInterface
+class Result implements VersionableInterface, ComparableInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
+    use ArraySetterTrait, FromJSONTrait, AsVersionTrait, SignatureComparisonTrait;
 
     protected $score;
     protected $success;
@@ -27,17 +27,6 @@ class Result implements VersionableInterface
     protected $duration;
     protected $response;
     protected $extensions;
-
-    private static $directProps = array(
-        'success',
-        'completion',
-        'duration',
-        'response',
-    );
-    private static $versionedProps = array(
-        'score',
-        'extensions',
-    );
 
     public function __construct() {
         if (func_num_args() == 1) {

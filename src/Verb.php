@@ -17,19 +17,14 @@
 
 namespace TinCan;
 
-class Verb implements VersionableInterface
+class Verb implements VersionableInterface, ComparableInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
+    use ArraySetterTrait, FromJSONTrait, AsVersionTrait, SignatureComparisonTrait;
+
+    static private $signatureSkipProperties = array('display');
 
     protected $id;
     protected $display;
-
-    private static $directProps = array(
-        'id',
-    );
-    private static $versionedProps = array(
-        'display',
-    );
 
     public function __construct() {
         if (func_num_args() == 1) {
@@ -57,4 +52,15 @@ class Verb implements VersionableInterface
         return $this;
     }
     public function getDisplay() { return $this->display; }
+
+    static public function Voided() {
+        return new self(
+            [
+                'id' => 'http://adlnet.gov/expapi/verbs/voided',
+                'display' => [
+                    'en-US' => 'voided'
+                ]
+            ]
+        );
+    }
 }

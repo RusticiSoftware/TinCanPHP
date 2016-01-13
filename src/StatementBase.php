@@ -17,9 +17,9 @@
 
 namespace TinCan;
 
-abstract class StatementBase implements VersionableInterface
+abstract class StatementBase implements VersionableInterface, ComparableInterface
 {
-    use ArraySetterTrait, FromJSONTrait, AsVersionTrait;
+    use ArraySetterTrait, FromJSONTrait, AsVersionTrait, SignatureComparisonTrait;
 
     protected $actor;
     protected $verb;
@@ -34,17 +34,12 @@ abstract class StatementBase implements VersionableInterface
     // precision as afforded by the spec they will have to create their own,
     // they can see TinCan\Util::getTimestamp for an example of how to do so
     //
+    // based on the signature comparison tests it seems that DateTime can store
+    // subsecond precisions, but just not output them as part of ISO handling?
+    // it might be possible to switch to a DateTime and just do manual formatting
+    // still with the subsecond value (need to research it fully)
+    //
     protected $timestamp;
-
-    protected static $directProps = array(
-        'timestamp',
-    );
-    protected static $versionedProps = array(
-        'actor',
-        'verb',
-        'result',
-        'context',
-    );
 
     public function __construct() {
         if (func_num_args() == 1) {
@@ -64,9 +59,67 @@ abstract class StatementBase implements VersionableInterface
     }
 
     private function _asVersion(&$result, $version) {
-        if (isset($this->target)) {
-            $result['object'] = $this->target->asVersion($version);
+        foreach ($result as $property => $value) {
+            if ($value !== false && empty($value)) {
+                unset($result[$property]);
+            }
+            elseif (is_array($value)) {
+                $this->_asVersion($value, $version);
+                $result[$property] = $value;
+            }
+            elseif ($value instanceof VersionableInterface) {
+                $result[$property] = $value->asVersion($version);
+            }
         }
+        if (isset($result['target'])) {
+            $result['object'] = $result['target'];
+            unset($result['target']);
+        }
+    }
+
+    public function compareWithSignature($fromSig) {
+        foreach (array('actor', 'verb', 'target', 'context', 'result') as $property) {
+            if (! isset($this->$property) && ! isset($fromSig->$property)) {
+                continue;
+            }
+            if (isset($this->$property) && ! isset($fromSig->$property)) {
+                return array('success' => false, 'reason' => "Comparison of $property failed: value not in signature");
+            }
+            if (isset($fromSig->$property) && ! isset($this->$property)) {
+                return array('success' => false, 'reason' => "Comparison of $property failed: value not in this");
+            }
+
+            $result = $this->$property->compareWithSignature($fromSig->$property);
+            if (! $result['success']) {
+                return array('success' => false, 'reason' => "Comparison of $property failed: " . $result['reason']);
+            }
+        }
+
+        if (isset($this->timestamp) || isset($fromSig->timestamp)) {
+            if (isset($this->timestamp) && ! isset($fromSig->timestamp)) {
+                return array('success' => false, 'reason' => 'Comparison of timestamp failed: value not in signature');
+            }
+            if (isset($fromSig->timestamp) && ! isset($this->timestamp)) {
+                return array('success' => false, 'reason' => 'Comparison of timestamp failed: value not in this');
+            }
+
+            $a = new \DateTime ($this->timestamp);
+            $b = new \DateTime ($fromSig->timestamp);
+
+            if ($a != $b) {
+                return array('success' => false, 'reason' => 'Comparison of timestamp failed: value is not the same');
+            }
+
+            //
+            // DateTime's diff doesn't take into account subsecond precision
+            // even though it can store it, so manually check that
+            //
+            if ($a->format('u') !== $b->format('u')) {
+                return array('success' => false, 'reason' => 'Comparison of timestamp failed: value is not the same');
+            }
+        }
+
+        return array('success' => true, 'reason' => null);
     }
 
     public function setActor($value) {

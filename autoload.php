@@ -15,18 +15,19 @@
     limitations under the License.
 */
 
-namespace TinCan;
-
-class LanguageMap extends Map
-{
-    public function getNegotiatedLanguageString ($acceptLanguage = null) {
-        $negotiator = new \Negotiation\Negotiator();
-        if ($acceptLanguage === null) {
-            $acceptLanguage = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE']. ', *' : '*';
-        }
-        $availableLanguages = array_keys ($this->_map);
-        $preferredLanguage = $negotiator->getBest($acceptLanguage, $availableLanguages);
-
-        return $this->_map[$preferredLanguage->getValue()];
-    }
+if (file_exists('vendor/autoload.php')) {
+    // prefer the composer autoloader
+    return require_once('vendor/autoload.php');
 }
+
+spl_autoload_register(function($className) {
+    $namespace = 'TinCan\\';
+    if (stripos($className, $namespace) === false) {
+        return;
+    }
+    $sourceDir = __DIR__ . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR;
+    $fileName  = str_replace([$namespace, '\\'], [$sourceDir, DIRECTORY_SEPARATOR], $className) . '.php';
+    if (is_readable($fileName)) {
+        include $fileName;
+    }
+});
