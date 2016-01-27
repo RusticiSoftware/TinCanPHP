@@ -137,10 +137,10 @@ class StatementTest extends PHPUnit_Framework_TestCase {
                 'completion' => true,
                 'success' => false,
                 'score' => [
-                    'raw' => '97',
-                    'min' => '65',
-                    'max' => '100',
-                    'scaled' => '.97'
+                    'raw' => 97,
+                    'min' => 0,
+                    'max' => 100,
+                    'scaled' => 0.97
                 ]
             ],
             'version' => '1.0.0',
