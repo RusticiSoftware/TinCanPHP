@@ -352,7 +352,7 @@ class RemoteLRS implements LRSInterface
             // or returns the id when there wasn't, either way the caller
             // may have called us with a statement configuration rather than
             // a Statement object, so provide them back the Statement object
-            // as the content in either case on succcess
+            // as the content in either case on success
             //
             $response->content = $statement;
         }
