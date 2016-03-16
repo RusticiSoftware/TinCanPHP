@@ -60,7 +60,7 @@ abstract class StatementBase implements VersionableInterface, ComparableInterfac
 
     private function _asVersion(&$result, $version) {
         foreach ($result as $property => $value) {
-            if ($value !== false && empty($value)) {
+            if ((is_array($value) || is_object($value) || is_null($value)) && empty($value)) {
                 unset($result[$property]);
             }
             elseif (is_array($value)) {
