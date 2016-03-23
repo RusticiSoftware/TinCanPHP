@@ -48,24 +48,21 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 
     public function testFromJSONInvalidNull() {
         $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
+            'TinCan\JsonParseErrorException'
         );
         $obj = Statement::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
         $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
+            'TinCan\JsonParseErrorException'
         );
         $obj = Statement::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
         $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_SYNTAX
+            'TinCan\JsonParseErrorException'
         );
         $obj = Statement::fromJSON('{id:"some value"}');
     }
@@ -681,7 +678,27 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
         $result = $obj->verify();
 
         $this->assertFalse($result['success'], 'success');
-        $this->assertStringStartsWith('Failed to load JWS: exception \'InvalidArgumentException\' with message \'The token "not a signature" is an invalid JWS\'', $result['reason'], 'reason');
+
+        /*
+         * With PHP7 the text which encapsulates the exception is slightly different.
+         * As we need to test against multiple versions of php we are testing the multiple ways in which it's written.
+         */
+        $possible = [
+            'Failed to load JWS: InvalidArgumentException: The token "not a signature" is an invalid JWS',
+            'Failed to load JWS: exception \'InvalidArgumentException\' with message \'The token "not a signature" is an invalid JWS\''
+        ];
+
+        $foundMatch = false;
+
+        foreach ($possible as $k => $v) {
+            $len = strlen($v);
+            if (substr($result['reason'], 0, $len) == $v) {
+                $foundMatch = true;
+                break;
+            }
+        }
+
+        $this->assertTrue($foundMatch);
     }
 
     public function testVerifyInvalidX5cErrorToException() {
