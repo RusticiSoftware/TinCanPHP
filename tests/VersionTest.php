@@ -15,24 +15,43 @@
     limitations under the License.
 */
 
-class VersionTest extends PHPUnit_Framework_TestCase {
-    public function testSupported() {
-        $result = TinCan\Version::supported();
+namespace TinCanTest;
 
-        $this->assertEquals(
-            [
-                "1.0.1",
-                "1.0.0"
-                //, "0.95"
-            ],
-            $result,
-            "match supported"
-        );
+use TinCan\Version;
+
+class VersionTest extends \PHPUnit_Framework_TestCase {
+    public function testStaticFactoryReturnsInstance() {
+        $this->assertInstanceOf("TinCan\Version", Version::v101(), "factory returns instance");
+    }
+
+    public function testToString() {
+        $this->assertInternalType("string", (string) Version::v101(), "object converts to string");
+    }
+
+    public function testHasValueReturnsBool() {
+        $this->assertTrue(Version::v101()->hasValue(Version::V101), "object has correct value");
+    }
+
+    public function testHasAnyValueReturnsBool() {
+        $this->assertFalse(Version::v101()->hasAnyValue([Version::V100, Version::V095]), "object does not have values");
+    }
+
+    public function testIsSupportedReturnsBool() {
+        $this->assertTrue(Version::v100()->isSupported(), "1.0.0 should be supported");
+        $this->assertFalse(Version::v095()->isSupported(), "0.95 should not be supported");
+    }
+
+    public function testIsLatestReturnsBool() {
+        $this->assertTrue(Version::v101()->isLatest(), "1.0.1 should be the latest version");
+        $this->assertFalse(Version::v095()->isLatest(), "0.95 should not be the latest version");
+    }
+
+    public function testSupported() {
+        $result = Version::supported();
+        $this->assertNotContains(Version::V095, $result, "0.95 not included");
     }
 
     public function testLatest() {
-        $result = TinCan\Version::latest();
-
-        $this->assertSame("1.0.1", $result, "match latest");
+        $this->assertSame(Version::V101, Version::latest(), "match latest");
     }
 }

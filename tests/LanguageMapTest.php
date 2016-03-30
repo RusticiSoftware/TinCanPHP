@@ -15,9 +15,11 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
 use TinCan\LanguageMap;
 
-class LanguageMapTest extends PHPUnit_Framework_TestCase {
+class LanguageMapTest extends \PHPUnit_Framework_TestCase {
     const NAME = 'testName';
 
     public function testInstantiation() {

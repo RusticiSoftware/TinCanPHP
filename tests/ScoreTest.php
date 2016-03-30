@@ -15,10 +15,12 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
 use TinCan\Score;
 
-class ScoreTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+class ScoreTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     private $emptyProperties = array(
         'scaled',

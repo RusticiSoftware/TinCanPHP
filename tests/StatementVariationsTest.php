@@ -15,10 +15,14 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
+use TinCan\Activity;
 use TinCan\RemoteLRS;
+use TinCan\Statement;
 use TinCan\Util;
 
-class StatementVariationsTest extends PHPUnit_Framework_TestCase {
+class StatementVariationsTest extends \PHPUnit_Framework_TestCase {
     static protected $lrss;
 
     static public function setUpBeforeClass() {
@@ -30,7 +34,7 @@ class StatementVariationsTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testBasic() {
-        $statement = new TinCan\Statement(
+        $statement = new Statement(
             [
                 'actor' => [
                     'mbox' => COMMON_MBOX
@@ -38,7 +42,7 @@ class StatementVariationsTest extends PHPUnit_Framework_TestCase {
                 'verb' => [
                     'id' => COMMON_VERB_ID
                 ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementVariationsTest/Basic'
                 ])
             ]
@@ -54,7 +58,7 @@ class StatementVariationsTest extends PHPUnit_Framework_TestCase {
     public function testAttachmentsMetaOnly() {
         $text_content = "Content created at: " . Util::getTimestamp();
 
-        $statement = new TinCan\Statement(
+        $statement = new Statement(
             [
                 'actor' => [
                     'mbox' => COMMON_MBOX
@@ -62,7 +66,7 @@ class StatementVariationsTest extends PHPUnit_Framework_TestCase {
                 'verb' => [
                     'id' => COMMON_VERB_ID
                 ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementVariationsTest/Basic'
                 ]),
                 'attachments' => [
@@ -88,7 +92,7 @@ class StatementVariationsTest extends PHPUnit_Framework_TestCase {
     public function testAttachmentsString() {
         $text_content = "Content created at: " . Util::getTimestamp();
 
-        $statement = new TinCan\Statement(
+        $statement = new Statement(
             [
                 'actor' => [
                     'mbox' => COMMON_MBOX
@@ -96,7 +100,7 @@ class StatementVariationsTest extends PHPUnit_Framework_TestCase {
                 'verb' => [
                     'id' => COMMON_VERB_ID
                 ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementVariationsTest/AttachmentsString'
                 ]),
                 'attachments' => [
@@ -120,7 +124,7 @@ class StatementVariationsTest extends PHPUnit_Framework_TestCase {
     public function testAttachmentsBinaryFile() {
         $file = 'tests/files/image.jpg';
 
-        $statement = new TinCan\Statement(
+        $statement = new Statement(
             [
                 'actor' => [
                     'mbox' => COMMON_MBOX
@@ -128,7 +132,7 @@ class StatementVariationsTest extends PHPUnit_Framework_TestCase {
                 'verb' => [
                     'id' => COMMON_VERB_ID
                 ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementVariationsTest/AttachmentsBinary'
                 ]),
                 'attachments' => [
@@ -157,7 +161,7 @@ class StatementVariationsTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testSignedAndVerified() {
-        $statement = new TinCan\Statement(
+        $statement = new Statement(
             [
                 'actor' => [
                     'mbox' => COMMON_MBOX
@@ -165,7 +169,7 @@ class StatementVariationsTest extends PHPUnit_Framework_TestCase {
                 'verb' => [
                     'id' => COMMON_VERB_ID
                 ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementVariationsTest/Signed'
                 ])
             ]
@@ -188,7 +192,7 @@ class StatementVariationsTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testSignedAndVerifiedX5c() {
-        $statement = new TinCan\Statement(
+        $statement = new Statement(
             [
                 'actor' => [
                     'mbox' => COMMON_MBOX
@@ -196,7 +200,7 @@ class StatementVariationsTest extends PHPUnit_Framework_TestCase {
                 'verb' => [
                     'id' => COMMON_VERB_ID
                 ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementVariationsTest/Signed'
                 ])
             ]

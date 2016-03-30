@@ -15,9 +15,20 @@
     limitations under the License.
 */
 
-use TinCan\RemoteLRS;
+namespace TinCanTest;
 
-class RemoteLRSTest extends PHPUnit_Framework_TestCase {
+use TinCan\Activity;
+use TinCan\Agent;
+use TinCan\Attachment;
+use TinCan\Person;
+use TinCan\RemoteLRS;
+use TinCan\Statement;
+use TinCan\StatementRef;
+use TinCan\Util;
+use TinCan\Verb;
+use TinCan\Version;
+
+class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
     static private $endpoint;
     static private $version;
     static private $username;
@@ -36,7 +47,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
         $this->assertAttributeEmpty('endpoint', $lrs, 'endpoint empty');
         $this->assertAttributeEmpty('auth', $lrs, 'auth empty');
         $this->assertAttributeEmpty('extended', $lrs, 'extended empty');
-        $this->assertSame(TinCan\Version::latest(), $lrs->getVersion(), 'version set to latest');
+        $this->assertSame(Version::latest(), $lrs->getVersion(), 'version set to latest');
     }
 
     public function testAbout() {
@@ -49,7 +60,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
 
     public function testSaveStatement() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
-        $statement = new TinCan\Statement(
+        $statement = new Statement(
             [
                 'actor' => [
                     'mbox' => COMMON_MBOX
@@ -57,7 +68,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
                 'verb' => [
                     'id' => COMMON_VERB_ID
                 ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID
                 ])
             ]
@@ -79,7 +90,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
                 'verb' => [
                     'id' => COMMON_VERB_ID
                 ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID
                 ])
             ],
@@ -90,7 +101,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
                 'verb' => [
                     'id' => COMMON_VERB_ID
                 ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/2'
                 ])
             ],
@@ -101,7 +112,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
                 'verb' => [
                     'id' => COMMON_VERB_ID
                 ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/3'
                 ])
             ]
@@ -125,13 +136,13 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
             'usageType'   => 'http://id.tincanapi.com/attachment/supporting_media',
             'display'     => ['en-US' => 'RemoteLRSTest::testSaveStatements'],
             'contentType' => 'text/plain; charset=ascii',
-            'content'     => 'Attachment 1 content created at: ' . TinCan\Util::getTimestamp()
+            'content'     => 'Attachment 1 content created at: ' . Util::getTimestamp()
         ];
         $attachment2 = [
             'usageType'   => 'http://id.tincanapi.com/attachment/supporting_media',
             'display'     => ['en-US' => 'RemoteLRSTest::testSaveStatements'],
             'contentType' => 'text/plain; charset=ascii',
-            'content'     => 'Attachment 2 content created at: ' . TinCan\Util::getTimestamp()
+            'content'     => 'Attachment 2 content created at: ' . Util::getTimestamp()
         ];
         $statements = [
             [
@@ -141,7 +152,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
                 'verb' => [
                     'id' => COMMON_VERB_ID
                 ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID
                 ]),
                 'attachments' => [
@@ -155,7 +166,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
                 'verb' => [
                     'id' => COMMON_VERB_ID
                 ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/2'
                 ]),
                 'attachments' => [
@@ -189,7 +200,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
                 'verb' => [
                     'id' => COMMON_VERB_ID
                 ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID
                 ])
             ]
@@ -218,11 +229,11 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
                 'verb' => [
                     'id' => COMMON_VERB_ID
                 ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID
                 ]),
                 'attachments' => [
-                    new TinCan\Attachment([
+                    new Attachment([
                         'usageType'   => 'http://id.tincanapi.com/attachment/supporting_media',
                         'display'     => ['en-US' => 'Test Display'],
                         'contentType' => 'application/json',
@@ -253,7 +264,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
                 'verb' => [
                     'id' => COMMON_VERB_ID
                 ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID
                 ])
             ]
@@ -263,8 +274,8 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
                 'actor' => [
                     'mbox' => COMMON_MBOX
                 ],
-                'verb' => TinCan\Verb::Voided(),
-                'object' => new TinCan\StatementRef([
+                'verb' => Verb::Voided(),
+                'object' => new StatementRef([
                     'id' => $saveResponse->content->getId()
                 ])
             ]
@@ -337,14 +348,14 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
     public function testRetrieveStateIds() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->retrieveStateIds(
-            new TinCan\Activity(
+            new Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
-            new TinCan\Agent(
+            new Agent(
                 [ 'mbox' => COMMON_MBOX ]
             ),
             array(
-                'registration' => TinCan\Util::getUUID(),
+                'registration' => Util::getUUID(),
                 'since' => '2014-01-07T08:24:30Z'
             )
         );
@@ -355,15 +366,15 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
     public function testDeleteState() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->deleteState(
-            new TinCan\Activity(
+            new Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
-            new TinCan\Agent(
+            new Agent(
                 [ 'mbox' => COMMON_MBOX ]
             ),
             'testKey',
             [
-                'registration' => TinCan\Util::getUUID()
+                'registration' => Util::getUUID()
             ]
         );
 
@@ -373,14 +384,14 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
     public function testClearState() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->clearState(
-            new TinCan\Activity(
+            new Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
-            new TinCan\Agent(
+            new Agent(
                 [ 'mbox' => COMMON_MBOX ]
             ),
             [
-                'registration' => TinCan\Util::getUUID()
+                'registration' => Util::getUUID()
             ]
         );
 
@@ -390,7 +401,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
     public function testRetrieveActivityProfileIds() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->retrieveActivityProfileIds(
-            new TinCan\Activity(
+            new Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
             array(
@@ -404,7 +415,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
     public function testRetrieveActivityProfile() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->saveActivityProfile(
-            new TinCan\Activity(
+            new Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
             'testKey',
@@ -415,7 +426,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
         );
 
         $response = $lrs->retrieveActivityProfile(
-            new TinCan\Activity(
+            new Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
             'testKey'
@@ -427,7 +438,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
     public function testSaveActivityProfile() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->saveActivityProfile(
-            new TinCan\Activity(
+            new Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
             'testKey',
@@ -443,7 +454,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
     public function testDeleteActivityProfile() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->deleteActivityProfile(
-            new TinCan\Activity(
+            new Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
             'testKey'
@@ -453,7 +464,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testRetrieveActivity() {
-        $testActivity = new TinCan\Activity([
+        $testActivity = new Activity([
             'id' => COMMON_ACTIVITY_ID. '/testRetrieveActivity',
             'definition' => [
                 'name' => [
@@ -463,7 +474,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
         ]);
 
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
-        $statement = new TinCan\Statement(
+        $statement = new Statement(
             [
                 'actor' => [
                     'mbox' => COMMON_MBOX
@@ -484,7 +495,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
     public function testRetrieveAgentProfileIds() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->retrieveAgentProfileIds(
-            new TinCan\Agent(
+            new Agent(
                 [ 'mbox' => COMMON_MBOX ]
             ),
             array(
@@ -498,7 +509,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
     public function testRetrieveAgentProfile() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->retrieveAgentProfile(
-            new TinCan\Agent(
+            new Agent(
                 [ 'mbox' => COMMON_MBOX ]
             ),
             'testKey'
@@ -510,7 +521,7 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
     public function testDeleteAgentProfile() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->deleteAgentProfile(
-            new TinCan\Agent(
+            new Agent(
                 [ 'mbox' => COMMON_MBOX ]
             ),
             'testKey'
@@ -522,14 +533,14 @@ class RemoteLRSTest extends PHPUnit_Framework_TestCase {
     public function testRetrievePerson() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
 
-        $testAgent = new TinCan\Agent(
+        $testAgent = new Agent(
             [
                 'mbox' => COMMON_MBOX. '.testretrieveperson',
                 'name' => COMMON_NAME
             ]
         );
 
-        $testPerson = new TinCan\Person(
+        $testPerson = new Person(
             [
                 'mbox' => [ COMMON_MBOX. '.testretrieveperson' ],
                 'name' => [ COMMON_NAME ]

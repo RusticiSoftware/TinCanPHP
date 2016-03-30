@@ -117,42 +117,65 @@ class RemoteLRS implements LRSInterface
             }
         }
 
-        $context = stream_context_create(array( 'http' => $http ));
-        $fp = fopen($url, 'rb', false, $context);
-        if (! $fp) {
-            throw new \Exception("Request failed: $php_errormsg");
-        }
-
-        $metadata = stream_get_meta_data($fp);
-        $content  = stream_get_contents($fp);
-
-        $response = $this->_parseMetadata($metadata, $options);
-
-        //
-        // keep a copy of the raw content, the methods expecting
-        // an LRS response may handle the content, for instance
-        // querying statements takes the returned value and converts
-        // it to Statement objects (really StatementsResult but who
-        // is counting), etc. but a user may want the original raw
-        // returned content untouched, do the same with the metadata
-        // because it feels like a good practice
-        //
-        $response['_content']  = $content;
-        $response['_metadata'] = $metadata;
-
-        //
-        // Content-Type won't be set in the case of a 204 (and potentially others)
-        //
-        if (isset($response['headers']['contentType']) && $response['headers']['contentType'] === "multipart/mixed") {
-            $content = $this->_parseMultipart($response['headers']['contentTypeBoundary'], $content);
-        }
-
         $success = false;
-        if (($response['status'] >= 200 && $response['status'] < 300) || ($response['status'] === 404 && isset($options['ignore404']) && $options['ignore404'])) {
-            $success = true;
+
+        //
+        // errors from fopen are reported to PHP as E_WARNING which prevents us
+        // from getting a reasonable message, so set an error handler here for
+        // the immediate call to turn it into an exception, and then restore
+        // normal handling
+        //
+        set_error_handler(
+            function ($errno, $errstr, $errfile, $errline, array $errcontext) {
+                throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+            }
+        );
+
+        try {
+            $context = stream_context_create(array( 'http' => $http ));
+            $fp = fopen($url, 'rb', false, $context);
+
+            if (! $fp) {
+                $content = "Request failed: $php_errormsg";
+            }
         }
-        elseif ($response['status'] >= 300 && $response['status'] < 400) {
-            throw new \Exception("Unsupported status code: " . $response['status'] . " (LRS should not redirect)");
+        catch (ErrorException $ex) {
+            $content = "Request failed: $ex";
+        }
+
+        restore_error_handler();
+
+        if ($fp) {
+            $metadata = stream_get_meta_data($fp);
+            $content  = stream_get_contents($fp);
+
+            $response = $this->_parseMetadata($metadata, $options);
+
+            //
+            // keep a copy of the raw content, the methods expecting
+            // an LRS response may handle the content, for instance
+            // querying statements takes the returned value and converts
+            // it to Statement objects (really StatementsResult but who
+            // is counting), etc. but a user may want the original raw
+            // returned content untouched, do the same with the metadata
+            // because it feels like a good practice
+            //
+            $response['_content']  = $content;
+            $response['_metadata'] = $metadata;
+
+            //
+            // Content-Type won't be set in the case of a 204 (and potentially others)
+            //
+            if (isset($response['headers']['contentType']) && $response['headers']['contentType'] === "multipart/mixed") {
+                $content = $this->_parseMultipart($response['headers']['contentTypeBoundary'], $content);
+            }
+
+            if (($response['status'] >= 200 && $response['status'] < 300) || ($response['status'] === 404 && isset($options['ignore404']) && $options['ignore404'])) {
+                $success = true;
+            }
+            elseif ($response['status'] >= 300 && $response['status'] < 400) {
+                $content = "Unsupported status code: " . $response['status'] . " (LRS should not redirect)";
+            }
         }
 
         return new LRSResponse($success, $content, $response);
@@ -352,7 +375,7 @@ class RemoteLRS implements LRSInterface
             // or returns the id when there wasn't, either way the caller
             // may have called us with a statement configuration rather than
             // a Statement object, so provide them back the Statement object
-            // as the content in either case on succcess
+            // as the content in either case on success
             //
             $response->content = $statement;
         }

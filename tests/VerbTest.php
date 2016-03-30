@@ -15,10 +15,12 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
 use TinCan\Verb;
 
-class VerbTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+class VerbTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     static private $DISPLAY;
 
