@@ -15,10 +15,12 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
 use TinCan\Activity;
 
-class ActivityTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+class ActivityTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     static private $DEFINITION;
 

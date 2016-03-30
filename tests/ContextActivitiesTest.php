@@ -15,10 +15,13 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
+use TinCan\Activity;
 use TinCan\ContextActivities;
 
-class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+class ContextActivitiesTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     static private $listProps = ['category', 'parent', 'grouping', 'other'];
     static private $common_activity_cfg = [
@@ -46,7 +49,7 @@ class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testFromJSONInstantiations() {
-        $common_activity = new TinCan\Activity(self::$common_activity_cfg);
+        $common_activity = new Activity(self::$common_activity_cfg);
 
         $all_json = array();
         foreach (self::$listProps as $k) {
@@ -87,7 +90,7 @@ class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testListSetters() {
-        $common_activity = new TinCan\Activity(self::$common_activity_cfg);
+        $common_activity = new Activity(self::$common_activity_cfg);
 
         foreach (self::$listProps as $k) {
             $setMethod = 'set' . ucfirst($k);
@@ -118,16 +121,16 @@ class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
 
     public function testCompareWithSignature() {
         $acts = [
-            new TinCan\Activity(
+            new Activity(
                 ['id' => COMMON_ACTIVITY_ID . '/0']
             ),
-            new TinCan\Activity(
+            new Activity(
                 ['id' => COMMON_ACTIVITY_ID . '/1']
             ),
-            new TinCan\Activity(
+            new Activity(
                 ['id' => COMMON_ACTIVITY_ID . '/2']
             ),
-            new TinCan\Activity(
+            new Activity(
                 ['id' => COMMON_ACTIVITY_ID . '/3']
             )
         ];

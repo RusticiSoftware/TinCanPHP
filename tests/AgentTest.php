@@ -15,10 +15,13 @@
     limitations under the License.
 */
 
-use TinCan\Agent;
+namespace TinCanTest;
 
-class AgentTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+use TinCan\Agent;
+use TinCan\AgentAccount;
+
+class AgentTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     public function testInstantiation() {
         $obj = new Agent();
@@ -141,13 +144,13 @@ class AgentTest extends PHPUnit_Framework_TestCase {
 
     public function testCompareWithSignature() {
         $name = 'Test Name';
-        $acct1 = new TinCan\AgentAccount(
+        $acct1 = new AgentAccount(
             [
                 'homePage' => COMMON_ACCT_HOMEPAGE,
                 'name'     => COMMON_ACCT_NAME
             ]
         );
-        $acct2 = new TinCan\AgentAccount(
+        $acct2 = new AgentAccount(
             [
                 'homePage' => COMMON_ACCT_HOMEPAGE,
                 'name'     => COMMON_ACCT_NAME . '-diff'

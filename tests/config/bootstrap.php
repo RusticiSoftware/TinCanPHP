@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright 2014 Rustici Software
+    Copyright 2015 Rustici Software
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,28 +15,21 @@
     limitations under the License.
 */
 
-namespace TinCanTest;
+date_default_timezone_set('UTC');
+error_reporting(E_ALL);
+ini_set('display_errors', 'stdout');
 
-use TinCan\Version;
+require_once('autoload.php');
+require_once(__DIR__ . '/config.php');
 
-class VersionTest extends \PHPUnit_Framework_TestCase {
-    public function testSupported() {
-        $result = Version::supported();
-
-        $this->assertEquals(
-            [
-                "1.0.1",
-                "1.0.0"
-                //, "0.95"
-            ],
-            $result,
-            "match supported"
-        );
-    }
-
-    public function testLatest() {
-        $result = Version::latest();
-
-        $this->assertSame("1.0.1", $result, "match latest");
-    }
+if (!trait_exists('TinCanTest\\TestCompareWithSignatureTrait')) {
+    tincan_register_autoloader('TinCanTest\\', 'tests');
 }
+
+register_shutdown_function(function() {
+    if ($err = error_get_last()) {
+        print "\n\nNon-exception error occurred:\n\n";
+        print $err['type'] . ": " . $err['message'] . "\n";
+        print $err['file'] . " (" . $err['line'] . ")\n\n";
+    }
+});

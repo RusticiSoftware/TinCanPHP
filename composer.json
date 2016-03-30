@@ -37,5 +37,10 @@
         "psr-4": {
             "TinCan\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TinCanTest\\": "tests/"
+        }
     }
 }

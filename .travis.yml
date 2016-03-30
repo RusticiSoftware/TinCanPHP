@@ -6,5 +6,5 @@ php:
   - 5.4
   - hhvm
 before_script:
-  - cp tests/Config.php.travis-ci tests/Config.php
+  - cp tests/config/config.travis-ci.php tests/config/config.php
   - composer install --dev

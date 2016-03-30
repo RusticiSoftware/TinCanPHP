@@ -15,10 +15,14 @@
     limitations under the License.
 */
 
-use TinCan\Result;
+namespace TinCanTest;
 
-class ResultTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+use TinCan\Extensions;
+use TinCan\Result;
+use TinCan\Score;
+
+class ResultTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     private $emptyProperties = array(
         'success',
@@ -90,7 +94,7 @@ class ResultTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testCompareWithSignature() {
-        $score1 = new TinCan\Score(
+        $score1 = new Score(
             [
                 'raw'    => 97,
                 'scaled' => 0.97,
@@ -98,19 +102,19 @@ class ResultTest extends PHPUnit_Framework_TestCase {
                 'max'    => 100
             ]
         );
-        $score2 = new TinCan\Score(
+        $score2 = new Score(
             [
                 'raw'    => 15,
                 'scaled' => 0.50
             ]
         );
-        $extensions1 = new TinCan\Extensions(
+        $extensions1 = new Extensions(
             [
                 COMMON_EXTENSION_ID_1 => 'test1',
                 COMMON_EXTENSION_ID_2 => 'test2'
             ]
         );
-        $extensions2 = new TinCan\Extensions(
+        $extensions2 = new Extensions(
             [
                 COMMON_EXTENSION_ID_1 => 'test1'
             ]

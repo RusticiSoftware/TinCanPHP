@@ -15,12 +15,21 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
+use TinCan\Activity;
+use TinCan\Agent;
+use TinCan\Attachment;
+use TinCan\Context;
+use TinCan\Result;
 use TinCan\Statement;
+use TinCan\Util;
+use TinCan\Verb;
 use TinCan\Version;
 use Namshi\JOSE\JWS;
 
-class StatementTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+class StatementTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     public function testInstantiation() {
         $obj = new Statement();
@@ -66,7 +75,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
         $obj->stamp();
 
         $this->assertAttributeInternalType('string', 'timestamp', $obj, 'timestamp is string');
-        $this->assertRegExp(TinCan\Util::UUID_REGEX, $obj->getId(), 'id is UUId');
+        $this->assertRegExp(Util::UUID_REGEX, $obj->getId(), 'id is UUId');
     }
 
     public function testSetId() {
@@ -131,7 +140,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
                         ]
                     ],
                 ],
-                'registration' => TinCan\Util::getUUID(),
+                'registration' => Util::getUUID(),
             ],
             'result' => [
                 'completion' => true,
@@ -172,30 +181,30 @@ class StatementTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testCompareWithSignature() {
-        $id1 = TinCan\Util::getUUID();
-        $id2 = TinCan\Util::getUUID();
-        $actor1 = new TinCan\Agent(
+        $id1 = Util::getUUID();
+        $id2 = Util::getUUID();
+        $actor1 = new Agent(
             [ 'mbox' => COMMON_MBOX ]
         );
-        $actor2 = new TinCan\Agent(
+        $actor2 = new Agent(
             [ 'account' => [ 'homePage' => COMMON_ACCT_HOMEPAGE, 'name' => COMMON_ACCT_NAME ]]
         );
-        $verb1 = new TinCan\Verb(
+        $verb1 = new Verb(
             [ 'id' => COMMON_VERB_ID ]
         );
-        $verb2 = new TinCan\Verb(
+        $verb2 = new Verb(
             [ 'id' => COMMON_VERB_ID . '/2' ]
         );
-        $activity1 = new TinCan\Activity(
+        $activity1 = new Activity(
             [ 'id' => COMMON_ACTIVITY_ID ]
         );
-        $activity2 = new TinCan\Activity(
+        $activity2 = new Activity(
             [ 'id' => COMMON_ACTIVITY_ID . '/2' ]
         );
-        $context1 = new TinCan\Context(
-            [ 'registration' => TinCan\Util::getUUID() ]
+        $context1 = new Context(
+            [ 'registration' => Util::getUUID() ]
         );
-        $context2 = new TinCan\Context(
+        $context2 = new Context(
             [
                 'contextActivities' => [
                     [ 'parent' => [ COMMON_ACTIVITY_ID . '/parent' ]],
@@ -203,10 +212,10 @@ class StatementTest extends PHPUnit_Framework_TestCase {
                 ]
             ]
         );
-        $result1 = new TinCan\Result(
+        $result1 = new Result(
             [ 'raw' => 87 ]
         );
-        $result2 = new TinCan\Result(
+        $result2 = new Result(
             [ 'response' => 'a' ]
         );
         $timestamp1           = '2015-01-28T14:23:37.159Z';
@@ -214,7 +223,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
         $timestamp1_subsecond = '2015-01-28T14:23:37.348Z';
         $timestamp2           = '2015-01-28T15:49:11.089Z';
 
-        $attachments1 = new TinCan\Attachment(
+        $attachments1 = new Attachment(
             [
                 'usageType'   => 'http://id.tincanapi.com/attachment/supporting_media',
                 'display'     => ['en-US' => 'Test Display'],
@@ -222,7 +231,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
                 'content'     => json_encode(['foo', 'bar']),
             ]
         );
-        $attachments2 = new TinCan\Attachment(
+        $attachments2 = new Attachment(
             [
                 'usageType'   => 'http://id.tincanapi.com/attachment/supporting_media',
                 'display'     => ['en-US' => 'Test Display'],
@@ -555,7 +564,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             [
                 'actor' => [ 'mbox' => COMMON_MBOX ],
                 'verb' => [ 'id' => COMMON_VERB_ID ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignNoPassword'
                 ])
             ]
@@ -573,7 +582,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             [
                 'actor' => [ 'mbox' => COMMON_MBOX ],
                 'verb' => [ 'id' => COMMON_VERB_ID ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignNoPassword'
                 ])
             ]
@@ -591,7 +600,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             [
                 'actor' => [ 'mbox' => COMMON_MBOX ],
                 'verb' => [ 'id' => COMMON_VERB_ID ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignNoPassword'
                 ])
             ]
@@ -609,7 +618,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             [
                 'actor' => [ 'mbox' => COMMON_MBOX ],
                 'verb' => [ 'id' => COMMON_VERB_ID ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignNoPassword'
                 ])
             ]
@@ -627,7 +636,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             [
                 'actor' => [ 'mbox' => COMMON_MBOX ],
                 'verb' => [ 'id' => COMMON_VERB_ID ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignNoPassword'
                 ])
             ]
@@ -640,7 +649,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             [
                 'actor' => [ 'mbox' => COMMON_MBOX ],
                 'verb' => [ 'id' => COMMON_VERB_ID ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignAndVerify'
                 ])
             ]
@@ -656,7 +665,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             [
                 'actor' => [ 'mbox' => COMMON_MBOX ],
                 'verb' => [ 'id' => COMMON_VERB_ID ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignAndVerify'
                 ]),
                 'attachments' => [
@@ -694,7 +703,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             [
                 'actor' => [ 'mbox' => COMMON_MBOX ],
                 'verb' => [ 'id' => COMMON_VERB_ID ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignNoPassword'
                 ]),
                 'attachments' => [
@@ -724,7 +733,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             [
                 'actor' => [ 'mbox' => COMMON_MBOX ],
                 'verb' => [ 'id' => COMMON_VERB_ID ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignNoPassword'
                 ]),
                 'attachments' => [
@@ -756,7 +765,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             [
                 'actor' => [ 'mbox' => COMMON_MBOX ],
                 'verb' => [ 'id' => COMMON_VERB_ID ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignNoPassword'
                 ]),
                 'attachments' => [
@@ -788,7 +797,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             [
                 'actor' => [ 'mbox' => COMMON_MBOX ],
                 'verb' => [ 'id' => COMMON_VERB_ID ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignNoPassword'
                 ]),
                 'attachments' => [
@@ -822,7 +831,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             [
                 'actor' => [ 'mbox' => COMMON_MBOX ],
                 'verb' => [ 'id' => COMMON_VERB_ID ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementTest/testVerifyDiffStatement'
                 ])
             ]
@@ -833,7 +842,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             [
                 'actor' => [ 'mbox' => COMMON_MBOX ],
                 'verb' => [ 'id' => COMMON_VERB_ID ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementTest/testVerifyDiffStatement-diff'
                 ]),
                 'attachments' => $obj->getAttachments()
@@ -850,7 +859,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             [
                 'actor' => [ 'mbox' => COMMON_MBOX ],
                 'verb' => [ 'id' => COMMON_VERB_ID ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignAndVerify'
                 ])
             ]
@@ -874,7 +883,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             [
                 'actor' => [ 'mbox' => COMMON_MBOX ],
                 'verb' => [ 'id' => COMMON_VERB_ID ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignAndVerifyFromEmbedded'
                 ])
             ]
@@ -898,7 +907,7 @@ class StatementTest extends PHPUnit_Framework_TestCase {
             [
                 'actor' => [ 'mbox' => COMMON_MBOX ],
                 'verb' => [ 'id' => COMMON_VERB_ID ],
-                'object' => new TinCan\Activity([
+                'object' => new Activity([
                     'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignAndVerify'
                 ])
             ]
