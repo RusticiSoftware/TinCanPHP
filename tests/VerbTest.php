@@ -78,10 +78,40 @@ class VerbTest extends \PHPUnit_Framework_TestCase {
             'id' => COMMON_VERB_ID,
             'display' => self::$DISPLAY
         ];
-        $obj = new Verb($args);
+
+        $obj       = Verb::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
         $versioned = $obj->asVersion('1.0.0');
 
-        $this->assertEquals($versioned, $args, "version 1.0.0");
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = Verb::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionEmptyLanguageMap() {
+        $args      = ['display' => []];
+
+        $obj       = Verb::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        unset($args['display']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmptyStringInLanguageMap() {
+        $args      = ['display' => ['en' => '']];
+
+        $obj       = Verb::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
     }
 
     public function testCompareWithSignature() {

@@ -40,6 +40,15 @@ class Result implements VersionableInterface, ComparableInterface
         }
     }
 
+    private function _asVersion(&$result, $version) {
+        //
+        // empty string is an invalid duration
+        //
+        if (isset($result['duration']) && $result['duration'] == '') {
+            unset($result['duration']);
+        }
+    }
+
     public function setScore($value) {
         if (! $value instanceof Score && is_array($value)) {
             $value = new Score($value);

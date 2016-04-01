@@ -46,10 +46,14 @@ class Agent implements VersionableInterface, StatementTargetInterface, Comparabl
         }
 
         //
-        // only one of these
+        // only one of these, note that if 'account' has been set
+        // but is returned empty then no IFI will be included
         //
         if (isset($this->account)) {
-            $result['account'] = $this->account->asVersion($version);
+            $versioned_acct = $this->account->asVersion($version);
+            if (! empty($versioned_acct)) {
+                $result['account'] = $versioned_acct;
+            }
         }
         elseif (isset($this->mbox_sha1sum)) {
             $result['mbox_sha1sum'] = $this->mbox_sha1sum;
