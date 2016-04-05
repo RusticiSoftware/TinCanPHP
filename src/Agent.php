@@ -94,7 +94,7 @@ class Agent implements VersionableInterface, StatementTargetInterface, Comparabl
 
             return array('success' => false, 'reason' => 'Comparison of this.mbox to signature.mbox_sha1sum failed: no match');
         }
-        else if (isset($fromSig->mbox) && isset($this->mbox_sha1sum)) {
+        elseif (isset($fromSig->mbox) && isset($this->mbox_sha1sum)) {
             if ($fromSig->getMbox_sha1sum() === $this->mbox_sha1sum) {
                 return array('success' => true, 'reason' => null);
             }
