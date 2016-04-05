@@ -51,13 +51,26 @@ class StatementRefTest extends \PHPUnit_Framework_TestCase {
     // TODO: need to loop versions
     public function testAsVersion() {
         $args = [
-            'objectType' => 'StatementRef',
             'id' => Util::getUUID(),
         ];
-        $obj = new StatementRef($args);
+
+        $obj       = StatementRef::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
         $versioned = $obj->asVersion('1.0.0');
 
-        $this->assertEquals($versioned, $args, "version 1.0.0");
+        $args['objectType'] = 'StatementRef';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = StatementRef::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'StatementRef';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
     }
 
     public function testCompareWithSignature() {

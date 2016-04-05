@@ -88,21 +88,11 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
         $obj->setId('some invalid id');
     }
 
-    /*
-    // TODO: need to loop possible configs
-    public function testFromJSONInstantiations() {
-        $obj = Statement::fromJSON('{"id":"' . COMMON_MBOX . '"}');
-        $this->assertInstanceOf('TinCan\Statement', $obj);
-        $this->assertSame(COMMON_MBOX, $obj->getMbox(), 'mbox value');
-    }
-    */
-
     // TODO: need to loop versions
     public function testAsVersion() {
         $args = [
             'actor' => [
                 'mbox' => COMMON_MBOX,
-                'objectType' => 'Agent',
             ],
             'verb' => [
                 'id' => COMMON_VERB_ID,
@@ -111,16 +101,15 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
                 ]
             ],
             'object' => [
-                'objectType' => 'Activity',
                 'id' => COMMON_ACTIVITY_ID,
                 'definition' => [
                     'type' => 'Invalid type',
                     'name' => [
                         'en-US' => 'Test',
                     ],
-                    //'description' => [
-                        //'en-US' => 'Test description',
-                    //],
+                    'description' => [
+                        'en-US' => 'Test description',
+                    ],
                     'extensions' => [
                         'http://someuri' => 'some value'
                     ],
@@ -130,7 +119,6 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
                 'contextActivities' => [
                     'parent' => [
                         [
-                            'objectType' => 'Activity',
                             'id' => COMMON_ACTIVITY_ID . '/1',
                             'definition' => [
                                 'name' => [
@@ -163,21 +151,116 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
                 ]
             ]
         ];
-        $obj = new Statement($args);
 
+        $obj = Statement::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
         $obj->stamp();
-        $args['id']        = $obj->getId();
-        $args['timestamp'] = $obj->getTimestamp();
-
-        $obj->getTarget()->getDefinition()->getDescription()->set('en-ES', 'Testo descriptiono');
-        $args['object']['definition']['description'] = ['en-ES' => 'Testo descriptiono'];
-
-        $obj->getTarget()->getDefinition()->getName()->unset('en-US');
-        unset($args['object']['definition']['name']);
 
         $versioned = $obj->asVersion('1.0.0');
 
-        $this->assertEquals($args, $versioned, 'version 1.0.0');
+        $args['id'] = $obj->getId();
+        $args['timestamp'] = $obj->getTimestamp();
+        $args['actor']['objectType'] = 'Agent';
+        $args['object']['objectType'] = 'Activity';
+        $args['context']['contextActivities']['parent'][0]['objectType'] = 'Activity';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = Statement::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionEmptySubObjects() {
+        $args = [
+            'actor' => [
+                'mbox' => COMMON_MBOX,
+            ],
+            'verb' => [
+                'id' => COMMON_VERB_ID,
+                'display' => []
+            ],
+            'object' => [
+                'id' => COMMON_ACTIVITY_ID,
+                'definition' => [
+                    'type' => 'Invalid type',
+                    'name' => [],
+                    'description' => [],
+                    'extensions' => [],
+                ]
+            ],
+            'context' => [
+                'contextActivities' => [
+                    'parent' => [],
+                ],
+                'registration' => Util::getUUID(),
+            ],
+            'result' => [
+                'completion' => true,
+                'success' => false,
+                'score' => []
+            ],
+            'version' => '1.0.0',
+            'attachments' => []
+        ];
+
+        $obj = Statement::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['actor']['objectType'] = 'Agent';
+        $args['object']['objectType'] = 'Activity';
+        unset($args['verb']['display']);
+        unset($args['object']['definition']['name']);
+        unset($args['object']['definition']['description']);
+        unset($args['object']['definition']['extensions']);
+        unset($args['context']['contextActivities']);
+        unset($args['result']['score']);
+        unset($args['attachments']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionSubObjectWithEmptyValue() {
+        $args = [
+            'actor' => [
+                'mbox' => COMMON_MBOX,
+            ],
+            'verb' => [
+                'id' => COMMON_VERB_ID,
+            ],
+            'object' => [
+                'id' => COMMON_ACTIVITY_ID,
+                'definition' => [
+                    'type' => 'Invalid type',
+                    'name' => [
+                        'en-US' => ''
+                    ],
+                ]
+            ],
+            'context' => [
+                'contextActivities' => [],
+            ],
+            'result' => [
+                'completion' => true,
+                'success' => false,
+                'score' => [
+                    'raw' => 0
+                ]
+            ]
+        ];
+
+        $obj = Statement::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['actor']['objectType'] = 'Agent';
+        $args['object']['objectType'] = 'Activity';
+        unset($args['context']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
     }
 
     public function testCompareWithSignature() {

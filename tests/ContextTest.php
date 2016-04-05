@@ -77,18 +77,15 @@ class ContextTest extends \PHPUnit_Framework_TestCase {
         $args = [
             'registration' => Util::getUUID(),
             'instructor'   => [
-                'objectType' => 'Agent',
-                'name'       => 'test agent'
+                'name' => 'test agent'
             ],
             'team' => [
-                'objectType' => 'Group',
-                'name'       => 'test group'
+                'name' => 'test group'
             ],
             'contextActivities' => [
                 'category' => [
                     [
-                        'objectType' => 'Activity',
-                        'id'         => 'test category'
+                        'id' => 'test category'
                     ]
                 ]
             ],
@@ -96,16 +93,47 @@ class ContextTest extends \PHPUnit_Framework_TestCase {
             'platform'   => 'test platform',
             'language'   => 'test language',
             'statement'  => [
-                'objectType' => 'StatementRef',
-                'id'         => Util::getUUID()
+                'id' => Util::getUUID()
             ],
-            'extensions' => ['test extension'],
+            'extensions' => [],
         ];
+        $args['extensions'][COMMON_EXTENSION_ID_1] = "test";
 
-        $obj       = new Context($args);
+        $obj       = Context::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
         $versioned = $obj->asVersion('1.0.0');
 
-        $this->assertEquals($versioned, $args, "platform only: 1.0.0");
+        $args['instructor']['objectType'] = 'Agent';
+        $args['team']['objectType'] = 'Group';
+        $args['contextActivities']['category'][0]['objectType'] = 'Activity';
+        $args['statement']['objectType'] = 'StatementRef';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = Context::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionEmptyLists() {
+        $args = [
+            'contextActivities' => [
+                'category' => []
+            ],
+            'extensions' => [],
+        ];
+
+        $obj       = Context::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        unset($args['contextActivities']);
+        unset($args['extensions']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
     }
 
     public function testSetInstructor() {

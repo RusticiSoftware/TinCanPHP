@@ -38,6 +38,15 @@ class ExtensionsTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($versioned, $args, "version: 1.0.0");
     }
 
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = Extensions::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, null, "serialized version matches original");
+    }
+
     public function testCompareWithSignature() {
         $success = ['success' => true, 'reason' => null];
 

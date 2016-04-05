@@ -135,6 +135,44 @@ class ScoreTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($versioned, $args, "version: 1.0.0");
     }
 
+    public function testAsVersionEmpty() {
+        $obj       = new Score([]);
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, [], "version: 1.0.0");
+    }
+
+    public function testAsVersionSingleZero() {
+        $args = [
+            'raw' => 0
+        ];
+        $obj       = new Score($args);
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "version: 1.0.0");
+
+        $args = [
+            'scaled' => 0
+        ];
+        $obj       = new Score($args);
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "version: 1.0.0");
+    }
+
+    public function testAsVersionWithZeroScores() {
+        $args = [
+            'raw'    => '0',
+            'min'    => '-1.0',
+            'max'    => 2.0,
+            'scaled' => 0
+        ];
+        $obj       = new Score($args);
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "version: 1.0.0");
+    }
+
     public function testCompareWithSignature() {
         $full = [
             'raw'    => 97,
