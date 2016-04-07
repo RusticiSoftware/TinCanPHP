@@ -29,10 +29,29 @@ class LanguageMapTest extends \PHPUnit_Framework_TestCase {
 
     public function testAsVersion() {
         $args      = ['en' => [self::NAME]];
-        $obj       = new LanguageMap($args);
+
+        $obj       = LanguageMap::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
         $versioned = $obj->asVersion();
 
-        $this->assertEquals($versioned, $args, "en only: test");
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = LanguageMap::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, null, "serialization returns null");
+    }
+
+    public function testAsVersionValueEmptyString() {
+        $args      = ['en' => ['']];
+
+        $obj       = LanguageMap::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion();
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
     }
 
     public function testGetNegotiatedLanguageString() {

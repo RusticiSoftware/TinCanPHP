@@ -46,10 +46,14 @@ class Agent implements VersionableInterface, StatementTargetInterface, Comparabl
         }
 
         //
-        // only one of these
+        // only one of these, note that if 'account' has been set
+        // but is returned empty then no IFI will be included
         //
         if (isset($this->account)) {
-            $result['account'] = $this->account->asVersion($version);
+            $versioned_acct = $this->account->asVersion($version);
+            if (! empty($versioned_acct)) {
+                $result['account'] = $versioned_acct;
+            }
         }
         elseif (isset($this->mbox_sha1sum)) {
             $result['mbox_sha1sum'] = $this->mbox_sha1sum;
@@ -90,7 +94,7 @@ class Agent implements VersionableInterface, StatementTargetInterface, Comparabl
 
             return array('success' => false, 'reason' => 'Comparison of this.mbox to signature.mbox_sha1sum failed: no match');
         }
-        else if (isset($fromSig->mbox) && isset($this->mbox_sha1sum)) {
+        elseif (isset($fromSig->mbox) && isset($this->mbox_sha1sum)) {
             if ($fromSig->getMbox_sha1sum() === $this->mbox_sha1sum) {
                 return array('success' => true, 'reason' => null);
             }

@@ -59,18 +59,6 @@ abstract class StatementBase implements VersionableInterface, ComparableInterfac
     }
 
     private function _asVersion(&$result, $version) {
-        foreach ($result as $property => $value) {
-            if ($value !== false && empty($value)) {
-                unset($result[$property]);
-            }
-            elseif (is_array($value)) {
-                $this->_asVersion($value, $version);
-                $result[$property] = $value;
-            }
-            elseif ($value instanceof VersionableInterface) {
-                $result[$property] = $value->asVersion($version);
-            }
-        }
         if (isset($result['target'])) {
             $result['object'] = $result['target'];
             unset($result['target']);
