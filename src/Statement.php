@@ -219,7 +219,61 @@ class Statement extends StatementBase
         } else {
             throw new \InvalidArgumentException("Refusing to verify signature: Invalid signing algorithm ('" . $algorithm . "')");
         }
-    } 
+    }
+
+    public static function sanitizeSerializedInfo(array $serialization, array $payload, $signatureIndex)
+    {
+        //
+        // remove the signature attachment before comparing the
+        // serializations, if it was the only attachment and the
+        // signature doesn't include the 'attachments' property
+        // then unset it as well
+        //
+        unset($serialization['attachments'][$signatureIndex]);
+        if (count($serialization['attachments']) === 0 && ! isset($payload['attachments'])) {
+            unset($serialization['attachments']);
+        }
+
+        //
+        // authority and stored are most often populated by the LRS,
+        // and presumably for signature purposes are *never* included
+        // in the signature so we are safe to remove them here
+        //
+        unset($serialization['stored']);
+        unset($serialization['authority']);
+
+        //
+        // the payload 'version' is instructive of how to serialize the
+        // statement for comparison, that 'version' is not required and
+        // when not set we need to remove the 'version' in the serialization
+        // which will be the current latest supported by the library
+        // which shouldn't be compared against what is in the signature
+        //
+        if (! isset($payload['version'])) {
+            unset($serialization['version']);
+        }
+
+        //
+        // a statement can be signed without having first provided an
+        // id, in that case the id is set by the receiving LRS, so if
+        // the serialization has one, presumably from retrieval from
+        // an LRS, remove it so that it is not compared
+        //
+        // if the statement did provide an id before signing then the
+        // LRS should have maintained that id, so they can be compared
+        //
+        if (! isset($payload['id'])) {
+            unset($serialization['id']);
+        }
+
+        //
+        // the same applies to timestamp
+        //
+        if (! isset($payload['timestamp'])) {
+            unset($serialization['timestamp']);
+        }
+        return $serialization;
+    }
 
     public function verify($options = array()) {
         if (! isset($options['version'])) {
@@ -290,55 +344,7 @@ class Statement extends StatementBase
         $version = $payload['version'] ? $payload['version'] : Version::latest();
         $serialization = $this->serializeForSignature($version);
 
-        //
-        // remove the signature attachment before comparing the
-        // serializations, if it was the only attachment and the
-        // signature doesn't include the 'attachments' property
-        // then unset it as well
-        //
-        unset($serialization['attachments'][$signatureIndex]);
-        if (count($serialization['attachments']) === 0 && ! isset($payload['attachments'])) {
-            unset($serialization['attachments']);
-        }
-
-        //
-        // authority and stored are most often populated by the LRS,
-        // and presumably for signature purposes are *never* included
-        // in the signature so we are safe to remove them here
-        //
-        unset($serialization['stored']);
-        unset($serialization['authority']);
-
-        //
-        // the payload 'version' is instructive of how to serialize the
-        // statement for comparison, that 'version' is not required and
-        // when not set we need to remove the 'version' in the serialization
-        // which will be the current latest supported by the library
-        // which shouldn't be compared against what is in the signature
-        //
-        if (! isset($payload['version'])) {
-            unset($serialization['version']);
-        }
-
-        //
-        // a statement can be signed without having first provided an
-        // id, in that case the id is set by the receiving LRS, so if
-        // the serialization has one, presumably from retrieval from
-        // an LRS, remove it so that it is not compared
-        //
-        // if the statement did provide an id before signing then the
-        // LRS should have maintained that id, so they can be compared
-        //
-        if (! isset($payload['id'])) {
-            unset($serialization['id']);
-        }
-
-        //
-        // the same applies to timestamp
-        //
-        if (! isset($payload['timestamp'])) {
-            unset($serialization['timestamp']);
-        }
+        $serialization = self::sanitizeSerializedInfo($serialization, $payload, $signatureIndex);
 
         //
         // now we can construct an object from both the payload and the

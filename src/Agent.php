@@ -55,13 +55,13 @@ class Agent implements VersionableInterface, StatementTargetInterface, Comparabl
                 $result['account'] = $versioned_acct;
             }
         }
-        elseif (isset($this->mbox_sha1sum)) {
+        else if (isset($this->mbox_sha1sum)) {
             $result['mbox_sha1sum'] = $this->mbox_sha1sum;
         }
-        elseif (isset($this->mbox)) {
+        else if (isset($this->mbox)) {
             $result['mbox'] = $this->mbox;
         }
-        elseif (isset($this->openid)) {
+        else if (isset($this->openid)) {
             $result['openid'] = $this->openid;
         }
 

@@ -17,23 +17,36 @@
 
 namespace TinCanTest;
 
-use TinCan\Document;
+use TinCan\Map;
 
-class StubDocument extends Document
-{
+class StubMap extends Map {}
 
-}
+class MapTest extends \PHPUnit_Framework_TestCase {
 
-class DocumentTest extends \PHPUnit_Framework_TestCase {
-
-	public function testExceptionOnInvalidDateTime()
-    {
-    	$this->setExpectedException(
-            "InvalidArgumentException",
-            'type of arg1 must be string or DateTime'
-        );
-
-    	$obj = new StubDocument;
-    	$obj->setTimestamp(1);
+    public function testInstantiation() {
+        $obj = new StubMap();
     }
+
+    public function testInstantiationWithArg() {
+        $obj = new StubMap([]);
+        $this->assertTrue($obj->isEmpty());
+    }
+
+    public function testSetUnset()
+    {
+        $obj = new StubMap();
+        
+        $code = 'code';
+        $value = 'value';
+
+        $obj->set($code, $value);
+
+        $this->assertEquals($value, $obj->asVersion()[$code]);
+
+        $obj->unset($code);
+
+        $this->assertFalse(isset($obj->asVersion()[$code]));
+
+    }
+
 }

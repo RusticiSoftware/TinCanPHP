@@ -32,6 +32,27 @@ class PersonTest extends \PHPUnit_Framework_TestCase {
         $this->assertAttributeEmpty('account', $obj, 'account empty');
     }
 
+    public function testAsVersionIncludesPropertyValues()
+    {
+        $name = "John Smith";
+        $mbox = "john.smith@tincanphptests.com";
+        $mboxSha1sum = sha1($mbox);
+        $openid = false;
+
+        $obj = new Person();
+        $obj->setName($name);
+        $obj->setMbox($mbox);
+        $obj->setMbox_sha1sum($mboxSha1sum);
+        $obj->setOpenid($openid);
+
+        $asVersion = $obj->asVersion(false);
+
+        $this->assertEquals($name, $asVersion['name']);
+        $this->assertEquals($mbox, $asVersion['mbox']);
+        $this->assertEquals($mboxSha1sum, $asVersion['mbox_sha1sum']);
+        $this->assertEquals($openid, $asVersion['openid']);
+    }
+
     public function testFromJSONInvalidNull() {
         $this->setExpectedException(
             'TinCan\JsonParseErrorException'

@@ -84,7 +84,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
         $obj = new Statement();
         $obj->setId('some invalid id');
     }
-    
+
     public function testSetStoredInvalidArgumentException()
     {
         $obj = new Statement();
@@ -1059,6 +1059,27 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 
         $result = $obj->verify(['publicKey' => 'file://' . $GLOBALS['KEYs']['public']]);
 
+    }
+
+    public function testSanitizeSerializedInfo()
+    {
+        $serialization = [
+            'attachments' => [
+                'value'
+            ],
+            'stored' => '-',
+            'authority' => '-',
+            'version' => '1.0.1',
+            'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignAndVerify',
+            'timestamp' => '2016-04-07T19:15:07+00:00'
+        ];
+
+        $payload = [];
+        $signatureIndex = 0;
+
+        $result = Statement::sanitizeSerializedInfo($serialization, $payload, $signatureIndex);
+
+        $this->assertCount(0, $result);
     }
 
     public function testValidateNameOfRSAlgorithm()

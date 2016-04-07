@@ -17,23 +17,19 @@
 
 namespace TinCanTest;
 
-use TinCan\Document;
+use TinCan\StatementBase;
 
-class StubDocument extends Document
-{
+class StubStatementBase extends StatementBase {}
 
-}
+class StatementBaseTest extends \PHPUnit_Framework_TestCase {
 
-class DocumentTest extends \PHPUnit_Framework_TestCase {
-
-	public function testExceptionOnInvalidDateTime()
-    {
-    	$this->setExpectedException(
-            "InvalidArgumentException",
-            'type of arg1 must be string or DateTime'
-        );
-
-    	$obj = new StubDocument;
-    	$obj->setTimestamp(1);
+    public function testInstantiation() {
+        $obj = new StubStatementBase();
     }
+
+    public function testSetTargetAsSubStatement()
+    {
+        
+    }
+
 }
