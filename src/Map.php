@@ -42,8 +42,7 @@ abstract class Map implements VersionableInterface
         $this->_map[$code] = $value;
     }
 
-    public function unset($code)
-    {
+    public function unset($code) {
         unset($this->_map[$code]);
     }
 

@@ -9,3 +9,5 @@ before_script:
   - cp tests/config/config.travis-ci.php tests/config/config.php
   - composer self-update
   - composer install --dev
+script:
+  - ./vendor/bin/phpunit
