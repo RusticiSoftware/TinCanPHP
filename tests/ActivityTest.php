@@ -72,16 +72,58 @@ class ActivityTest extends \PHPUnit_Framework_TestCase {
 
     // TODO: need to loop versions
     public function testAsVersion() {
-        $obj = new Activity(
-            array('id' => COMMON_ACTIVITY_ID)
-        );
+        $args = [
+            'id' => COMMON_ACTIVITY_ID,
+            'definition' => [
+                'name' => [
+                    'en' => 'test'
+                ]
+            ]
+        ];
+
+        $obj       = Activity::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
         $versioned = $obj->asVersion('1.0.0');
 
-        $this->assertEquals(
-            $versioned,
-            [ 'objectType' => 'Activity', 'id' => COMMON_ACTIVITY_ID ],
-            "id only: 1.0.0"
-        );
+        $args['objectType'] = 'Activity';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = Activity::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Activity';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionIdOnly() {
+        $args = [ 'id' => COMMON_ACTIVITY_ID ];
+
+        $obj       = Activity::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Activity';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmptyDefinition() {
+        $args = [
+            'id' => COMMON_ACTIVITY_ID,
+            'definition' => []
+        ];
+
+        $obj       = Activity::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Activity';
+        unset($args['definition']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
     }
 
     public function testCompareWithSignature() {

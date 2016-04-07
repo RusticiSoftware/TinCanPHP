@@ -62,17 +62,87 @@ class AgentTest extends \PHPUnit_Framework_TestCase {
     }
 
     // TODO: need to loop versions
-    public function testAsVersion() {
-        $obj = new Agent(
-            [ 'mbox' => COMMON_MBOX ]
-        );
+    public function testAsVersionMbox() {
+        $args      = [
+            'mbox' => COMMON_MBOX
+        ];
+
+        $obj       = Agent::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
         $versioned = $obj->asVersion('1.0.0');
 
-        $this->assertEquals(
-            [ 'objectType' => 'Agent', 'mbox' => COMMON_MBOX ],
-            $versioned,
-            "mbox only: 1.0.0"
-        );
+        $args['objectType'] = 'Agent';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionMboxSha1() {
+        $args      = [
+            'mbox_sha1sum' => COMMON_MBOX_SHA1
+        ];
+
+        $obj       = Agent::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Agent';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionAccount() {
+        $args      = [
+            'account' => [
+                'name' => COMMON_ACCT_NAME,
+                'homePage' => COMMON_ACCT_HOMEPAGE
+            ]
+        ];
+
+        $obj       = Agent::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Agent';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionAccountEmptyStrings() {
+        $args      = [
+            'account' => [
+                'name' => '',
+                'homePage' => ''
+            ]
+        ];
+
+        $obj       = Agent::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Agent';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmptyAccount() {
+        $args      = [
+            'account' => []
+        ];
+
+        $obj       = Agent::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Agent';
+        unset($args['account']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = Agent::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Agent';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
     }
 
     public function testIsIdentified() {

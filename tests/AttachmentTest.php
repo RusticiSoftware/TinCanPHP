@@ -120,6 +120,26 @@ class AttachmentTest extends \PHPUnit_Framework_TestCase {
         );
     }
 
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = Attachment::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionEmptyLanguageMap() {
+        $args      = ['display' => []];
+
+        $obj       = Attachment::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        unset($args['display']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
     public function testCompareWithSignature() {
         $full = [
             'usageType'   => self::USAGE_TYPE,

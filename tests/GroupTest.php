@@ -40,15 +40,101 @@ class GroupTest extends \PHPUnit_Framework_TestCase {
     }
 
     // TODO: need to loop versions
-    public function testAsVersion() {
-        $obj = new Group();
+    public function testAsVersionMbox() {
+        $args      = [
+            'mbox' => COMMON_GROUP_MBOX
+        ];
+
+        $obj       = Group::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
         $versioned = $obj->asVersion('1.0.0');
 
-        $this->assertEquals(
-            [ 'objectType' => 'Group' ],
-            $versioned,
-            "empty: 1.0.0"
-        );
+        $args['objectType'] = 'Group';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionMboxSha1() {
+        $args      = [
+            'mbox_sha1sum' => COMMON_GROUP_MBOX_SHA1
+        ];
+
+        $obj       = Group::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Group';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionAccount() {
+        $args      = [
+            'account' => [
+                'name' => COMMON_ACCT_NAME,
+                'homePage' => COMMON_ACCT_HOMEPAGE
+            ]
+        ];
+
+        $obj       = Group::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Group';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionAccountEmptyStrings() {
+        $args      = [
+            'account' => [
+                'name' => '',
+                'homePage' => ''
+            ]
+        ];
+
+        $obj       = Group::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Group';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmptyAccount() {
+        $args      = [
+            'account' => []
+        ];
+
+        $obj       = Group::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Group';
+        unset($args['account']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmptyMember() {
+        $args      = [
+            'member' => []
+        ];
+
+        $obj       = Group::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Group';
+        unset($args['member']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = Group::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Group';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
     }
 
     public function testAddMember() {

@@ -34,21 +34,6 @@ class ContextActivities implements VersionableInterface, ComparableInterface
         }
     }
 
-    private function _asVersion(array &$result, $version) {
-        foreach ($result as $property => $value) {
-            if (empty($value)) {
-                unset($result[$property]);
-            }
-            elseif (is_array($value)) {
-                $this->_asVersion($value, $version);
-                $result[$property] = $value;
-            }
-            elseif ($value instanceof VersionableInterface) {
-                $result[$property] = $value->asVersion($version);
-            }
-        }
-    }
-
     private function _listSetter($prop, $value) {
         if (is_array($value)) {
             if (isset($value['id'])) {

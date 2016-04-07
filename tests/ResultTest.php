@@ -76,10 +76,31 @@ class ResultTest extends \PHPUnit_Framework_TestCase {
         $obj       = new Result($args);
         $versioned = $obj->asVersion('1.0.0');
 
-        $this->assertEquals($versioned, $args, "success only: 1.0.0");
+        $this->assertEquals($versioned, $args, "serialized version matches original");
     }
 
-    // reported https://github.com/RusticiSoftware/TinCanPHP/issues/34
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = Result::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionScoreEmpty() {
+        $args = [
+            'score' => []
+        ];
+
+        $obj       = Result::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        unset($args['score']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
     public function testAsVersionScoreZeroRaw() {
         $args = [
             'score' => [
@@ -91,6 +112,30 @@ class ResultTest extends \PHPUnit_Framework_TestCase {
         $versioned = $obj->asVersion('1.0.0');
 
         $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionResponseEmptyString() {
+        $args = [
+            'response' => ''
+        ];
+
+        $obj       = Result::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionDurationEmptyString() {
+        $args = [
+            'duration' => ''
+        ];
+
+        $obj       = Result::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        unset($args['duration']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
     }
 
     public function testCompareWithSignature() {
