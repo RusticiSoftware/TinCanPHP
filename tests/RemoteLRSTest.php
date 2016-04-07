@@ -36,7 +36,7 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
 
     public static function setUpBeforeClass() {
         self::$endpoint = $GLOBALS['LRSs'][0]['endpoint'];
-        self::$version = $GLOBALS['LRSs'][0]['version'];
+        self::$version  = $GLOBALS['LRSs'][0]['version'];
         self::$username = $GLOBALS['LRSs'][0]['username'];
         self::$password = $GLOBALS['LRSs'][0]['password'];
     }
@@ -48,6 +48,25 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         $this->assertAttributeEmpty('auth', $lrs, 'auth empty');
         $this->assertAttributeEmpty('extended', $lrs, 'extended empty');
         $this->assertSame(Version::latest(), $lrs->getVersion(), 'version set to latest');
+
+        $options = $GLOBALS['LRSs'][0];
+        $options['auth'] = "auth";
+
+        $lrs = new RemoteLRS($options['endpoint'], $options['version'], $options['auth']);
+        $this->assertEquals($options['version'], $lrs->getVersion());
+        $this->assertEquals($options['endpoint'], $lrs->getEndpoint());
+        $this->assertEquals($options['auth'], $lrs->getAuth());
+
+        $lrs = new RemoteLRS($options);
+        $this->assertEquals($options['version'], $lrs->getVersion());
+        $this->assertEquals($options['endpoint'], $lrs->getEndpoint());
+        $this->assertEquals($options['auth'], $lrs->getAuth());
+
+        unset($options['auth'], $options['version']);
+
+        $lrs = new RemoteLRS($options);
+        $this->assertEquals(Version::latest(), $lrs->getVersion());
+        $this->assertAttributeNotEmpty('auth', $lrs, 'auth empty');
     }
 
     public function testAbout() {
@@ -78,6 +97,90 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('TinCan\LRSResponse', $response);
         $this->assertTrue($response->success, 'success');
         $this->assertSame($response->content, $statement, 'content');
+
+        //Test that the statement gets updated.
+        $savedStatement = $response->content;
+        $savedStatement->setActor([ 'mbox' => 'mailto:info@tincanapi.com' ]);
+
+        $response = $lrs->saveStatement($savedStatement);
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertTrue($response->success, 'success');
+        $this->assertSame($response->content, $savedStatement, 'content');
+    }
+
+    /**
+     * This method is here to test how _parseHeaders()
+     * will function with different structures of header arrays.
+     *
+     * At the moment the headers being tested are only those that
+     * are returned by the endpoint we are testing against.
+     */
+    public function testParseHeaders()
+    {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+
+        $expected = array(
+            'content-type' => 'application/json',
+            'folded' => "works\r\n\ttoo",
+            'content-encoding' => 'gzip',
+            'allow' => [
+                'GET',
+                'HEAD',
+                'TRACE'
+            ],
+            'set-cookie' => [
+                'foo=bar',
+                'baz=quux'
+            ],
+            'accept-patch' => 'text/example;charset=utf-8',
+            'folded2' => "works\r\n\tas well",
+            'folded3' => "works"
+        );
+
+        $raw_headers = "Content-Type: application/json\n"
+            . "Folded: works\n\ttoo\n"
+            . "Content-Encoding: gzip\n"
+            . "Allow: GET\n"
+            . "Allow: HEAD\n"
+            . "Allow: TRACE\n"
+            . "Set-Cookie: foo=bar\n"
+            . "Set-Cookie: baz=quux\n"
+            . "Accept-Patch: text/example;charset=utf-8\n"
+            . "Folded2: works\n\tas well\n"
+            . "Folded3: works\nas well\n";
+
+        $method = new \ReflectionMethod("TinCan\RemoteLRS", "_parseHeaders");
+        $method->setAccessible(true);
+
+        $returnValue = $method->invoke($lrs, $raw_headers);
+
+        foreach($expected as $key => $val) {
+            $this->assertEquals(
+                $expected[$key],
+                $returnValue[$key],
+                "The value of $key isn't the same in both arrays."
+            );
+        }
+
+    }
+
+    public function testSendRequestErrorOnFailure()
+    {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+
+        $method = new \ReflectionMethod("TinCan\RemoteLRS", "sendRequest");
+        $method->setAccessible(true);
+
+        $response = $method->invoke($lrs, 'GET', 'http://23,3.33...32...../hi');
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+
+        $expected = "Request failed: ErrorException: fopen(): "
+                   . "php_network_getaddresses: getaddrinfo failed: Name or service not known in";
+        $expectedLen = strlen($expected);
+
+        $actual = substr($response->content, 0, $expectedLen);
+        $this->assertEquals($expected, $actual);
+
     }
 
     public function testSaveStatements() {
@@ -363,6 +466,20 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('TinCan\LRSResponse', $response);
     }
 
+    public function testRetrieveStateIdsWithArrayInput() {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $response = $lrs->retrieveStateIds(
+            [ 'id' => COMMON_ACTIVITY_ID ],
+            [ 'mbox' => COMMON_MBOX ],
+            array(
+                'registration' => Util::getUUID(),
+                'since' => '2014-01-07T08:24:30Z'
+            )
+        );
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+    }
+
     public function testDeleteState() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->deleteState(
@@ -372,6 +489,20 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
             new Agent(
                 [ 'mbox' => COMMON_MBOX ]
             ),
+            'testKey',
+            [
+                'registration' => Util::getUUID()
+            ]
+        );
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+    }
+
+    public function testDeleteStateWithArrayInput() {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $response = $lrs->deleteState(
+            [ 'id' => COMMON_ACTIVITY_ID ],
+            [ 'mbox' => COMMON_MBOX ],
             'testKey',
             [
                 'registration' => Util::getUUID()
@@ -398,12 +529,85 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('TinCan\LRSResponse', $response);
     }
 
+    public function testClearStateWithArrayInput() {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $response = $lrs->clearState(
+            [ 'id' => COMMON_ACTIVITY_ID ],
+            [ 'mbox' => COMMON_MBOX ],
+            [
+                'registration' => Util::getUUID()
+            ]
+        );
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+    }
+
+    public function testSaveState()
+    {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+
+        $id = Util::getUUID();
+        $registration = Util::getUUID();
+        $content = '';
+
+        $response = $lrs->saveState(
+            [ 'id' => COMMON_ACTIVITY_ID ],
+            [ 'mbox' => COMMON_MBOX ],
+            $id,
+            $content,
+            [
+                'registration' => $registration,
+                'contentType' => 'application/json',
+            ]
+        );
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertTrue($response->success);
+
+        $response = $lrs->retrieveState(
+            [ 'id' => COMMON_ACTIVITY_ID ],
+            [ 'mbox' => COMMON_MBOX ],
+            $response->content->getId(),
+            [
+                'registration' => $registration
+            ]
+        );
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertTrue($response->success);
+
+        //Lets save again using the Etag
+        $response = $lrs->saveState(
+            [ 'id' => COMMON_ACTIVITY_ID ],
+            [ 'mbox' => COMMON_MBOX ],
+            $id,
+            $content,
+            [
+                'registration' => $registration,
+                'contentType' => 'application/json',
+                'etag' => $response->httpResponse['headers']['etag']
+            ]
+        );
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertTrue($response->success);
+    }
+
     public function testRetrieveActivityProfileIds() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->retrieveActivityProfileIds(
             new Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
+            array(
+                'since' => '2014-01-07T08:24:30Z'
+            )
+        );
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+    }
+
+    public function testRetrieveActivityProfileIdsWithArrayInput() {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $response = $lrs->retrieveActivityProfileIds(
+            [ 'id' => COMMON_ACTIVITY_ID ],
             array(
                 'since' => '2014-01-07T08:24:30Z'
             )
@@ -435,6 +639,25 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('TinCan\LRSResponse', $response);
     }
 
+    public function testRetrieveActivityProfileWithArrayInput() {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $response = $lrs->saveActivityProfile(
+            [ 'id' => COMMON_ACTIVITY_ID ],
+            'testKey',
+            json_encode(['testProperty' => 'testValue']),
+            [
+                'contentType' => 'application/json',
+            ]
+        );
+
+        $response = $lrs->retrieveActivityProfile(
+            [ 'id' => COMMON_ACTIVITY_ID ],
+            'testKey'
+        );
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+    }
+
     public function testSaveActivityProfile() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->saveActivityProfile(
@@ -449,6 +672,52 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         );
 
         $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertTrue($response->success);
+
+        //Test that we can save again now that we have a value for etag.
+        $response = $lrs->saveActivityProfile(
+            new Activity(
+                [ 'id' => COMMON_ACTIVITY_ID ]
+            ),
+            'testKey',
+            json_encode(['testProperty' => 'testValue']),
+            [
+                'contentType' => 'application/json',
+                'etag' => $response->content->getEtag()
+            ]
+        );
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertTrue($response->success);
+    }
+
+    public function testSaveActivityProfileWithArrayInput() {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $response = $lrs->saveActivityProfile(
+            [ 'id' => COMMON_ACTIVITY_ID ],
+            'testKey',
+            json_encode(['testProperty' => 'testValue']),
+            [
+                'contentType' => 'application/json',
+            ]
+        );
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertTrue($response->success);
+
+        //Test that we can save again now that we have a value for etag.
+        $response = $lrs->saveActivityProfile(
+            [ 'id' => COMMON_ACTIVITY_ID ],
+            'testKey',
+            json_encode(['testProperty' => 'testValue']),
+            [
+                'contentType' => 'application/json',
+                'etag' => $response->content->getEtag()
+            ]
+        );
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertTrue($response->success);
     }
 
     public function testDeleteActivityProfile() {
@@ -457,6 +726,16 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
             new Activity(
                 [ 'id' => COMMON_ACTIVITY_ID ]
             ),
+            'testKey'
+        );
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+    }
+
+    public function testDeleteActivityProfileWithArrayInput()  {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $response = $lrs->deleteActivityProfile(
+            [ 'id' => COMMON_ACTIVITY_ID ],
             'testKey'
         );
 
@@ -492,6 +771,41 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($testActivity, $response->content, 'retrieved activity');
     }
 
+    public function testRetrieveActivityWithHttpAcceptLanguageHeader() {
+        $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'en_US';
+        $this->testRetrieveActivity();
+    }
+
+    public function testRetrieveActivityWithArrayInput() {
+        $testActivity = [
+            'id' => COMMON_ACTIVITY_ID. '/testRetrieveActivity',
+            'definition' => [
+                'name' => [
+                    'en' => 'This is a test activity.'
+                ]
+            ]
+        ];
+
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $statement = new Statement(
+            [
+                'actor' => [
+                    'mbox' => COMMON_MBOX
+                ],
+                'verb' => [
+                    'id' => COMMON_VERB_ID
+                ],
+                'object' => $testActivity
+            ]
+        );
+        $response = $lrs->saveStatement($statement);
+
+        $response = $lrs->retrieveActivity($testActivity['id']);
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+
+        $this->assertEquals((new Activity($testActivity)), $response->content, 'retrieved activity');
+    }
+
     public function testRetrieveAgentProfileIds() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->retrieveAgentProfileIds(
@@ -506,9 +820,63 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('TinCan\LRSResponse', $response);
     }
 
-    public function testRetrieveAgentProfile() {
+    public function testRetrieveAgentProfileIdsWithArrayInput() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $response = $lrs->retrieveAgentProfileIds(
+            [ 'mbox' => COMMON_MBOX ],
+            array(
+                'since' => '2014-01-07T08:24:30Z'
+            )
+        );
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+    }
+
+    public function testSaveAgentProfile()
+    {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+
+        $content = '';
+        $id = Util::getUUID();
+
+        $response = $lrs->saveAgentProfile(
+            [ 'mbox' => COMMON_MBOX ],
+            $id,
+            $content,
+            [
+                'contentType' => 'application/json'
+            ]
+        );
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertTrue($response->success);
+
         $response = $lrs->retrieveAgentProfile(
+            [ 'mbox' => COMMON_MBOX ],
+            $id
+        );
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertTrue($response->success);
+
+        //Try to save again now that we have a value for etag.
+        $response = $lrs->saveAgentProfile(
+            [ 'mbox' => COMMON_MBOX ],
+            $id,
+            $content,
+            [
+                'contentType' => 'application/json',
+                'etag' => $response->httpResponse['headers']['etag']
+            ]
+        );
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertTrue($response->success);
+    }
+
+    public function testDeleteAgentProfile() {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $response = $lrs->deleteAgentProfile(
             new Agent(
                 [ 'mbox' => COMMON_MBOX ]
             ),
@@ -518,12 +886,10 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('TinCan\LRSResponse', $response);
     }
 
-    public function testDeleteAgentProfile() {
+    public function testDeleteAgentProfileWithArrayInput() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->deleteAgentProfile(
-            new Agent(
-                [ 'mbox' => COMMON_MBOX ]
-            ),
+            [ 'mbox' => COMMON_MBOX ],
             'testKey'
         );
 
@@ -550,5 +916,73 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         $response = $lrs->retrievePerson($testAgent);
         $this->assertInstanceOf('TinCan\LRSResponse', $response);
         $this->assertEquals($testPerson, $response->content, 'retrieved person');
+    }
+
+    public function testRetrievePersonWithArrayInput() {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+
+        $testAgent = [
+            'mbox' => COMMON_MBOX. '.testretrieveperson',
+            'name' => COMMON_NAME
+        ];
+
+        $testPerson = new Person(
+            [
+                'mbox' => [ COMMON_MBOX. '.testretrieveperson' ],
+                'name' => [ COMMON_NAME ]
+            ]
+        );
+
+        $response = $lrs->retrievePerson($testAgent);
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertEquals($testPerson, $response->content, 'retrieved person');
+    }
+
+    public function testSetUnsupportedVersion()
+    {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+
+        $value = ".dddwadwkdpoak";
+        $this->setExpectedException(
+            "InvalidArgumentException",
+            "Unsupported version: $value"
+        );
+        $lrs->setVersion($value);
+    }
+
+    public function testSetEndpointWithoutTrailingSlash()
+    {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $lrs->setEndpoint('https://a.com');
+        $this->assertEquals('https://a.com/', $lrs->getEndpoint());
+    }
+
+    public function testSetAuth()
+    {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+
+        $user = "user";
+        $pass = "pass";
+        $combo = "Basic " . base64_encode($user . ':' . $pass);
+
+        $lrs->setAuth($user);
+        $this->assertEquals($user, $lrs->getAuth());
+
+        $lrs->setAuth($pass);
+        $this->assertEquals($pass, $lrs->getAuth());
+
+        $lrs->setAuth($user, $pass);
+        $this->assertEquals($combo, $lrs->getAuth());
+    }
+
+    public function testSetAuthWithNoInput()
+    {
+        $this->setExpectedException(
+            "BadMethodCallException",
+            "setAuth requires 1 or 2 arguments"
+        );
+
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $lrs->setAuth();
     }
 }

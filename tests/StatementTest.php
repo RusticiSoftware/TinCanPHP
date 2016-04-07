@@ -85,6 +85,16 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
         $obj->setId('some invalid id');
     }
 
+    public function testSetStoredInvalidArgumentException()
+    {
+        $obj = new Statement();
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'type of arg1 must be string or DateTime'
+        );
+        $obj->setStored(1);
+    }
+
     /*
     // TODO: need to loop possible configs
     public function testFromJSONInstantiations() {
@@ -226,6 +236,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
                 'display'     => ['en-US' => 'Test Display'],
                 'contentType' => 'application/json',
                 'content'     => json_encode(['foo', 'bar']),
+                'description' => 'Test Display'
             ]
         );
         $attachments2 = new Attachment(
@@ -234,6 +245,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
                 'display'     => ['en-US' => 'Test Display'],
                 'contentType' => 'application/json',
                 'content'     => json_encode(['bar', 'foo']),
+                'description' => 'Test Display'
             ]
         );
 
@@ -881,7 +893,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
                 ])
             ]
         );
-        $obj->sign('file://' . $GLOBALS['KEYs']['private'], $GLOBALS['KEYs']['password']);
+        $obj->sign('file://' . $GLOBALS['KEYs']['private'], $GLOBALS['KEYs']['password'], ['description' => 'Signed!']);
 
         $attachment = $obj->getAttachments()[0];
 
@@ -934,5 +946,49 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
         $result = $obj->verify();
         $this->assertFalse($result['success'], 'success return value');
         $this->assertSame($result['reason'], 'No public key found or provided for verification', 'reason');
+    }
+
+    public function testSignAndVerifyInvalidAlgorithms() {
+        $obj = new Statement(
+            [
+                'actor' => [ 'mbox' => COMMON_MBOX ],
+                'verb' => [ 'id' => COMMON_VERB_ID ],
+                'object' => new Activity([
+                    'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignAndVerify'
+                ])
+            ]
+        );
+        $obj->sign('file://' . $GLOBALS['KEYs']['private'], $GLOBALS['KEYs']['password'], ['description' => 'Signed!']);
+
+        $attachment = $obj->getAttachments()[0];
+
+        $this->assertSame($attachment->getUsageType(), 'http://adlnet.gov/expapi/attachments/signature', 'usage type value');
+        $this->assertSame($attachment->getContentType(), 'application/octet-stream', 'content type value');
+
+        $result = $obj->verify(['publicKey' => 'file://' . $GLOBALS['KEYs']['public']]);
+
+    }
+
+    public function testValidateNameOfRSAlgorithm()
+    {
+        $this->assertTrue(Statement::validateNameOfRSAlgorithm('RS256'));
+        $this->assertTrue(Statement::validateNameOfRSAlgorithm('RS384'));
+        $this->assertTrue(Statement::validateNameOfRSAlgorithm('RS512'));
+
+        $this->setExpectedException(
+            "InvalidArgumentException",
+            "Refusing to verify signature: Invalid signing algorithm ('invalidvalue')"
+        );
+        Statement::validateNameOfRSAlgorithm('invalidvalue');
+    }
+
+    public function testExceptionOnInvalidDateTime()
+    {
+        $this->setExpectedException(
+            "InvalidArgumentException",
+            'type of arg1 must be string or DateTime'
+        );
+        $obj = new Statement();
+        $obj->setTimestamp(1);
     }
 }

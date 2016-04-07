@@ -175,9 +175,7 @@ class Statement extends StatementBase
                     throw new \Exception('Unable to read certificate for x5c inclusion: ' . openssl_error_string());
                 }
 
-                if (! openssl_x509_export($cert, $x5c, true)) {
-                    throw new \Exception('Unable to export certificate for x5c inclusion: ' . openssl_error_string());
-                }
+                openssl_x509_export($cert, $x5c, true);
 
                 $x5c = preg_replace(
                     array(
@@ -209,6 +207,20 @@ class Statement extends StatementBase
         $this->addAttachment($attachment);
     }
 
+    public static function validateNameOfRSAlgorithm($algorithm)
+    {
+        //
+        // there is a JWS spec security issue with allowing non-RS algorithms
+        // to be specified and it is against the Tin Can spec anyways so we
+        // want to fail hard on non-RS algorithms
+        //
+        if (in_array($algorithm, array('RS256', 'RS384', 'RS512'), true)) {
+            return true;
+        } else {
+            throw new \InvalidArgumentException("Refusing to verify signature: Invalid signing algorithm ('" . $algorithm . "')");
+        }
+    } 
+
     public function verify($options = array()) {
         if (! isset($options['version'])) {
             $options['version'] = Version::latest();
@@ -217,12 +229,12 @@ class Statement extends StatementBase
         $signatureAttachment = null;
         $signatureIndex = 0;
 
-        foreach ($this->getAttachments() as $attachment) {
+        foreach ($this->getAttachments() as $key => $attachment) {
             if ($attachment->getUsageType() === self::SIGNATURE_USAGE_TYPE) {
                 $signatureAttachment = $attachment;
+                $signatureIndex = $key;
                 break;
             }
-            $signatureIndex++;
         }
         if ($signatureAttachment === null) {
             return array('success' => false, 'reason' => "Unable to locate signature attachment (usage type)");
@@ -237,14 +249,7 @@ class Statement extends StatementBase
 
         $header = $jws->getHeader();
 
-        //
-        // there is a JWS spec security issue with allowing non-RS algorithms
-        // to be specified and it is against the Tin Can spec anyways so we
-        // want to fail hard on non-RS algorithms
-        //
-        if (! in_array($header['alg'], array('RS256', 'RS384', 'RS512'), true)) {
-            throw new \InvalidArgumentException("Refusing to verify signature: Invalid signing algorithm ('" . $options['algorithm'] . "')");
-        }
+        self::validateNameOfRSAlgorithm($header['alg']);
 
         if (isset($options['publicKey'])) {
             $publicKeyFile = $options['publicKey'];

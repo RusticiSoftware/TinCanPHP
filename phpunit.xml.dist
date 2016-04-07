@@ -52,6 +52,7 @@
         <const name="COMMON_OPENID"          value="http://tincanapi.com/" />
         <const name="COMMON_VERB_ID"         value="http://adlnet.gov/expapi/verbs/experienced" />
         <const name="COMMON_ACTIVITY_ID"     value="http://tincanapi.com/TinCanPHP/Test/Activity" />
+        <const name="COMMON_STATE_ID"        value="http://tincanapi.com/TinCanPHP/Test/State" />
         <const name="COMMON_EXTENSION_ID_1"  value="http://id.tincanapi.com/extension/topic" />
         <const name="COMMON_EXTENSION_ID_2"  value="http://id.tincanapi.com/extension/location" />
     </php>

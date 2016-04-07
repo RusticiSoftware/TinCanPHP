@@ -228,4 +228,24 @@ class ScoreTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals($versioned, $args, "raw with 0 as value");
     }
+
+    /**
+     * @dataProvider scoreProvider
+     */
+    public function testValidate($testValue, $score, $min, $max, $scaleFactor)
+    {
+        $obj = new Score($score, $min, $max, $scaleFactor);
+        $this->assertTrue($obj->validate($testValue));
+    }
+
+    public function scoreProvider()
+    {
+        return [
+            [40, 4, 10, 50, 1],
+            [40, 4, 39, 41, 1],
+            [40, 4, 2, 100, 1],
+            [40, 4, 10, 60, 1]
+        ];
+    }
+
 }
