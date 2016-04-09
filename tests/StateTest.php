@@ -23,8 +23,7 @@ use TinCan\Group;
 
 class StateTest extends \PHPUnit_Framework_TestCase {
 
-	public function testCanSetActivityWithArray()
-    {
+    public function testCanSetActivityWithArray() {
         $args = [
             'id' => COMMON_ACTIVITY_ID,
             'definition' => []
@@ -34,8 +33,7 @@ class StateTest extends \PHPUnit_Framework_TestCase {
         $state->setActivity($args);
     }
 
-    public function testSetAgent()
-    {
+    public function testSetAgent() {
         $obj = new State();
         $obj->setAgent(['mbox' => COMMON_MBOX]);
         $this->assertInstanceOf('TinCan\Agent', $obj->getAgent());
@@ -46,8 +44,7 @@ class StateTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('TinCan\Group', $obj->getAgent());
     }
 
-    public function testExceptionOnInvalidRegistrationUUID()
-    {
+    public function testExceptionOnInvalidRegistrationUUID() {
         $this->setExpectedException(
             "InvalidArgumentException",
             'arg1 must be a UUID'
