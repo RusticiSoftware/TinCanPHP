@@ -220,6 +220,8 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
                    . "php_network_getaddresses: getaddrinfo failed: Nam";
         $expected['php7'] = "Request failed: ErrorException: fopen(): "
                    . "php_network_getaddresses: getaddrinfo failed: Name or service not known in";
+        $expected['hhvm'] = "Request failed: exception 'ErrorException' with message 'Failed to open"
+                   
 
         $foundMatch = false;
 
