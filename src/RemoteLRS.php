@@ -134,10 +134,6 @@ class RemoteLRS implements LRSInterface
         try {
             $context = stream_context_create(array( 'http' => $http ));
             $fp = fopen($url, 'rb', false, $context);
-
-            if (! $fp) {
-                $content = "Request failed: $php_errormsg";
-            }
         }
         catch (\ErrorException $ex) {
             $content  = "Request failed: $ex";
@@ -488,42 +484,30 @@ class RemoteLRS implements LRSInterface
     private function _queryStatementsRequestParams($query) {
         $result = array();
 
-        foreach (array('agent') as $k) {
-            if (isset($query[$k])) {
-                $result[$k] = json_encode($query[$k]->asVersion($this->version));
-            }
+        if (isset($query['agent'])) {
+            $result['agent'] = json_encode($query['agent']->asVersion($this->version));
         }
-        foreach (
-            array(
-                'verb',
-                'activity',
-            ) as $k
-        ) {
+
+        $identifiables = ['verb', 'activity'];
+        foreach ($identifiables as $k) {
             if (isset($query[$k])) {
                 $result[$k] = $query[$k]->getId();
             }
         }
-        foreach (
-            array(
-                'ascending',
-                'related_activities',
-                'related_agents',
-                'attachments',
-            ) as $k
-        ) {
+
+        $arguments = ['ascending', 'related_activities', 'related_agents', 'attachments'];
+        foreach ($arguments as $k) {
             if (isset($query[$k])) {
                 $result[$k] = $query[$k] ? 'true' : 'false';
             }
         }
-        foreach (
-            array(
-                'registration',
-                'since',
-                'until',
-                'limit',
-                'format',
-            ) as $k
-        ) {
+
+        $content = [
+            'registration', 'since',
+            'until', 'limit',
+            'format'
+        ];
+        foreach ($content as $k) {
             if (isset($query[$k])) {
                 $result[$k] = $query[$k];
             }

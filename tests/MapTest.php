@@ -49,4 +49,15 @@ class MapTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    public function testExceptionOnBadMethodCall()
+    {
+        $badName ="dsadasdasdasdasdasdas";
+        $this->setExpectedException(
+            "BadMethodCallException",
+            get_class(new StubMap) . "::$badName() does not exist"
+        );
+        $obj = new StubMap();
+        $obj->$badName();
+    }
+
 }

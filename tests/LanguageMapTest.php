@@ -74,4 +74,5 @@ class LanguageMapTest extends \PHPUnit_Framework_TestCase {
         $nullAcceptValue = $obj->getNegotiatedLanguageString();
         $this->assertEquals($nullAcceptValue, $langs['en-US'], 'US name equal');
     }
+
 }

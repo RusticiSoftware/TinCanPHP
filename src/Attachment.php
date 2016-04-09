@@ -43,12 +43,9 @@ class Attachment implements VersionableInterface, ComparableInterface
             }
         }
 
-        foreach (
-            [
-                'display',
-                'description',
-            ] as $k
-        ) {
+        $props = ['display', 'description'];
+
+        foreach ($props as $k) {
             $method = 'set' . ucfirst($k);
 
             if (! isset($this->$k)) {

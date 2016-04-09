@@ -41,13 +41,9 @@ class ActivityDefinition implements VersionableInterface
             $this->_fromArray($arg);
         }
 
-        foreach (
-            [
-                'name',
-                'description',
-                'extensions',
-            ] as $k
-        ) {
+        $props = ['name', 'description', 'extensions'];
+
+        foreach ($props as $k) {
             $method = 'set' . ucfirst($k);
 
             if (! isset($this->$k)) {

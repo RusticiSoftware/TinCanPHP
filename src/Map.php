@@ -41,8 +41,9 @@ abstract class Map implements VersionableInterface
     public function set($code, $value) {
         $this->_map[$code] = $value;
     }
-    
-    public function unset($code) {
+
+    public function _unset($code)
+    {
         unset($this->_map[$code]);
     }
 
@@ -56,7 +57,7 @@ abstract class Map implements VersionableInterface
                 return $this->_unset($args[0]);
             break;
             default:
-                throw new BadMethodCallException(__CLASS__ . "::$func() does not exist");
+                throw new \BadMethodCallException(get_class($this) . "::$func() does not exist");
         }
     }
 }

@@ -120,6 +120,7 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
 
         $expected = array(
+            0 => "header",
             'content-type' => 'application/json',
             'folded' => "works\r\n\ttoo",
             'content-encoding' => 'gzip',
@@ -137,7 +138,8 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
             'folded3' => "works"
         );
 
-        $raw_headers = "Content-Type: application/json\n"
+        $raw_headers = "Header\n"
+            . "Content-Type: application/json\n"
             . "Folded: works\n\ttoo\n"
             . "Content-Encoding: gzip\n"
             . "Allow: GET\n"
@@ -164,6 +166,45 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    public function testQueryStatementsRequestParams()
+    {
+
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+
+        $expected = [
+            'agent' => json_encode(['objectType' => 'Agent', 'name' => "A name"]),
+            'verb' => COMMON_VERB_ID,
+            'activity' => COMMON_ACTIVITY_ID,
+            'ascending' => 'true',
+            'related_activities' => 'false',
+            'related_agents' => 'true',
+            'attachments' => 'false',
+            'registration' => Util::getUUID(),
+            'since' => "2004-02-12T15:19:21+00:00",
+            'until' => "2005-02-12T15:19:21+00:00",
+            'limit' => 1,
+            'format' => 'json'
+        ];
+
+        $input = $expected;
+        $input['verb'] = new Verb(['id' => COMMON_VERB_ID]);
+        $input['activity'] = new Activity(['id' => COMMON_ACTIVITY_ID]);
+        $input['agent'] = new Agent(['objectType' => 'Agent', 'name' => "A name"]);
+        $input['ascending'] = true;
+        $input['related_activities'] = false;
+        $input['related_agents'] = true;
+        $input['attachments'] = false;
+
+        $method = new \ReflectionMethod("TinCan\RemoteLRS", "_queryStatementsRequestParams");
+        $method->setAccessible(true);
+
+        $returnValue = $method->invoke($lrs, $input);
+
+        foreach($expected as $k => $v) {
+            $this->assertEquals($v, $returnValue[$k]);
+        }
+    }
+
     public function testSendRequestErrorOnFailure()
     {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
@@ -174,12 +215,22 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         $response = $method->invoke($lrs, 'GET', 'http://23,3.33...32...../hi');
         $this->assertInstanceOf('TinCan\LRSResponse', $response);
 
-        $expected = "Request failed: ErrorException: fopen(): "
+        $expected = [];
+        $expected['php5'] = "Request failed: exception 'ErrorException' with message 'fopen(): "
+                   . "php_network_getaddresses: getaddrinfo failed: Nam";
+        $expected['php7'] = "Request failed: ErrorException: fopen(): "
                    . "php_network_getaddresses: getaddrinfo failed: Name or service not known in";
-        $expectedLen = strlen($expected);
 
-        $actual = substr($response->content, 0, $expectedLen);
-        $this->assertEquals($expected, $actual);
+        $foundMatch = false;
+
+        foreach($expected as $versionNumber => $message) {
+            if(strpos($response->content, $message) === 0) {
+                $foundMatch = true;
+                break;
+            }
+        }
+
+        $this->assertTrue($foundMatch);
 
     }
 

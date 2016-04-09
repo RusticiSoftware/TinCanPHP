@@ -143,16 +143,16 @@ abstract class StatementBase implements VersionableInterface, ComparableInterfac
                 if ($value['objectType'] === 'Activity') {
                     $value = new Activity($value);
                 }
-                else if ($value['objectType'] === 'Agent') {
+                elseif ($value['objectType'] === 'Agent') {
                     $value = new Agent($value);
                 }
-                else if ($value['objectType'] === 'Group') {
+                elseif ($value['objectType'] === 'Group') {
                     $value = new Group($value);
                 }
-                else if ($value['objectType'] === 'StatementRef') {
+                elseif ($value['objectType'] === 'StatementRef') {
                     $value = new StatementRef($value);
                 }
-                else if ($value['objectType'] === 'SubStatement') {
+                elseif ($value['objectType'] === 'SubStatement') {
                     $value = new SubStatement($value);
                 }
                 else {

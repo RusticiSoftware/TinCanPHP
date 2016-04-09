@@ -308,16 +308,13 @@ class Statement extends StatementBase
         if (isset($options['publicKey'])) {
             $publicKeyFile = $options['publicKey'];
         }
-        else if (isset($header['x5c'])) {
+        elseif (isset($header['x5c'])) {
             $cert = "-----BEGIN CERTIFICATE-----\r\n" . chunk_split($header['x5c'][0], 64, "\r\n") . "-----END CERTIFICATE-----\r\n";
             $cert = openssl_x509_read($cert);
             if (! $cert) {
                 return array('success' => false, 'reason' => 'failed to read cert in x5c: ' . openssl_error_string());
             }
             $publicKeyFile = openssl_pkey_get_public($cert);
-            if (! $publicKeyFile) {
-                return array('success' => false, 'reason' => 'x5c failed to provide public key: ' . openssl_error_string());
-            }
         }
         else {
             return array('success' => false, 'reason' => 'No public key found or provided for verification');
