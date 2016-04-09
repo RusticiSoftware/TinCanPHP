@@ -230,7 +230,7 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
             }
         }
 
-        $this->assertTrue($foundMatch);
+        $this->assertTrue($foundMatch, $response->content);
 
     }
 
