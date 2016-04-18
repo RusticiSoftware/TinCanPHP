@@ -207,7 +207,7 @@ class RemoteLRS implements LRSInterface
                 if ($pair[0] === 'charset') {
                     $result['headers']['contentTypeCharset'] = $pair[1];
                 }
-                else if ($pair[0] === 'boundary') {
+                elseif ($pair[0] === 'boundary') {
                     $result['headers']['contentTypeBoundary'] = $pair[1];
                 }
             }
@@ -224,7 +224,7 @@ class RemoteLRS implements LRSInterface
             if ($part === '') {
                 continue;
             }
-            else if ($part === '--') {
+            elseif ($part === '--') {
                 break;
             }
             list($header, $body) = explode("\r\n\r\n", $part, 2);
@@ -910,6 +910,7 @@ class RemoteLRS implements LRSInterface
                     'activityId' => $activity->getId(),
                     'profileId'  => $id,
                 ),
+                'ignore404' => true
             )
         );
 
@@ -983,7 +984,8 @@ class RemoteLRS implements LRSInterface
                 'params' => array(
                     'agent'     => json_encode($agent->asVersion($this->version)),
                     'profileId' => $id,
-                )
+                ),
+                'ignore404' => true
             )
         );
 

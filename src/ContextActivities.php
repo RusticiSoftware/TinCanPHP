@@ -48,7 +48,7 @@ class ContextActivities implements VersionableInterface, ComparableInterface
                 $this->$prop = $value;
             }
         }
-        else if ($value instanceof Activity) {
+        elseif ($value instanceof Activity) {
             array_push($this->$prop, $value);
         }
         else {
