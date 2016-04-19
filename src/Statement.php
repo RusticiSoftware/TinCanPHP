@@ -174,11 +174,7 @@ class Statement extends StatementBase
                 if (! $cert) {
                     throw new \Exception('Unable to read certificate for x5c inclusion: ' . openssl_error_string());
                 }
-
-                /*
-                 * I've removed the check here because it seems like if
-                 * $cert is valid then this line will always execute successfully.
-                 */
+                
                 openssl_x509_export($cert, $x5c, true);
 
                 $x5c = preg_replace(
@@ -318,10 +314,7 @@ class Statement extends StatementBase
             if (! $cert) {
                 return array('success' => false, 'reason' => 'failed to read cert in x5c: ' . openssl_error_string());
             }
-            /*
-             * I've removed the check here because it seems like if
-             * $cert is valid then this line will always execute successfully.
-             */
+            
             $publicKeyFile = openssl_pkey_get_public($cert);
         }
         else {
