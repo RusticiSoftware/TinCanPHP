@@ -17,6 +17,8 @@
 
 namespace TinCan;
 
+use ErrorException;
+
 class RemoteLRS implements LRSInterface
 {
     use ArraySetterTrait;
