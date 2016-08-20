@@ -48,24 +48,21 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 
     public function testFromJSONInvalidNull() {
         $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
+            'TinCan\JsonParseErrorException'
         );
         $obj = Statement::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
         $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
+            'TinCan\JsonParseErrorException'
         );
         $obj = Statement::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
         $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_SYNTAX
+            'TinCan\JsonParseErrorException'
         );
         $obj = Statement::fromJSON('{id:"some value"}');
     }
@@ -87,6 +84,25 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
         $obj = new Statement();
         $obj->setId('some invalid id');
     }
+
+    public function testSetStoredInvalidArgumentException()
+    {
+        $obj = new Statement();
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'type of arg1 must be string or DateTime'
+        );
+        $obj->setStored(1);
+    }
+
+    /*
+    // TODO: need to loop possible configs
+    public function testFromJSONInstantiations() {
+        $obj = Statement::fromJSON('{"id":"' . COMMON_MBOX . '"}');
+        $this->assertInstanceOf('TinCan\Statement', $obj);
+        $this->assertSame(COMMON_MBOX, $obj->getMbox(), 'mbox value');
+    }
+    */
 
     // TODO: need to loop versions
     public function testAsVersion() {
@@ -312,6 +328,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
                 'display'     => ['en-US' => 'Test Display'],
                 'contentType' => 'application/json',
                 'content'     => json_encode(['foo', 'bar']),
+                'description' => 'Test Display'
             ]
         );
         $attachments2 = new Attachment(
@@ -320,6 +337,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
                 'display'     => ['en-US' => 'Test Display'],
                 'contentType' => 'application/json',
                 'content'     => json_encode(['bar', 'foo']),
+                'description' => 'Test Display'
             ]
         );
 
@@ -764,7 +782,27 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
         $result = $obj->verify();
 
         $this->assertFalse($result['success'], 'success');
-        $this->assertStringStartsWith('Failed to load JWS: exception \'InvalidArgumentException\' with message \'The token "not a signature" is an invalid JWS\'', $result['reason'], 'reason');
+
+        /*
+         * With PHP7 the text which encapsulates the exception is slightly different.
+         * As we need to test against multiple versions of php we are testing the multiple ways in which it's written.
+         */
+        $possible = [
+            'Failed to load JWS: InvalidArgumentException: The token "not a signature" is an invalid JWS',
+            'Failed to load JWS: exception \'InvalidArgumentException\' with message \'The token "not a signature" is an invalid JWS\''
+        ];
+
+        $foundMatch = false;
+
+        foreach ($possible as $k => $v) {
+            $len = strlen($v);
+            if (substr($result['reason'], 0, $len) == $v) {
+                $foundMatch = true;
+                break;
+            }
+        }
+
+        $this->assertTrue($foundMatch);
     }
 
     public function testVerifyInvalidX5cErrorToException() {
@@ -947,7 +985,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
                 ])
             ]
         );
-        $obj->sign('file://' . $GLOBALS['KEYs']['private'], $GLOBALS['KEYs']['password']);
+        $obj->sign('file://' . $GLOBALS['KEYs']['private'], $GLOBALS['KEYs']['password'], ['description' => 'Signed!']);
 
         $attachment = $obj->getAttachments()[0];
 
@@ -1000,5 +1038,70 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
         $result = $obj->verify();
         $this->assertFalse($result['success'], 'success return value');
         $this->assertSame($result['reason'], 'No public key found or provided for verification', 'reason');
+    }
+
+    public function testSignAndVerifyInvalidAlgorithms() {
+        $obj = new Statement(
+            [
+                'actor' => [ 'mbox' => COMMON_MBOX ],
+                'verb' => [ 'id' => COMMON_VERB_ID ],
+                'object' => new Activity([
+                    'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignAndVerify'
+                ])
+            ]
+        );
+        $obj->sign('file://' . $GLOBALS['KEYs']['private'], $GLOBALS['KEYs']['password'], ['description' => 'Signed!']);
+
+        $attachment = $obj->getAttachments()[0];
+
+        $this->assertSame($attachment->getUsageType(), 'http://adlnet.gov/expapi/attachments/signature', 'usage type value');
+        $this->assertSame($attachment->getContentType(), 'application/octet-stream', 'content type value');
+
+        $result = $obj->verify(['publicKey' => 'file://' . $GLOBALS['KEYs']['public']]);
+
+    }
+
+    public function testSanitizeSerializedInfo()
+    {
+        $serialization = [
+            'attachments' => [
+                'value'
+            ],
+            'stored' => '-',
+            'authority' => '-',
+            'version' => '1.0.1',
+            'id' => COMMON_ACTIVITY_ID . '/StatementTest/testSignAndVerify',
+            'timestamp' => '2016-04-07T19:15:07+00:00'
+        ];
+
+        $payload = [];
+        $signatureIndex = 0;
+
+        $result = Statement::sanitizeSerializedInfo($serialization, $payload, $signatureIndex);
+
+        $this->assertCount(0, $result);
+    }
+
+    public function testValidateNameOfRSAlgorithm()
+    {
+        $this->assertTrue(Statement::validateNameOfRSAlgorithm('RS256'));
+        $this->assertTrue(Statement::validateNameOfRSAlgorithm('RS384'));
+        $this->assertTrue(Statement::validateNameOfRSAlgorithm('RS512'));
+
+        $this->setExpectedException(
+            "InvalidArgumentException",
+            "Refusing to verify signature: Invalid signing algorithm ('invalidvalue')"
+        );
+        Statement::validateNameOfRSAlgorithm('invalidvalue');
+    }
+
+    public function testExceptionOnInvalidDateTime()
+    {
+        $this->setExpectedException(
+            "InvalidArgumentException",
+            'type of arg1 must be string or DateTime'
+        );
+        $obj = new Statement();
+        $obj->setTimestamp(1);
     }
 }

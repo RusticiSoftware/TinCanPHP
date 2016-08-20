@@ -35,24 +35,21 @@ class AgentTest extends \PHPUnit_Framework_TestCase {
 
     public function testFromJSONInvalidNull() {
         $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
+            'TinCan\JSONParseErrorException'
         );
         $obj = Agent::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
         $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
+            'TinCan\JSONParseErrorException'
         );
         $obj = Agent::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
         $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_SYNTAX
+            'TinCan\JSONParseErrorException'
         );
         $obj = Agent::fromJSON('{name:"some value"}');
     }
@@ -62,6 +59,52 @@ class AgentTest extends \PHPUnit_Framework_TestCase {
         $obj = Agent::fromJSON('{"mbox":"' . COMMON_MBOX . '"}');
         $this->assertInstanceOf('TinCan\Agent', $obj);
         $this->assertSame(COMMON_MBOX, $obj->getMbox(), 'mbox value');
+    }
+
+    public function testAsVersionIncludesPropertyValues()
+    {
+        $name = "John Smith";
+        $mbox = "john.smith@tincanphptests.com";
+        $mboxSha1sum = sha1($mbox);
+        $openid = false;
+
+        $obj = new Agent();
+        $obj->setName($name);
+        $this->assertEquals($name, $obj->asVersion(false)['name']);
+        $this->assertEquals('Agent', $obj->asVersion(false)['objectType']);
+
+        $obj = new Agent();
+        $obj->setMbox($mbox);
+        $this->assertEquals('mailto:' . $mbox, $obj->asVersion(false)['mbox']);
+
+        $obj = new Agent();
+        $obj->setMbox_sha1sum($mboxSha1sum);
+        $this->assertEquals($mboxSha1sum, $obj->asVersion(false)['mbox_sha1sum']);
+
+        $obj = new Agent();
+        $obj->setOpenid($openid);
+        $this->assertEquals($openid, $obj->asVersion(false)['openid']);
+
+        $obj = new Agent();
+        $obj->setMbox($mbox);
+        $obj->setMbox_sha1sum($mboxSha1sum);
+        $obj->setOpenid($openid);
+        $this->assertTrue(isset($obj->asVersion(false)['mbox_sha1sum']));
+        $this->assertFalse(isset($obj->asVersion(false)['mbox']));
+        $this->assertFalse(isset($obj->asVersion(false)['openid']));
+
+        $obj = new Agent();
+        $obj->setMbox($mbox);
+        $obj->setOpenid($openid);
+        $this->assertFalse(isset($obj->asVersion(false)['mbox_sha1sum']));
+        $this->assertTrue(isset($obj->asVersion(false)['mbox']));
+        $this->assertFalse(isset($obj->asVersion(false)['openid']));
+
+        $obj = new Agent();
+        $obj->setOpenid($openid);
+        $this->assertFalse(isset($obj->asVersion(false)['mbox_sha1sum']));
+        $this->assertFalse(isset($obj->asVersion(false)['mbox']));
+        $this->assertTrue(isset($obj->asVersion(false)['openid']));
     }
 
     // TODO: need to loop versions
@@ -334,7 +377,25 @@ class AgentTest extends \PHPUnit_Framework_TestCase {
                 'sigArgs'     => ['mbox' => COMMON_MBOX],
                 'reason'      => 'Comparison of this.mbox_sha1sum to signature.mbox failed: no match'
             ],
+            [
+                'description' => 'value not in signature',
+                'objArgs'     => ['account' => $acct1, 'name' => $name],
+                'sigArgs'     => ['name' => $name . ' diff'],
+                'reason'      => 'Comparison of account failed: value not in signature'
+            ],
+            [
+                'description' => 'value not in this',
+                'objArgs'     => ['name' => $name],
+                'sigArgs'     => ['account' => $acct1, 'name' => $name . ' diff'],
+                'reason'      => 'Comparison of account failed: value not in this'
+            ],
         ];
         $this->runSignatureCases("TinCan\Agent", $cases);
+    }
+
+    public function testGetMbox_sha1sumReturnsNullWithNoData()
+    {
+        $obj = new Agent();
+        $this->assertNull($obj->getMbox_sha1sum());
     }
 }

@@ -40,12 +40,9 @@ class Context implements VersionableInterface, ComparableInterface
             $this->_fromArray($arg);
         }
 
-        foreach (
-            [
-                'contextActivities',
-                'extensions',
-            ] as $k
-        ) {
+        $props = ['contextActivities', 'extensions'];
+
+        foreach ($props as $k) {
             $method = 'set' . ucfirst($k);
 
             if (! isset($this->$k)) {

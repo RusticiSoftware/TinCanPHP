@@ -134,18 +134,15 @@ class RemoteLRS implements LRSInterface
         try {
             $context = stream_context_create(array( 'http' => $http ));
             $fp = fopen($url, 'rb', false, $context);
-
-            if (! $fp) {
-                $content = "Request failed: $php_errormsg";
-            }
         }
-        catch (ErrorException $ex) {
-            $content = "Request failed: $ex";
+        catch (\ErrorException $ex) {
+            $content  = "Request failed: $ex";
+            $response = null;
         }
 
         restore_error_handler();
 
-        if ($fp) {
+        if (isset($fp) && $fp) {
             $metadata = stream_get_meta_data($fp);
             $content  = stream_get_contents($fp);
 
@@ -170,12 +167,7 @@ class RemoteLRS implements LRSInterface
                 $content = $this->_parseMultipart($response['headers']['contentTypeBoundary'], $content);
             }
 
-            if (($response['status'] >= 200 && $response['status'] < 300) || ($response['status'] === 404 && isset($options['ignore404']) && $options['ignore404'])) {
-                $success = true;
-            }
-            elseif ($response['status'] >= 300 && $response['status'] < 400) {
-                $content = "Unsupported status code: " . $response['status'] . " (LRS should not redirect)";
-            }
+            return LRSResponse::fromRemoteLRSResponse($response, $options, $content);
         }
 
         return new LRSResponse($success, $content, $response);
@@ -215,7 +207,7 @@ class RemoteLRS implements LRSInterface
                 if ($pair[0] === 'charset') {
                     $result['headers']['contentTypeCharset'] = $pair[1];
                 }
-                else if ($pair[0] === 'boundary') {
+                elseif ($pair[0] === 'boundary') {
                     $result['headers']['contentTypeBoundary'] = $pair[1];
                 }
             }
@@ -232,7 +224,7 @@ class RemoteLRS implements LRSInterface
             if ($part === '') {
                 continue;
             }
-            else if ($part === '--') {
+            elseif ($part === '--') {
                 break;
             }
             list($header, $body) = explode("\r\n\r\n", $part, 2);
@@ -265,40 +257,48 @@ class RemoteLRS implements LRSInterface
     // as suggested here: http://php.net/manual/en/function.http-parse-headers.php#112986
     //
     // adapted to private method, and force headers to lowercase for easy detection
+    // 
+    // Now reworked so that the variable names make a bit more sense.
     //
     private function _parseHeaders($raw_headers) {
         $headers = array();
         $key = ''; // [+]
 
-        foreach(explode("\n", $raw_headers) as $i => $h) {
-            $h = explode(':', $h, 2);
-            $h[0] = strtolower($h[0]);
+        $raw_headers = explode("\n", $raw_headers);
+        $raw_headers = array_filter($raw_headers);
 
-            if (isset($h[1])) {
-                if (! isset($headers[$h[0]])) {
-                    $headers[$h[0]] = trim($h[1]);
+        foreach($raw_headers as $i => $header) {
+
+            $header = explode(':', $header, 2);
+ 
+            $name = strtolower($header[0]);
+            $value = (isset($header[1])) ? $header[1] : false;
+
+            if($value === false) {
+
+                if (substr($name, 0, 1) == "\t") {
+                    $headers[$key] .= "\r\n\t".trim($name);
                 }
-                elseif (is_array($headers[$h[0]])) {
-                    // $tmp = array_merge($headers[$h[0]], array(trim($h[1]))); // [-]
-                    // $headers[$h[0]] = $tmp; // [-]
-                    $headers[$h[0]] = array_merge($headers[$h[0]], array(trim($h[1]))); // [+]
+                elseif (! $key) {
+                    $headers[0] = trim($name);
+                }
+
+            }
+            else {
+                $value = trim($value);
+
+                if(empty($headers[$name])) {
+                    $headers[$name] = $value;
+                }
+                elseif (is_array($headers[$name])) {
+                    $headers[$name] = array_merge($headers[$name], [$value]);
                 }
                 else {
-                    // $tmp = array_merge(array($headers[$h[0]]), array(trim($h[1]))); // [-]
-                    // $headers[$h[0]] = $tmp; // [-]
-                    $headers[$h[0]] = array_merge(array($headers[$h[0]]), array(trim($h[1]))); // [+]
+                    $headers[$name] = array_merge([$headers[$name]], [$value]);
                 }
 
-                $key = $h[0]; // [+]
+                $key = $name;
             }
-            else { // [+]
-                if (substr($h[0], 0, 1) == "\t") {// [+]
-                    $headers[$key] .= "\r\n\t".trim($h[0]); // [+]
-                }
-                elseif (! $key) {// [+]
-                    $headers[0] = trim($h[0]);trim($h[0]); // [+]
-                }
-            } // [+]
         }
 
         return $headers;
@@ -484,42 +484,30 @@ class RemoteLRS implements LRSInterface
     private function _queryStatementsRequestParams($query) {
         $result = array();
 
-        foreach (array('agent') as $k) {
-            if (isset($query[$k])) {
-                $result[$k] = json_encode($query[$k]->asVersion($this->version));
-            }
+        if (isset($query['agent'])) {
+            $result['agent'] = json_encode($query['agent']->asVersion($this->version));
         }
-        foreach (
-            array(
-                'verb',
-                'activity',
-            ) as $k
-        ) {
+
+        $identifiables = ['verb', 'activity'];
+        foreach ($identifiables as $k) {
             if (isset($query[$k])) {
                 $result[$k] = $query[$k]->getId();
             }
         }
-        foreach (
-            array(
-                'ascending',
-                'related_activities',
-                'related_agents',
-                'attachments',
-            ) as $k
-        ) {
+
+        $arguments = ['ascending', 'related_activities', 'related_agents', 'attachments'];
+        foreach ($arguments as $k) {
             if (isset($query[$k])) {
                 $result[$k] = $query[$k] ? 'true' : 'false';
             }
         }
-        foreach (
-            array(
-                'registration',
-                'since',
-                'until',
-                'limit',
-                'format',
-            ) as $k
-        ) {
+
+        $content = [
+            'registration', 'since',
+            'until', 'limit',
+            'format'
+        ];
+        foreach ($content as $k) {
             if (isset($query[$k])) {
                 $result[$k] = $query[$k];
             }
@@ -632,7 +620,6 @@ class RemoteLRS implements LRSInterface
                 'agent'      => json_encode($agent->asVersion($this->version)),
                 'stateId'    => $id,
             ),
-            'ignore404' => true,
         );
         if (func_num_args() > 3) {
             $options = func_get_arg(3);
@@ -831,8 +818,7 @@ class RemoteLRS implements LRSInterface
                 'params' => array(
                     'activityId' => $activity->getId(),
                     'profileId'  => $id,
-                ),
-                'ignore404' => true,
+                )
             )
         );
 
@@ -924,6 +910,7 @@ class RemoteLRS implements LRSInterface
                     'activityId' => $activity->getId(),
                     'profileId'  => $id,
                 ),
+                'ignore404' => true
             )
         );
 
@@ -933,7 +920,9 @@ class RemoteLRS implements LRSInterface
     public function retrieveActivity($activityid) {
         $headers = array('Accept-language: *');
         if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-            $headers = 'Accept-language: ' . $_SERVER['HTTP_ACCEPT_LANGUAGE'] . ', *';
+            $headers = [
+                'Accept-language' => $_SERVER['HTTP_ACCEPT_LANGUAGE'] . ', *'
+            ];
         }
 
         $response = $this->sendRequest(
@@ -996,7 +985,7 @@ class RemoteLRS implements LRSInterface
                     'agent'     => json_encode($agent->asVersion($this->version)),
                     'profileId' => $id,
                 ),
-                'ignore404' => true,
+                'ignore404' => true
             )
         );
 

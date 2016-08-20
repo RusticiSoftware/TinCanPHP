@@ -44,24 +44,21 @@ class ActivityTest extends \PHPUnit_Framework_TestCase {
 
     public function testFromJSONInvalidNull() {
         $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
+            'TinCan\JSONParseErrorException'
         );
         $obj = Activity::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
         $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
+            'TinCan\JSONParseErrorException'
         );
         $obj = Activity::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
         $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_SYNTAX
+            'TinCan\JSONParseErrorException'
         );
         $obj = Activity::fromJSON('{id:"some value"}');
     }

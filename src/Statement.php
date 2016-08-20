@@ -174,10 +174,8 @@ class Statement extends StatementBase
                 if (! $cert) {
                     throw new \Exception('Unable to read certificate for x5c inclusion: ' . openssl_error_string());
                 }
-
-                if (! openssl_x509_export($cert, $x5c, true)) {
-                    throw new \Exception('Unable to export certificate for x5c inclusion: ' . openssl_error_string());
-                }
+                
+                openssl_x509_export($cert, $x5c, true);
 
                 $x5c = preg_replace(
                     array(
@@ -209,82 +207,22 @@ class Statement extends StatementBase
         $this->addAttachment($attachment);
     }
 
-    public function verify($options = array()) {
-        if (! isset($options['version'])) {
-            $options['version'] = Version::latest();
-        }
-
-        $signatureAttachment = null;
-        $signatureIndex = 0;
-
-        foreach ($this->getAttachments() as $attachment) {
-            if ($attachment->getUsageType() === self::SIGNATURE_USAGE_TYPE) {
-                $signatureAttachment = $attachment;
-                break;
-            }
-            $signatureIndex++;
-        }
-        if ($signatureAttachment === null) {
-            return array('success' => false, 'reason' => "Unable to locate signature attachment (usage type)");
-        }
-
-        try {
-            $jws = JWS::load($signatureAttachment->getContent());
-        }
-        catch (\InvalidArgumentException $e) {
-            return array('success' => false, 'reason' => 'Failed to load JWS: ' . $e);
-        }
-
-        $header = $jws->getHeader();
-
+    public static function validateNameOfRSAlgorithm($algorithm)
+    {
         //
         // there is a JWS spec security issue with allowing non-RS algorithms
         // to be specified and it is against the Tin Can spec anyways so we
         // want to fail hard on non-RS algorithms
         //
-        if (! in_array($header['alg'], array('RS256', 'RS384', 'RS512'), true)) {
-            throw new \InvalidArgumentException("Refusing to verify signature: Invalid signing algorithm ('" . $options['algorithm'] . "')");
+        if (in_array($algorithm, array('RS256', 'RS384', 'RS512'), true)) {
+            return true;
+        } else {
+            throw new \InvalidArgumentException("Refusing to verify signature: Invalid signing algorithm ('" . $algorithm . "')");
         }
+    }
 
-        if (isset($options['publicKey'])) {
-            $publicKeyFile = $options['publicKey'];
-        }
-        else if (isset($header['x5c'])) {
-            $cert = "-----BEGIN CERTIFICATE-----\r\n" . chunk_split($header['x5c'][0], 64, "\r\n") . "-----END CERTIFICATE-----\r\n";
-            $cert = openssl_x509_read($cert);
-            if (! $cert) {
-                return array('success' => false, 'reason' => 'failed to read cert in x5c: ' . openssl_error_string());
-            }
-            $publicKeyFile = openssl_pkey_get_public($cert);
-            if (! $publicKeyFile) {
-                return array('success' => false, 'reason' => 'x5c failed to provide public key: ' . openssl_error_string());
-            }
-        }
-        else {
-            return array('success' => false, 'reason' => 'No public key found or provided for verification');
-        }
-
-        if (! $jws->verify($publicKeyFile)) {
-            return array('success' => false, 'reason' => 'Failed to verify signature');
-        }
-
-        $payload = $jws->getPayload();
-
-        //
-        // serializing this statement as if it was going to be
-        // made into a signature should provide us with what we
-        // can expect in the payload, if the two don't match then
-        // the signature isn't valid, it also gives us a clone
-        // that we can then manipulate without affecting the
-        // original instance
-        //
-        // use the version from the payload as it indicates the
-        // version in use when the statement was serialized to
-        // begin with
-        //
-        $version = $payload['version'] ? $payload['version'] : Version::latest();
-        $serialization = $this->serializeForSignature($version);
-
+    public static function sanitizeSerializedInfo(array $serialization, array $payload, $signatureIndex)
+    {
         //
         // remove the signature attachment before comparing the
         // serializations, if it was the only attachment and the
@@ -334,6 +272,77 @@ class Statement extends StatementBase
         if (! isset($payload['timestamp'])) {
             unset($serialization['timestamp']);
         }
+        return $serialization;
+    }
+
+    public function verify($options = array()) {
+        if (! isset($options['version'])) {
+            $options['version'] = Version::latest();
+        }
+
+        $signatureAttachment = null;
+        $signatureIndex = 0;
+
+        foreach ($this->getAttachments() as $key => $attachment) {
+            if ($attachment->getUsageType() === self::SIGNATURE_USAGE_TYPE) {
+                $signatureAttachment = $attachment;
+                $signatureIndex = $key;
+                break;
+            }
+        }
+        if ($signatureAttachment === null) {
+            return array('success' => false, 'reason' => "Unable to locate signature attachment (usage type)");
+        }
+
+        try {
+            $jws = JWS::load($signatureAttachment->getContent());
+        }
+        catch (\InvalidArgumentException $e) {
+            return array('success' => false, 'reason' => 'Failed to load JWS: ' . $e);
+        }
+
+        $header = $jws->getHeader();
+
+        self::validateNameOfRSAlgorithm($header['alg']);
+
+        if (isset($options['publicKey'])) {
+            $publicKeyFile = $options['publicKey'];
+        }
+        elseif (isset($header['x5c'])) {
+            $cert = "-----BEGIN CERTIFICATE-----\r\n" . chunk_split($header['x5c'][0], 64, "\r\n") . "-----END CERTIFICATE-----\r\n";
+            $cert = openssl_x509_read($cert);
+            if (! $cert) {
+                return array('success' => false, 'reason' => 'failed to read cert in x5c: ' . openssl_error_string());
+            }
+            
+            $publicKeyFile = openssl_pkey_get_public($cert);
+        }
+        else {
+            return array('success' => false, 'reason' => 'No public key found or provided for verification');
+        }
+
+        if (! $jws->verify($publicKeyFile)) {
+            return array('success' => false, 'reason' => 'Failed to verify signature');
+        }
+
+        $payload = $jws->getPayload();
+
+        //
+        // serializing this statement as if it was going to be
+        // made into a signature should provide us with what we
+        // can expect in the payload, if the two don't match then
+        // the signature isn't valid, it also gives us a clone
+        // that we can then manipulate without affecting the
+        // original instance
+        //
+        // use the version from the payload as it indicates the
+        // version in use when the statement was serialized to
+        // begin with
+        //
+        $version = $payload['version'] ? $payload['version'] : Version::latest();
+        $serialization = $this->serializeForSignature($version);
+
+        $serialization = self::sanitizeSerializedInfo($serialization, $payload, $signatureIndex);
 
         //
         // now we can construct an object from both the payload and the

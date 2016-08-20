@@ -100,6 +100,7 @@ class Score implements VersionableInterface, ComparableInterface
                 sprintf("Value must be between %s and %s", $this->min, $this->max)
             );
         }
+        return true;
     }
 
     /**

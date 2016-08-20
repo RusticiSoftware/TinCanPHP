@@ -15,22 +15,24 @@
     limitations under the License.
 */
 
-namespace TinCan;
+namespace TinCanTest;
 
-trait FromJSONTrait
-{
-    public static function fromJSON($jsonStr) {
-        //
-        // 2nd arg as true means return value is an assoc. array rather than object
-        //
-        $cfg = json_decode($jsonStr, true);
+use TinCan\AgentProfile;
+use TinCan\Agent;
+use TinCan\Group;
 
-        if (is_null($cfg)) {
-            $err = json_last_error();
-            throw new JSONParseErrorException($cfg, $err, json_last_error_msg());
-        }
-        $called_class = get_called_class();
-        return new $called_class($cfg);
-    }
+class AgentProfileTest extends \PHPUnit_Framework_TestCase {
+
+    public function testSetAgent()
+    {
+        $profile = new AgentProfile();
+        $profile->setAgent(['mbox' => COMMON_MBOX]);
+        $this->assertInstanceOf('TinCan\Agent', $profile->getAgent());
+
+        $group = new Group();
+
+        $profile->setAgent(['objectType' => 'Group']);
+        $this->assertInstanceOf('TinCan\Group', $profile->getAgent());
+    }    
 
 }

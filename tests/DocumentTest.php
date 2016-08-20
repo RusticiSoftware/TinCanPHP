@@ -15,22 +15,25 @@
     limitations under the License.
 */
 
-namespace TinCan;
+namespace TinCanTest;
 
-trait FromJSONTrait
+use TinCan\Document;
+
+class StubDocument extends Document
 {
-    public static function fromJSON($jsonStr) {
-        //
-        // 2nd arg as true means return value is an assoc. array rather than object
-        //
-        $cfg = json_decode($jsonStr, true);
 
-        if (is_null($cfg)) {
-            $err = json_last_error();
-            throw new JSONParseErrorException($cfg, $err, json_last_error_msg());
-        }
-        $called_class = get_called_class();
-        return new $called_class($cfg);
+}
+
+class DocumentTest extends \PHPUnit_Framework_TestCase {
+
+	public function testExceptionOnInvalidDateTime()
+    {
+    	$this->setExpectedException(
+            "InvalidArgumentException",
+            'type of arg1 must be string or DateTime'
+        );
+
+    	$obj = new StubDocument;
+    	$obj->setTimestamp(1);
     }
-
 }

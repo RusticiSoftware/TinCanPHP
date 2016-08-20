@@ -30,4 +30,16 @@ class LRSResponse
         $this->content = $content;
         $this->httpResponse = $httpResponse;
     }
+
+    public static function fromRemoteLRSResponse(array $response, array $options, $content) {
+        $success = false;
+
+        if (($response['status'] >= 200 && $response['status'] < 300) || ($response['status'] === 404 && isset($options['ignore404']) && $options['ignore404'])) {
+                $success = true;
+        }
+        elseif ($response['status'] >= 300 && $response['status'] < 400) {
+                $content = "Unsupported status code: " . $response['status'] . " (LRS should not redirect)";
+        }
+        return new LRSResponse($success, $content, $response);
+    }
 }
