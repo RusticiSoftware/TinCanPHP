@@ -139,7 +139,7 @@ class RemoteLRS implements LRSInterface
                 $content = "Request failed: $php_errormsg";
             }
         }
-        catch (ErrorException $ex) {
+        catch (\ErrorException $ex) {
             $content = "Request failed: $ex";
         }
 
