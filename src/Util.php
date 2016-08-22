@@ -72,7 +72,7 @@ class Util
         $microseconds = sprintf('%06d', ($time - floor($time)) * 1000000);
         $millseconds = round($microseconds, -3)/1000;
         $millsecondsStr = str_pad($millseconds, 3, '0', STR_PAD_LEFT);
-        $date = (new \DateTime())->format('c');
+        $date = (new \DateTime(null, new \DateTimeZone("UTC")))->format('c');
 
         $position = strrpos($date, '+');
         $date = substr($date,0,$position).'.'.$millsecondsStr.substr($date,$position);

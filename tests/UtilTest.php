@@ -34,6 +34,6 @@ class UtilTest extends \PHPUnit_Framework_TestCase {
         // catch regressions, at least more than will be accepted by an LRS which is really
         // ultimately what we want in our tests
         //
-        $this->assertRegExp('/\d\d\d\d-[01]\d-[0123]\dT[012]\d:[012345]\d:[012345]\d\.\d\d\d[-+]\d\d:\d\d/', $result);
+        $this->assertRegExp('/\d\d\d\d-[01]\d-[0123]\dT[012]\d:[012345]\d:[012345]\d\.\d\d\d\+00:00/', $result);
     }
 }
