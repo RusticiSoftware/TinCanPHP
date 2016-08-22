@@ -205,16 +205,15 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
                 ])
             ]
         );
-        if ($saveResponse->success) {
-            $response = $lrs->retrieveStatement($saveResponse->content->getId());
+        if (! $saveResponse->success) {
+            $this->fail("save statement setup failed: " . $saveResponse->content);
+        }
 
-            $this->assertInstanceOf('TinCan\LRSResponse', $response);
-            $this->assertTrue($response->success);
-            $this->assertInstanceOf('TinCan\Statement', $response->content);
-        }
-        else {
-            // TODO: skipped? throw?
-        }
+        $response = $lrs->retrieveStatement($saveResponse->content->getId());
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertTrue($response->success);
+        $this->assertInstanceOf('TinCan\Statement', $response->content);
     }
 
     public function testRetrieveStatementWithAttachments() {
@@ -243,6 +242,9 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
             ]
         );
         $this->assertTrue($saveResponse->success, 'save succeeded');
+        if (! $saveResponse->success) {
+            $this->fail("save statement setup failed: " . $saveResponse->content);
+        }
 
         $response = $lrs->retrieveStatement($saveResponse->content->getId(), [ 'attachments' => true ]);
 
@@ -269,6 +271,10 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
                 ])
             ]
         );
+        if (! $saveResponse->success) {
+            $this->fail("save statement setup failed: " . $saveResponse->content);
+        }
+
         $voidResponse = $lrs->saveStatement(
             [
                 'actor' => [
@@ -280,6 +286,10 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
                 ])
             ]
         );
+        if (! $voidResponse->success) {
+            $this->fail("void statement setup failed: " . $voidResponse->content);
+        }
+
         $retrieveResponse = $lrs->retrieveVoidedStatement($saveResponse->content->getId());
 
         $this->assertInstanceOf('TinCan\LRSResponse', $retrieveResponse);
@@ -308,41 +318,37 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
     public function testMoreStatements() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $queryResponse = $lrs->queryStatements(['limit' => 1]);
-
-        if ($queryResponse->success) {
-            if (! $queryResponse->content->getMore()) {
-                $this->markTestSkipped('No more property in StatementsResult (not enough statements in endpoint?)');
-            }
-
-            $response = $lrs->moreStatements($queryResponse->content);
-
-            $this->assertInstanceOf('TinCan\LRSResponse', $response);
-            $this->assertTrue($response->success, 'success');
-            $this->assertInstanceOf('TinCan\StatementsResult', $response->content, 'content');
+        if (! $queryResponse->success) {
+            $this->fail("query statements setup failed: " . $queryResponse->content);
         }
-        else {
-            $this->markTestSkipped('Query to get "more" URL failed');
+
+        if (! $queryResponse->content->getMore()) {
+            $this->markTestSkipped('No more property in StatementsResult (not enough statements in endpoint?)');
         }
+
+        $response = $lrs->moreStatements($queryResponse->content);
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertTrue($response->success, 'success');
+        $this->assertInstanceOf('TinCan\StatementsResult', $response->content, 'content');
     }
 
     public function testMoreStatementsWithAttachments() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $queryResponse = $lrs->queryStatements(['limit' => 1, 'attachments' => true]);
-
-        if ($queryResponse->success) {
-            if (! $queryResponse->content->getMore()) {
-                $this->markTestSkipped('No more property in StatementsResult (not enough statements in endpoint?)');
-            }
-
-            $response = $lrs->moreStatements($queryResponse->content);
-
-            $this->assertInstanceOf('TinCan\LRSResponse', $response);
-            $this->assertTrue($response->success, 'success');
-            $this->assertInstanceOf('TinCan\StatementsResult', $response->content, 'content');
+        if (! $queryResponse->success) {
+            $this->fail("query statements setup failed: " . $queryResponse->content);
         }
-        else {
-            $this->markTestSkipped('Query to get "more" URL failed');
+
+        if (! $queryResponse->content->getMore()) {
+            $this->markTestSkipped('No more property in StatementsResult (not enough statements in endpoint?)');
         }
+
+        $response = $lrs->moreStatements($queryResponse->content);
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertTrue($response->success, 'success');
+        $this->assertInstanceOf('TinCan\StatementsResult', $response->content, 'content');
     }
 
     public function testRetrieveStateIds() {
@@ -424,6 +430,9 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
                 'contentType' => 'application/json',
             ]
         );
+        if (! $response->success) {
+            $this->fail("save activity profile setup failed: " . $response->content);
+        }
 
         $response = $lrs->retrieveActivityProfile(
             new Activity(
@@ -486,6 +495,9 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
             ]
         );
         $response = $lrs->saveStatement($statement);
+        if (! $response->success) {
+            $this->fail("save statement setup failed: " . $response->content);
+        }
 
         $response = $lrs->retrieveActivity($testActivity->getId());
         $this->assertInstanceOf('TinCan\LRSResponse', $response);
