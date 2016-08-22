@@ -984,7 +984,6 @@ class RemoteLRS implements LRSInterface
     }
 
     public function retrieveAgentProfile($agent, $id) {
-        // TODO: Group?
         if (! $agent instanceof Agent) {
             $agent = new Agent($agent);
         }
@@ -1025,7 +1024,6 @@ class RemoteLRS implements LRSInterface
     }
 
     public function saveAgentProfile($agent, $id, $content) {
-        // TODO: Group?
         if (! $agent instanceof Agent) {
             $agent = new Agent($agent);
         }
@@ -1078,7 +1076,6 @@ class RemoteLRS implements LRSInterface
 
     // TODO: Etag?
     public function deleteAgentProfile($agent, $id) {
-        // TODO: Group?
         if (! $agent instanceof Agent) {
             $agent = new Agent($agent);
         }
@@ -1097,7 +1094,6 @@ class RemoteLRS implements LRSInterface
     }
 
     public function retrievePerson($agent) {
-        // TODO: Group?
         if (! $agent instanceof Agent) {
             $agent = new Agent($agent);
         }
