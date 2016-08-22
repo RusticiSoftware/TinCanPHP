@@ -560,6 +560,15 @@ class RemoteLRS implements LRSInterface
         $requestCfg = array(
             'params' => $this->_queryStatementsRequestParams($query),
         );
+        if (func_num_args() > 1) {
+            $options = func_get_arg(1);
+
+            if (isset($options)) {
+                if (isset($options['headers'])) {
+                    $requestCfg['headers'] = $options['headers'];
+                }
+            }
+        }
 
         $response = $this->sendRequest('GET', 'statements', $requestCfg);
 
