@@ -33,6 +33,7 @@ class RemoteLRS implements LRSInterface
     protected $version;
     protected $auth;
     protected $proxy;
+    protected $headers;
     protected $extended;
 
     public function __construct() {
@@ -103,6 +104,12 @@ class RemoteLRS implements LRSInterface
         }
         if (isset($this->proxy)) {
             $http['proxy'] = $this->proxy;
+        }
+
+        if (isset($this->headers) && count($this->headers) > 0) {
+            foreach ($this->headers as $k => $v) {
+                array_push($http['header'], "$k: $v");
+            }
         }
 
         if (isset($options['headers'])) {
@@ -1167,4 +1174,10 @@ class RemoteLRS implements LRSInterface
         return $this;
     }
     public function getProxy() { return $this->proxy; }
+
+    public function setHeaders($value) {
+        $this->headers = $value;
+        return $this;
+    }
+    public function getHeaders() { return $this->headers; }
 }
