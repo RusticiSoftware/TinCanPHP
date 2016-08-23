@@ -34,26 +34,17 @@ class AgentTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testFromJSONInvalidNull() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
-        );
+        $this->setExpectedException('TinCan\JSONParseErrorException');
         $obj = Agent::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
-        );
+        $this->setExpectedException('TinCan\JSONParseErrorException');
         $obj = Agent::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_SYNTAX
-        );
+        $this->setExpectedException('TinCan\JSONParseErrorException');
         $obj = Agent::fromJSON('{name:"some value"}');
     }
 

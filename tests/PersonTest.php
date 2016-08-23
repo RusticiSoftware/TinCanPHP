@@ -33,26 +33,17 @@ class PersonTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testFromJSONInvalidNull() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
-        );
+        $this->setExpectedException('TinCan\JSONParseErrorException');
         $obj = Person::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
-        );
+        $this->setExpectedException('TinCan\JSONParseErrorException');
         $obj = Person::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_SYNTAX
-        );
+        $this->setExpectedException('TinCan\JSONParseErrorException');
         $obj = Person::fromJSON('{name:"some value"}');
     }
 

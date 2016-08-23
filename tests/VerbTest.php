@@ -42,26 +42,17 @@ class VerbTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testFromJSONInvalidNull() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
-        );
+        $this->setExpectedException('TinCan\JSONParseErrorException');
         $obj = Verb::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
-        );
+        $this->setExpectedException('TinCan\JSONParseErrorException');
         $obj = Verb::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_SYNTAX
-        );
+        $this->setExpectedException('TinCan\JSONParseErrorException');
         $obj = Verb::fromJSON('{id:"some value"}');
     }
 
