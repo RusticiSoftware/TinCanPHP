@@ -94,13 +94,15 @@ class RemoteLRS implements LRSInterface
             //
             'ignore_errors' => true,
 
-            'method' => $method,
-            'header' => array(
-                'X-Experience-API-Version: ' . $this->version
-            ),
+            'method' => $method
         );
+
+        $headers = array(
+            'X-Experience-API-Version: ' . $this->version
+        );
+
         if (isset($this->auth)) {
-            array_push($http['header'], 'Authorization: ' . $this->auth);
+            array_push($headers, 'Authorization: ' . $this->auth);
         }
         if (isset($this->proxy)) {
             $http['proxy'] = $this->proxy;
@@ -108,13 +110,13 @@ class RemoteLRS implements LRSInterface
 
         if (isset($this->headers) && count($this->headers) > 0) {
             foreach ($this->headers as $k => $v) {
-                array_push($http['header'], "$k: $v");
+                array_push($headers, "$k: $v");
             }
         }
 
         if (isset($options['headers'])) {
             foreach ($options['headers'] as $k => $v) {
-                array_push($http['header'], "$k: $v");
+                array_push($headers, "$k: $v");
             }
         }
         if (isset($options['params']) && count($options['params']) > 0) {
@@ -124,9 +126,11 @@ class RemoteLRS implements LRSInterface
         if (($method === 'PUT' || $method === 'POST') && isset($options['content'])) {
             $http['content'] = $options['content'];
             if (is_string($options['content'])) {
-                array_push($http['header'], 'Content-length: ' . strlen($options['content']));
+                array_push($headers, 'Content-length: ' . strlen($options['content']));
             }
         }
+
+        $http['header'] = $headers;
 
         $success = false;
 
