@@ -80,6 +80,29 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($response->content, $statement, 'content');
     }
 
+    public function testSaveStatementStamped() {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $statement = new Statement(
+            [
+                'actor' => [
+                    'mbox' => COMMON_MBOX
+                ],
+                'verb' => [
+                    'id' => COMMON_VERB_ID
+                ],
+                'object' => new Activity([
+                    'id' => COMMON_ACTIVITY_ID
+                ])
+            ]
+        );
+        $statement->stamp();
+
+        $response = $lrs->saveStatement($statement);
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertTrue($response->success, 'success');
+        $this->assertSame($response->content, $statement, 'content');
+    }
+
     public function testSaveStatements() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $statements = [
