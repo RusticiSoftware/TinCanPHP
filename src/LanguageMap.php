@@ -20,11 +20,11 @@ namespace TinCan;
 class LanguageMap extends Map
 {
     public function getNegotiatedLanguageString ($acceptLanguage = null) {
-        $negotiator = new \Negotiation\Negotiator();
+        $negotiator = new \Negotiation\LanguageNegotiator();
         if ($acceptLanguage === null) {
             $acceptLanguage = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE']. ', *' : '*';
         }
-        $availableLanguages = array_keys ($this->_map);
+        $availableLanguages = array_keys($this->_map);
         $preferredLanguage = $negotiator->getBest($acceptLanguage, $availableLanguages);
 
         return $this->_map[$preferredLanguage->getValue()];
