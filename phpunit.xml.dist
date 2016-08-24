@@ -21,24 +21,18 @@
             </exclude>
         </testsuite>
     </testsuites>
-    
+
     <logging>
-        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"
-            lowUpperBound="50" highLowerBound="80" />
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="true" lowUpperBound="50" highLowerBound="80" />
+        <!--log type="coverage-html" target="doc/coverage" showUncoveredFiles="true" lowUpperBound="50" highLowerBound="80" /-->
     </logging>
 
     <filter>
-        <whitelist addUncoveredFilesFromWhitelist="true">
+        <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">src</directory>
-            <exclude>
-                <directory>doc</directory>
-                <directory>sample</directory>
-                <directory>tests</directory>
-                <directory>vendor</directory>
-            </exclude>
         </whitelist>
     </filter>
-    
+
     <php>
         <const name="COMMON_NAME"            value="Example User" />
         <const name="COMMON_EMAIL"           value="tincanphp@tincanapi.com" />
