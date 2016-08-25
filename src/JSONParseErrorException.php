@@ -25,7 +25,7 @@ class JSONParseErrorException extends \Exception
     private $jsonErrorNumber;
     private $jsonErrorMessage;
 
-    public function __construct($malformedValue, $jsonErrorNumber, $jsonErrorMessage, Exception $previous = null) {
+    public function __construct($malformedValue, $jsonErrorNumber, $jsonErrorMessage, \Exception $previous = null) {
         $this->malformedValue   = $malformedValue;
         $this->jsonErrorNumber  = (int) $jsonErrorNumber;
         $this->jsonErrorMessage = $jsonErrorMessage;
