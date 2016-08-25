@@ -527,6 +527,11 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($testActivity, $response->content, 'retrieved activity');
     }
 
+    public function testRetrieveActivityWithHttpAcceptLanguageHeader() {
+        $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'en-US';
+        $this->testRetrieveActivity();
+    }
+
     public function testRetrieveAgentProfileIds() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->retrieveAgentProfileIds(

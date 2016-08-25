@@ -276,4 +276,26 @@ class ContextActivitiesTest extends \PHPUnit_Framework_TestCase {
         }
         $this->runSignatureCases("TinCan\ContextActivities", $cases);
     }
+
+    /**
+     * @dataProvider invalidListSetterDataProvider
+     */
+    public function testListSetterThrowsInvalidArgumentException($publicMethodName, $invalidValue) {
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'type of arg1 must be Activity, array of Activity properties, or array of Activity/array of Activity properties'
+        );
+        $obj = new ContextActivities();
+        $obj->$publicMethodName($invalidValue);
+    }
+
+    public function invalidListSetterDataProvider() {
+        $invalidValue = 1;
+        return [
+            ["setCategory", $invalidValue],
+            ["setParent", $invalidValue],
+            ["setGrouping", $invalidValue],
+            ["setOther", $invalidValue]
+        ];
+    }
 }

@@ -54,4 +54,20 @@ class VersionTest extends \PHPUnit_Framework_TestCase {
     public function testLatest() {
         $this->assertSame(Version::V101, Version::latest(), "match latest");
     }
+
+    public function testVersionFromString() {
+        $number = '1.0.1';
+        $version = Version::fromString($number);
+
+        $this->assertTrue($version->hasValue($number));
+    }
+
+    public function testInvalidArgumentExceptionIsThrown() {
+        $number = '1.8.01';
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            "Invalid version [$number]"
+        );
+        $version = Version::fromString($number);
+    }
 }

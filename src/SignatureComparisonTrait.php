@@ -68,7 +68,7 @@ trait SignatureComparisonTrait
         }
 
         if (is_object($a) && ! ($b instanceof $a)) {
-            $result['reason'] = "Comparison of $description failed: not a " . get_class($this) . " value";
+            $result['reason'] = "Comparison of $description failed: not a " . get_class($a) . " value";
             return $result;
         }
 

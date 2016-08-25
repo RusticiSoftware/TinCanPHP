@@ -107,6 +107,16 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
         $obj->setId('some invalid id');
     }
 
+    public function testSetStoredInvalidArgumentException() {
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'type of arg1 must be string or DateTime'
+        );
+
+        $obj = new Statement();
+        $obj->setStored(1);
+    }
+
     // TODO: need to loop versions
     public function testAsVersion() {
         $args = [

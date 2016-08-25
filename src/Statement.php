@@ -249,7 +249,7 @@ class Statement extends StatementBase
         if (isset($options['publicKey'])) {
             $publicKeyFile = $options['publicKey'];
         }
-        else if (isset($header['x5c'])) {
+        elseif (isset($header['x5c'])) {
             $cert = "-----BEGIN CERTIFICATE-----\r\n" . chunk_split($header['x5c'][0], 64, "\r\n") . "-----END CERTIFICATE-----\r\n";
             $cert = openssl_x509_read($cert);
             if (! $cert) {

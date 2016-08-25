@@ -359,4 +359,23 @@ class ContextTest extends \PHPUnit_Framework_TestCase {
         ];
         $this->runSignatureCases("TinCan\Context", $cases);
     }
+
+    public function testSetInstructorConvertToGroup() {
+        $obj = new Context();
+        $obj->setInstructor(
+            [
+                'objectType' => 'Group'
+            ]
+        );
+        $this->assertInstanceOf('TinCan\Group', $obj->getInstructor());
+    }
+
+    public function testSetRegistrationInvalidArgumentException() {
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'arg1 must be a UUID'
+        );
+        $obj = new Context();
+        $obj->setRegistration('232....3.3..3./2/2/1m3m3m3');
+    }
 }
