@@ -149,6 +149,9 @@ class GroupTest extends \PHPUnit_Framework_TestCase {
 
         $obj->addMember($common_agent);
         $this->assertEquals([$common_agent], $obj->getMember(), 'member list existing Agent');
+
+        $versioned = $obj->asVersion('1.0.0');
+        $this->assertSame($versioned['member'][0], $common_agent->asVersion('1.0.0'));
     }
 
     public function testCompareWithSignature() {

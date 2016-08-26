@@ -229,7 +229,7 @@ class RemoteLRS implements LRSInterface
                 if ($pair[0] === 'charset') {
                     $result['headers']['contentTypeCharset'] = $pair[1];
                 }
-                else if ($pair[0] === 'boundary') {
+                elseif ($pair[0] === 'boundary') {
                     $result['headers']['contentTypeBoundary'] = $pair[1];
                 }
             }
@@ -246,7 +246,7 @@ class RemoteLRS implements LRSInterface
             if ($part === '') {
                 continue;
             }
-            else if ($part === '--') {
+            elseif ($part === '--') {
                 break;
             }
             list($header, $body) = explode("\r\n\r\n", $part, 2);
@@ -956,7 +956,7 @@ class RemoteLRS implements LRSInterface
     public function retrieveActivity($activityid) {
         $headers = array('Accept-language: *');
         if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-            $headers = 'Accept-language: ' . $_SERVER['HTTP_ACCEPT_LANGUAGE'] . ', *';
+            $headers = array('Accept-language: ' . $_SERVER['HTTP_ACCEPT_LANGUAGE'] . ', *');
         }
 
         $response = $this->sendRequest(

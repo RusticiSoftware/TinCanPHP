@@ -70,6 +70,25 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
         $obj = Statement::fromJSON('{id:"some value"}');
     }
 
+    public function testConstructionFromArrayWithId() {
+        $id = Util::getUUID();
+        $cfg = [
+            'id' => $id,
+            'actor' => [
+                'mbox' => COMMON_MBOX,
+            ],
+            'verb' => [
+                'id' => COMMON_VERB_ID,
+            ],
+            'object' => [
+                'id' => COMMON_ACTIVITY_ID,
+            ],
+        ];
+        $obj = new Statement($cfg);
+
+        $this->assertSame($obj->getId(), $id, 'id');
+    }
+
     public function testStamp() {
         $obj = new Statement();
         $obj->stamp();
@@ -86,6 +105,16 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 
         $obj = new Statement();
         $obj->setId('some invalid id');
+    }
+
+    public function testSetStoredInvalidArgumentException() {
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'type of arg1 must be string or DateTime'
+        );
+
+        $obj = new Statement();
+        $obj->setStored(1);
     }
 
     // TODO: need to loop versions

@@ -46,7 +46,7 @@ trait AsVersionTrait
             if ($value instanceof VersionableInterface) {
                 $value = $value->asVersion($version);
             }
-            else if (is_array($value) && !empty($value)) {
+            elseif (is_array($value) && !empty($value)) {
                 $tmp_value = array();
                 foreach ($value as $element) {
                     if ($element instanceof VersionableInterface) {
