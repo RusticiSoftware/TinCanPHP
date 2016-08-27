@@ -98,26 +98,11 @@ class ScoreTest extends \PHPUnit_Framework_TestCase {
         $this->assertInternalType('float', $score->getScaled());
     }
 
-    public function testGetValueWithoutRawReturnsNull() {
-        $score = new Score;
-        $this->assertNull($score->getValue());
-    }
-
-    public function testGetValueWithoutScaledReturnsRoundedRaw() {
+    public function testGetValueReturnsRoundedRaw() {
         $raw   = 3.92013;
         $score = new Score($raw);
         $this->assertEquals(
             round($raw, Score::DEFAULT_PRECISION),
-            $score->getValue()
-        );
-    }
-
-    public function testGetValueWithScaledReturnsScaledAndRoundedRaw() {
-        $raw    = 3.92013;
-        $scaled = 0.8;
-        $score  = new Score($raw, null, null, $scaled);
-        $this->assertEquals(
-            round($raw * $scaled, Score::DEFAULT_PRECISION),
             $score->getValue()
         );
     }
