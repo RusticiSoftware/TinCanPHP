@@ -72,15 +72,15 @@ class Score implements VersionableInterface, ComparableInterface
      * @param float|array $aRawValue      the score value, may also be an array of properties
      * @param float       $aMin           the score minimum
      * @param float       $aMax           the score maximum
-     * @param float       $aScalingFactor the score scaling factor
+     * @param float       $aScaledValue   the scaled value
      */
-    public function __construct($aRawValue = null, $aMin = null, $aMax = null, $aScalingFactor = null) {
+    public function __construct($aRawValue = null, $aMin = null, $aMax = null, $aScaledValue = null) {
         if (!is_array($aRawValue)) {
             $aRawValue = [
                 'raw'    => $aRawValue,
                 'min'    => $aMin,
                 'max'    => $aMax,
-                'scaled' => $aScalingFactor
+                'scaled' => $aScaledValue
             ];
         }
         $this->_fromArray($aRawValue);
@@ -104,15 +104,9 @@ class Score implements VersionableInterface, ComparableInterface
 
     /**
      * @param  int $aPrecision a rounding precision integer
-     * @return null|float
+     * @return float
      */
     public function getValue($aPrecision = self::DEFAULT_PRECISION) {
-        if (!isset($this->raw)) {
-            return null;
-        }
-        if (isset($this->scaled)) {
-            return round($this->raw * $this->scaled, $aPrecision);
-        }
         return round($this->raw, $aPrecision);
     }
 
