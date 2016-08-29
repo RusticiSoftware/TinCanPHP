@@ -49,128 +49,174 @@ class ScoreTest extends \PHPUnit_Framework_TestCase {
         $this->assertContains('TinCan\AsVersionTrait', class_uses('TinCan\Score'));
     }
 
-    public function testSetScaledThrowsException() {
+    public function testScaled() {
+        $score = new Score;
+        $score->setScaled(0.9);
+
+        $this->assertEquals($score->getScaled(), 0.9);
+        $this->assertInternalType('float', $score->getScaled());
+    }
+
+    public function testSetScaledBelowMin() {
         $this->setExpectedException(
             'InvalidArgumentException',
-            sprintf('Scale must be between %s and %s [5]', Score::SCALE_MIN, Score::SCALE_MAX)
+            sprintf('Value must be greater than or equal to %s [-5]', Score::SCALE_MIN)
+        );
+        $score = new Score;
+        $score->setScaled(-5);
+    }
+
+    public function testSetScaledAboveMax() {
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            sprintf('Value must be less than or equal to %s [5]', Score::SCALE_MAX)
         );
         $score = new Score;
         $score->setScaled(5);
     }
 
-    public function testSetMinThrowsException() {
-        $this->setExpectedException('InvalidArgumentException', 'Min must be less than max');
-        $score = new Score(['max' => 3.7]);
-        $score->setMin(8.1);
+    public function testRaw() {
+        $score = new Score;
+        $score->setRaw(90);
+
+        $this->assertEquals($score->getRaw(), 90);
+        $this->assertInternalType('float', $score->getRaw());
+
+        $score = new Score(['min' => 65, 'max' => 85]);
+        $score->setRaw(75);
+        $this->assertEquals($score->getRaw(), 75, 'between min and max');
+
+        $score = new Score(['min' => 65]);
+        $score->setRaw(65);
+        $this->assertEquals($score->getRaw(), 65, 'same as min');
+
+        $score = new Score(['max' => 65]);
+        $score->setRaw(65);
+        $this->assertEquals($score->getRaw(), 65, 'same as max');
     }
 
-    public function testSetMaxThrowsException() {
-        $this->setExpectedException('InvalidArgumentException', 'Max must be greater than min');
-        $score = new Score(['min' => 5.3, 'max' => 3.7]);
-    }
-
-    public function testSetRawThrowsException() {
-        $score = new Score(['min' => 1.5, 'max' => 4.3]);
+    public function testSetRawBelowMin() {
         $this->setExpectedException(
             'InvalidArgumentException',
-            'Value must be between 1.5 and 4.3'
+            'Value must be greater than or equal to \'min\' (60) [50]'
         );
-        $score->setRaw(1);
+        $score = new Score(['min' => 60]);
+        $score->setRaw(50);
     }
 
-    public function testGetRawReturnsFloat() {
-        $score = new Score('1.5');
-        $this->assertInternalType('float', $score->getRaw());
+    public function testSetRawAboveMax() {
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'Value must be less than or equal to \'max\' (90) [95]'
+        );
+        $score = new Score(['max' => 90]);
+        $score->setRaw(95);
     }
 
-    public function testGetMinReturnsFloat() {
-        $score = new Score(null, '1.5');
-        $this->assertInternalType('float', $score->getMin());
-    }
-
-    public function testGetMaxReturnsFloat() {
-        $score = new Score(null, null, '1.5');
-        $this->assertInternalType('float', $score->getMax());
-    }
-
-    public function testGetScaledReturnsFloat() {
-        $score = new Score(null, null, null, '0.5');
-        $this->assertInternalType('float', $score->getScaled());
-    }
-
-    public function testGetValueWithoutRawReturnsNull() {
+    public function testMin() {
         $score = new Score;
-        $this->assertNull($score->getValue());
+        $score->setMin(9);
+
+        $this->assertEquals($score->getMin(), 9);
+        $this->assertInternalType('float', $score->getMin());
+
+        $score = new Score(['raw' => 65, 'max' => 85]);
+        $score->setMin(35);
+        $this->assertEquals($score->getMin(), 35, 'below raw');
+
+        $score = new Score(['raw' => 35, 'max' => 85]);
+        $score->setMin(35);
+        $this->assertEquals($score->getMin(), 35, 'equal to raw');
     }
 
-    public function testGetValueWithoutScaledReturnsRoundedRaw() {
-        $raw   = 3.92013;
-        $score = new Score($raw);
-        $this->assertEquals(
-            round($raw, Score::DEFAULT_PRECISION),
-            $score->getValue()
+    public function testSetMinAboveRaw() {
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'Value must be less than or equal to \'raw\' (50) [60]'
         );
+        $score = new Score(['raw' => 50]);
+        $score->setMin(60);
     }
 
-    public function testGetValueWithScaledReturnsScaledAndRoundedRaw() {
-        $raw    = 3.92013;
-        $scaled = 0.8;
-        $score  = new Score($raw, null, null, $scaled);
-        $this->assertEquals(
-            round($raw * $scaled, Score::DEFAULT_PRECISION),
-            $score->getValue()
+    public function testSetMinAboveMax() {
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'Value must be less than \'max\' (90) [95]'
         );
+        $score = new Score(['max' => 90]);
+        $score->setMin(95);
     }
 
-    public function testAsVersion() {
-        $args = [
-            'raw'    => '1.5',
-            'min'    => '1.0',
-            'max'    => '2.0',
-            'scaled' => '.95'
-        ];
-        $obj       = new Score($args);
+    public function testMax() {
+        $score = new Score;
+        $score->setMax(96.3);
+
+        $this->assertEquals($score->getMax(), 96.3);
+        $this->assertInternalType('float', $score->getMax());
+
+        $score = new Score(['raw' => 65, 'min' => 35]);
+        $score->setMax(85.4);
+        $this->assertEquals($score->getMax(), 85.4, 'above raw');
+
+        $score = new Score(['raw' => 35, 'min' => 15]);
+        $score->setMax(35);
+        $this->assertEquals($score->getMax(), 35, 'equal to raw');
+    }
+
+    public function testSetMaxBelowRaw() {
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'Value must be greater than or equal to \'raw\' (60) [50]'
+        );
+        $score = new Score(['raw' => 60]);
+        $score->setMax(50);
+    }
+
+    public function testSetMaxBelowMin() {
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'Value must be greater than \'min\' (10) [5]'
+        );
+        $score = new Score(['min' => 10]);
+        $score->setMax(5);
+    }
+
+    /**
+     * @dataProvider asVersionDataProvider
+     */
+    public function testAsVersion($args) {
+        $obj = new Score($args);
         $versioned = $obj->asVersion('1.0.0');
 
         $this->assertEquals($versioned, $args, "version: 1.0.0");
     }
 
-    public function testAsVersionEmpty() {
-        $obj       = new Score([]);
-        $versioned = $obj->asVersion('1.0.0');
-
-        $this->assertEquals($versioned, [], "version: 1.0.0");
-    }
-
-    public function testAsVersionSingleZero() {
-        $args = [
-            'raw' => 0
+    public function asVersionDataProvider() {
+        return [
+            'basic'          => [
+                [
+                    'raw'    => '1.5',
+                    'min'    => '1.0',
+                    'max'    => '2.0',
+                    'scaled' => '.95'
+                ]
+            ],
+            'empty'          => [[]],
+            'zero raw'       => [
+                [ 'raw' => 0 ]
+            ],
+            'zero scaled'    => [
+                [ 'scaled' => 0 ]
+            ],
+            'multiple zeros' => [
+                [
+                    'raw'    => '0',
+                    'min'    => '-1.0',
+                    'max'    => 2.0,
+                    'scaled' => 0
+                ]
+            ]
         ];
-        $obj       = new Score($args);
-        $versioned = $obj->asVersion('1.0.0');
-
-        $this->assertEquals($versioned, $args, "version: 1.0.0");
-
-        $args = [
-            'scaled' => 0
-        ];
-        $obj       = new Score($args);
-        $versioned = $obj->asVersion('1.0.0');
-
-        $this->assertEquals($versioned, $args, "version: 1.0.0");
-    }
-
-    public function testAsVersionWithZeroScores() {
-        $args = [
-            'raw'    => '0',
-            'min'    => '-1.0',
-            'max'    => 2.0,
-            'scaled' => 0
-        ];
-        $obj       = new Score($args);
-        $versioned = $obj->asVersion('1.0.0');
-
-        $this->assertEquals($versioned, $args, "version: 1.0.0");
     }
 
     public function testCompareWithSignature() {
@@ -250,20 +296,10 @@ class ScoreTest extends \PHPUnit_Framework_TestCase {
             [
                 'description' => 'full: max mismatch',
                 'objArgs'     => $full,
-                'sigArgs'     => array_replace($full, ['max' => 10]),
+                'sigArgs'     => array_replace($full, ['max' => 98]),
                 'reason'      => 'Comparison of max failed: value is not the same'
             ]
         ];
         $this->runSignatureCases("TinCan\Score", $cases);
-    }
-
-    public function testZeroValue() {
-        $args = [
-            'raw' => 0
-        ];
-        $obj = new Score($args);
-        $versioned = $obj->asVersion('1.0.0');
-
-        $this->assertEquals($versioned, $args, "raw with 0 as value");
     }
 }
