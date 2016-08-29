@@ -57,7 +57,7 @@ class LanguageMapTest extends \PHPUnit_Framework_TestCase {
     public function testGetNegotiatedLanguageString() {
         $langs = [
             'en-GB' => 'petrol',
-            'en-US' => 'gas'
+            'en-US' => 'gasoline'
         ];
         $obj = new LanguageMap($langs);
 
@@ -84,5 +84,27 @@ class LanguageMapTest extends \PHPUnit_Framework_TestCase {
         else {
             unset($_SERVER['HTTP_ACCEPT_LANGUAGE']);
         }
+
+        $langs = [
+            'en-US' => 'gasoline'
+        ];
+        $obj = new LanguageMap($langs);
+
+        $this->assertEquals($obj->getNegotiatedLanguageString('en'), $langs['en-US'], 'from prefix');
+
+        $langs = [
+            'fr-FR' => 'essence'
+        ];
+        $obj = new LanguageMap($langs);
+
+        $this->assertEquals($obj->getNegotiatedLanguageString('en, *'), $langs['fr-FR'], 'no matched');
+
+        $langs = [
+            'fr-FR' => 'essence',
+            'und' => 'fuel',
+        ];
+        $obj = new LanguageMap($langs);
+
+        $this->assertEquals($obj->getNegotiatedLanguageString('en'), $langs['und'], 'no matched with und');
     }
 }
