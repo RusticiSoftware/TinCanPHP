@@ -1,4 +1,4 @@
-A PHP library for implementing Tin Can API.
+A PHP library for implementing the Experience API (Tin Can API).
 
 [![Build Status](https://travis-ci.org/RusticiSoftware/TinCanPHP.png)](https://travis-ci.org/RusticiSoftware/TinCanPHP)
 [![Latest Stable Version](https://poser.pugx.org/rusticisoftware/tincan/v/stable)](https://packagist.org/packages/rusticisoftware/tincan)
