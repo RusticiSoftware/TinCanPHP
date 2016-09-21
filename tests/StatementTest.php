@@ -47,26 +47,17 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testFromJSONInvalidNull() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
-        );
+        $this->setExpectedException('TinCan\JSONParseErrorException');
         $obj = Statement::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
-        );
+        $this->setExpectedException('TinCan\JSONParseErrorException');
         $obj = Statement::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_SYNTAX
-        );
+        $this->setExpectedException('TinCan\JSONParseErrorException');
         $obj = Statement::fromJSON('{id:"some value"}');
     }
 
@@ -793,7 +784,11 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
         $result = $obj->verify();
 
         $this->assertFalse($result['success'], 'success');
-        $this->assertStringStartsWith('Failed to load JWS: exception \'InvalidArgumentException\' with message \'The token "not a signature" is an invalid JWS\'', $result['reason'], 'reason');
+        $this->assertStringStartsWith(
+            'Failed to load JWS',
+            $result['reason'],
+            'reason'
+        );
     }
 
     public function testVerifyInvalidX5cErrorToException() {
