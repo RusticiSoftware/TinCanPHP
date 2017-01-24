@@ -338,6 +338,14 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('TinCan\StatementsResult', $response->content);
     }
 
+    public function testQueryStatementsWithHeader() {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $response = $lrs->queryStatements(['limit' => 4], ['X-Experience-API-Version' => '99.99.99']);
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertFalse($response->success, 'success');
+        $this->assertEquals($response->httpResponse['status'], 400);
+    }
+
     public function testMoreStatements() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $queryResponse = $lrs->queryStatements(['limit' => 1]);
