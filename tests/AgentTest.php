@@ -69,6 +69,20 @@ class AgentTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($versioned, $args, "serialized version matches corrected");
     }
 
+    // TODO: need to loop versions
+    public function testAsVersionOpenid() {
+        $args      = [
+            'openid' => COMMON_OPENID
+        ];
+
+        $obj       = Agent::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Agent';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
     public function testAsVersionMboxSha1() {
         $args      = [
             'mbox_sha1sum' => COMMON_MBOX_SHA1
@@ -201,6 +215,9 @@ class AgentTest extends \PHPUnit_Framework_TestCase {
 
         $obj = new Agent(['mbox' => COMMON_MBOX]);
         $this->assertSame($obj->getMbox_sha1sum(), COMMON_MBOX_SHA1, 'sha1 from mbox');
+
+        $obj = new Agent();
+        $this->assertSame($obj->getMbox_sha1sum(), false, 'no mbox at all');
     }
 
     public function testCompareWithSignature() {
@@ -298,6 +315,18 @@ class AgentTest extends \PHPUnit_Framework_TestCase {
                 'objArgs'     => ['account' => $acct1 ],
                 'sigArgs'     => ['account' => $acct2 ],
                 'reason'      => 'Comparison of account failed: Comparison of name failed: value is not the same'
+            ],
+            [
+                'description' => 'missing object account',
+                'objArgs'     => [],
+                'sigArgs'     => ['account' => $acct2 ],
+                'reason'      => 'Comparison of account failed: value not in this'
+            ],
+            [
+                'description' => 'missing signature account',
+                'objArgs'     => ['account' => $acct1 ],
+                'sigArgs'     => [],
+                'reason'      => 'Comparison of account failed: value not in signature'
             ],
 
             //

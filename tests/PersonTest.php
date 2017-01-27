@@ -59,6 +59,9 @@ class PersonTest extends \PHPUnit_Framework_TestCase {
         $obj = new Person(
             [
                 'mbox' => array(COMMON_MBOX),
+                'name' => COMMON_NAME,
+                'openid' => COMMON_OPENID,
+                'mbox_sha1sum' => COMMON_MBOX_SHA1,
                 'account' => array(
                     array(
                         'name' => COMMON_ACCT_NAME,
@@ -73,6 +76,9 @@ class PersonTest extends \PHPUnit_Framework_TestCase {
             [
                 'objectType' => 'Person',
                 'mbox' => array(COMMON_MBOX),
+                'name' => COMMON_NAME,
+                'openid' => COMMON_OPENID,
+                'mbox_sha1sum' => COMMON_MBOX_SHA1,
                 'account' => array(
                     array(
                         'name' => COMMON_ACCT_NAME,

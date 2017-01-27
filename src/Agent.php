@@ -54,14 +54,11 @@ class Agent implements VersionableInterface, StatementTargetInterface, Comparabl
             if (! empty($versioned_acct)) {
                 $result['account'] = $versioned_acct;
             }
-        }
-        elseif (isset($this->mbox_sha1sum)) {
+        } else if (isset($this->mbox_sha1sum)) {
             $result['mbox_sha1sum'] = $this->mbox_sha1sum;
-        }
-        elseif (isset($this->mbox)) {
+        } else if (isset($this->mbox)) {
             $result['mbox'] = $this->mbox;
-        }
-        elseif (isset($this->openid)) {
+        } else if (isset($this->openid)) {
             $result['openid'] = $this->openid;
         }
 
@@ -149,6 +146,8 @@ class Agent implements VersionableInterface, StatementTargetInterface, Comparabl
         if (isset($this->mbox)) {
             return sha1($this->mbox);
         }
+
+        return false;
     }
     public function setOpenid($value) { $this->openid = $value; return $this; }
     public function getOpenid() { return $this->openid; }
