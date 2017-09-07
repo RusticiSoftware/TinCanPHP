@@ -15,10 +15,12 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
 use TinCan\AgentAccount;
 
-class AgentAccountTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+class AgentAccountTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     const HOMEPAGE = 'http://tincanapi.com';
     const NAME = 'test';
@@ -57,11 +59,36 @@ class AgentAccountTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testAsVersion() {
-        $args      = ['name' => COMMON_ACCT_NAME, 'homePage' => COMMON_ACCT_HOMEPAGE];
-        $obj       = new AgentAccount($args);
+        $args      = [
+            'name' => COMMON_ACCT_NAME,
+            'homePage' => COMMON_ACCT_HOMEPAGE
+        ];
+
+        $obj       = AgentAccount::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
         $versioned = $obj->asVersion('1.0.0');
 
-        $this->assertEquals($versioned, $args, "all properties: test");
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = AgentAccount::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionEmptyStrings() {
+        $args      = [
+            'name' => '',
+            'homePage' => ''
+        ];
+
+        $obj       = AgentAccount::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
     }
 
     public function testCompareWithSignature() {

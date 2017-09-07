@@ -15,21 +15,25 @@
     limitations under the License.
 */
 
-class UtilTest extends PHPUnit_Framework_TestCase {
-    public function testGetUUID() {
-        $result = TinCan\Util::getUUID();
+namespace TinCanTest;
 
-        $this->assertRegExp(TinCan\Util::UUID_REGEX, $result);
+use TinCan\Util;
+
+class UtilTest extends \PHPUnit_Framework_TestCase {
+    public function testGetUUID() {
+        $result = Util::getUUID();
+
+        $this->assertRegExp(Util::UUID_REGEX, $result);
     }
 
     public function testGetTimestamp() {
-        $result = TinCan\Util::getTimestamp();
+        $result = Util::getTimestamp();
 
         //
         // this isn't intended to match all ISO8601 just *our* format of it, so it should
         // catch regressions, at least more than will be accepted by an LRS which is really
         // ultimately what we want in our tests
         //
-        $this->assertRegExp('/\d\d\d\d-[01]\d-[0123]\dT[012]\d:[012345]\d:[012345]\d\.\d\d\d[-+]\d\d:\d\d/', $result);
+        $this->assertRegExp('/\d\d\d\d-[01]\d-[0123]\dT[012]\d:[012345]\d:[012345]\d\.\d\d\d\+00:00/', $result);
     }
 }

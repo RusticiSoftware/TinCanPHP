@@ -15,10 +15,18 @@
     limitations under the License.
 */
 
-use TinCan\SubStatement;
+namespace TinCanTest;
 
-class SubStatementTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+use TinCan\Activity;
+use TinCan\Agent;
+use TinCan\Context;
+use TinCan\Result;
+use TinCan\SubStatement;
+use TinCan\Util;
+use TinCan\Verb;
+
+class SubStatementTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     public function testInstantiation() {
         $obj = new SubStatement();
@@ -33,10 +41,9 @@ class SubStatementTest extends PHPUnit_Framework_TestCase {
     // TODO: need to loop versions
     public function testAsVersion() {
         $args = [
-            'objectType' => 'SubStatement',
+            'timestamp' => '2015-01-28T14:23:37.159Z',
             'actor' => [
                 'mbox' => COMMON_MBOX,
-                'objectType' => 'Agent',
             ],
             'verb' => [
                 'id' => COMMON_VERB_ID,
@@ -45,16 +52,15 @@ class SubStatementTest extends PHPUnit_Framework_TestCase {
                 ]
             ],
             'object' => [
-                'objectType' => 'Activity',
                 'id' => COMMON_ACTIVITY_ID,
                 'definition' => [
                     'type' => 'Invalid type',
                     'name' => [
                         'en-US' => 'Test',
                     ],
-                    //'description' => [
-                        //'en-US' => 'Test description',
-                    //],
+                    'description' => [
+                        'en-US' => 'Test description',
+                    ],
                     'extensions' => [
                         'http://someuri' => 'some value'
                     ],
@@ -64,7 +70,6 @@ class SubStatementTest extends PHPUnit_Framework_TestCase {
                 'contextActivities' => [
                     'parent' => [
                         [
-                            'objectType' => 'Activity',
                             'id' => COMMON_ACTIVITY_ID . '/1',
                             'definition' => [
                                 'name' => [
@@ -74,7 +79,7 @@ class SubStatementTest extends PHPUnit_Framework_TestCase {
                         ]
                     ],
                 ],
-                'registration' => TinCan\Util::getUUID(),
+                'registration' => Util::getUUID(),
             ],
             'result' => [
                 'completion' => true,
@@ -87,42 +92,142 @@ class SubStatementTest extends PHPUnit_Framework_TestCase {
                 ]
             ],
         ];
-        $obj = new SubStatement($args);
 
-        $obj->getTarget()->getDefinition()->getDescription()->set('en-ES', 'Testo descriptiono');
-        $args['object']['definition']['description'] = ['en-ES' => 'Testo descriptiono'];
-
-        $obj->getTarget()->getDefinition()->getName()->unset('en-US');
-        unset($args['object']['definition']['name']);
+        $obj = SubStatement::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
 
         $versioned = $obj->asVersion('1.0.0');
 
-        $this->assertEquals($args, $versioned, 'version 1.0.0');
+        $args['objectType'] = 'SubStatement';
+        $args['timestamp'] = $obj->getTimestamp();
+        $args['actor']['objectType'] = 'Agent';
+        $args['object']['objectType'] = 'Activity';
+        $args['context']['contextActivities']['parent'][0]['objectType'] = 'Activity';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
     }
 
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = SubStatement::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'SubStatement';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmptySubObjects() {
+        $args = [
+            'actor' => [
+                'mbox' => COMMON_MBOX,
+            ],
+            'verb' => [
+                'id' => COMMON_VERB_ID,
+                'display' => []
+            ],
+            'object' => [
+                'id' => COMMON_ACTIVITY_ID,
+                'definition' => [
+                    'type' => 'Invalid type',
+                    'name' => [],
+                    'description' => [],
+                    'extensions' => [],
+                ]
+            ],
+            'context' => [
+                'contextActivities' => [
+                    'parent' => [],
+                ],
+                'registration' => Util::getUUID(),
+            ],
+            'result' => [
+                'completion' => true,
+                'success' => false,
+                'score' => []
+            ],
+        ];
+
+        $obj = SubStatement::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'SubStatement';
+        $args['actor']['objectType'] = 'Agent';
+        $args['object']['objectType'] = 'Activity';
+        unset($args['verb']['display']);
+        unset($args['object']['definition']['name']);
+        unset($args['object']['definition']['description']);
+        unset($args['object']['definition']['extensions']);
+        unset($args['context']['contextActivities']);
+        unset($args['result']['score']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionSubObjectWithEmptyValue() {
+        $args = [
+            'actor' => [
+                'mbox' => COMMON_MBOX,
+            ],
+            'verb' => [
+                'id' => COMMON_VERB_ID,
+            ],
+            'object' => [
+                'id' => COMMON_ACTIVITY_ID,
+                'definition' => [
+                    'type' => 'Invalid type',
+                    'name' => [
+                        'en-US' => ''
+                    ],
+                ]
+            ],
+            'context' => [
+                'contextActivities' => [],
+            ],
+            'result' => [
+                'completion' => true,
+                'success' => false,
+                'score' => [
+                    'raw' => 0
+                ]
+            ]
+        ];
+
+        $obj = SubStatement::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'SubStatement';
+        $args['actor']['objectType'] = 'Agent';
+        $args['object']['objectType'] = 'Activity';
+        unset($args['context']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+
     public function testCompareWithSignature() {
-        $actor1 = new TinCan\Agent(
+        $actor1 = new Agent(
             [ 'mbox' => COMMON_MBOX ]
         );
-        $actor2 = new TinCan\Agent(
+        $actor2 = new Agent(
             [ 'account' => [ 'homePage' => COMMON_ACCT_HOMEPAGE, 'name' => COMMON_ACCT_NAME ]]
         );
-        $verb1 = new TinCan\Verb(
+        $verb1 = new Verb(
             [ 'id' => COMMON_VERB_ID ]
         );
-        $verb2 = new TinCan\Verb(
+        $verb2 = new Verb(
             [ 'id' => COMMON_VERB_ID . '/2' ]
         );
-        $activity1 = new TinCan\Activity(
+        $activity1 = new Activity(
             [ 'id' => COMMON_ACTIVITY_ID ]
         );
-        $activity2 = new TinCan\Activity(
+        $activity2 = new Activity(
             [ 'id' => COMMON_ACTIVITY_ID . '/2' ]
         );
-        $context1 = new TinCan\Context(
-            [ 'registration' => TinCan\Util::getUUID() ]
+        $context1 = new Context(
+            [ 'registration' => Util::getUUID() ]
         );
-        $context2 = new TinCan\Context(
+        $context2 = new Context(
             [
                 'contextActivities' => [
                     [ 'parent' => [ COMMON_ACTIVITY_ID . '/parent' ]],
@@ -130,10 +235,10 @@ class SubStatementTest extends PHPUnit_Framework_TestCase {
                 ]
             ]
         );
-        $result1 = new TinCan\Result(
+        $result1 = new Result(
             [ 'raw' => 87 ]
         );
-        $result2 = new TinCan\Result(
+        $result2 = new Result(
             [ 'response' => 'a' ]
         );
         $timestamp1           = '2015-01-28T14:23:37.159Z';

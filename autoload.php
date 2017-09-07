@@ -17,17 +17,29 @@
 
 if (file_exists('vendor/autoload.php')) {
     // prefer the composer autoloader
-    return require_once('vendor/autoload.php');
+    require_once('vendor/autoload.php');
+}
+else if (!class_exists('TinCan\\Version')) {
+    tincan_register_autoloader('TinCan\\', 'src');
 }
 
-spl_autoload_register(function($className) {
-    $namespace = 'TinCan\\';
-    if (stripos($className, $namespace) === false) {
-        return;
-    }
-    $sourceDir = __DIR__ . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR;
-    $fileName  = str_replace([$namespace, '\\'], [$sourceDir, DIRECTORY_SEPARATOR], $className) . '.php';
-    if (is_readable($fileName)) {
-        include $fileName;
-    }
-});
+/**
+ * Register a namespace autoloader for the TinCan library
+ *
+ * A source filepath will be generated based on the current directory.
+ *
+ * @param string $namespace a valid namespace, include trailing backslashes ('\\')
+ * @param string $directory a directory name, not a filepath
+ */
+function tincan_register_autoloader($namespace, $directory) {
+    spl_autoload_register(function($className) use ($namespace, $directory) {
+        if (stripos($className, $namespace) === false) {
+            return;
+        }
+        $sourceDir = __DIR__ . DIRECTORY_SEPARATOR . $directory . DIRECTORY_SEPARATOR;
+        $fileName  = str_replace([$namespace, '\\'], [$sourceDir, DIRECTORY_SEPARATOR], $className) . '.php';
+        if (is_readable($fileName)) {
+            include $fileName;
+        }
+    });
+}

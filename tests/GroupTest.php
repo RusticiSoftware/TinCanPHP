@@ -15,10 +15,14 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
+use TinCan\Agent;
+use TinCan\AgentAccount;
 use TinCan\Group;
 
-class GroupTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+class GroupTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     public function testInstantiation() {
         $obj = new Group();
@@ -32,23 +36,109 @@ class GroupTest extends PHPUnit_Framework_TestCase {
         $obj = Group::fromJSON('{"mbox":"' . COMMON_GROUP_MBOX . '", "member":[{"mbox":"' . COMMON_MBOX . '"}]}');
         $this->assertInstanceOf('TinCan\Group', $obj);
         $this->assertSame(COMMON_GROUP_MBOX, $obj->getMbox(), 'mbox value');
-        $this->assertEquals([new TinCan\Agent(['mbox' => COMMON_MBOX])], $obj->getMember(), 'member list');
+        $this->assertEquals([new Agent(['mbox' => COMMON_MBOX])], $obj->getMember(), 'member list');
     }
 
     // TODO: need to loop versions
-    public function testAsVersion() {
-        $obj = new Group();
+    public function testAsVersionMbox() {
+        $args      = [
+            'mbox' => COMMON_GROUP_MBOX
+        ];
+
+        $obj       = Group::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
         $versioned = $obj->asVersion('1.0.0');
 
-        $this->assertEquals(
-            [ 'objectType' => 'Group' ],
-            $versioned,
-            "empty: 1.0.0"
-        );
+        $args['objectType'] = 'Group';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionMboxSha1() {
+        $args      = [
+            'mbox_sha1sum' => COMMON_GROUP_MBOX_SHA1
+        ];
+
+        $obj       = Group::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Group';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionAccount() {
+        $args      = [
+            'account' => [
+                'name' => COMMON_ACCT_NAME,
+                'homePage' => COMMON_ACCT_HOMEPAGE
+            ]
+        ];
+
+        $obj       = Group::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Group';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionAccountEmptyStrings() {
+        $args      = [
+            'account' => [
+                'name' => '',
+                'homePage' => ''
+            ]
+        ];
+
+        $obj       = Group::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Group';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmptyAccount() {
+        $args      = [
+            'account' => []
+        ];
+
+        $obj       = Group::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Group';
+        unset($args['account']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmptyMember() {
+        $args      = [
+            'member' => []
+        ];
+
+        $obj       = Group::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Group';
+        unset($args['member']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = Group::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $args['objectType'] = 'Group';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
     }
 
     public function testAddMember() {
-        $common_agent = new TinCan\Agent(['mbox' => COMMON_MBOX]);
+        $common_agent = new Agent(['mbox' => COMMON_MBOX]);
 
         $obj = new Group();
 
@@ -59,27 +149,30 @@ class GroupTest extends PHPUnit_Framework_TestCase {
 
         $obj->addMember($common_agent);
         $this->assertEquals([$common_agent], $obj->getMember(), 'member list existing Agent');
+
+        $versioned = $obj->asVersion('1.0.0');
+        $this->assertSame($versioned['member'][0], $common_agent->asVersion('1.0.0'));
     }
 
     public function testCompareWithSignature() {
         $name = 'Test Group Name';
-        $acct1 = new TinCan\AgentAccount(
+        $acct1 = new AgentAccount(
             [
                 'homePage' => COMMON_ACCT_HOMEPAGE,
                 'name'     => COMMON_ACCT_NAME
             ]
         );
-        $acct2 = new TinCan\AgentAccount(
+        $acct2 = new AgentAccount(
             [
                 'homePage' => COMMON_ACCT_HOMEPAGE,
                 'name'     => COMMON_ACCT_NAME . '-diff'
             ]
         );
 
-        $member1 = new TinCan\Agent(
+        $member1 = new Agent(
             [ 'mbox' => COMMON_MBOX ]
         );
-        $member2 = new TinCan\Agent(
+        $member2 = new Agent(
             [ 'account' => $acct1 ]
         );
 

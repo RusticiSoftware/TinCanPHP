@@ -15,10 +15,13 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
+use TinCan\Activity;
 use TinCan\ContextActivities;
 
-class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+class ContextActivitiesTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     static private $listProps = ['category', 'parent', 'grouping', 'other'];
     static private $common_activity_cfg = [
@@ -46,7 +49,7 @@ class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testFromJSONInstantiations() {
-        $common_activity = new TinCan\Activity(self::$common_activity_cfg);
+        $common_activity = new Activity(self::$common_activity_cfg);
 
         $all_json = array();
         foreach (self::$listProps as $k) {
@@ -72,22 +75,49 @@ class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
     }
 
     // TODO: need to loop versions
-    public function testAsVersion() {
-        $obj = new ContextActivities();
-        $obj->setCategory(self::$common_activity_cfg);
+    public function testAsVersionWithSingleList() {
+        $keys = ['category', 'parent', 'grouping', 'other'];
+        foreach ($keys as $k) {
+            $args      = [];
+            $args[$k]  = [ self::$common_activity_cfg ];
+
+            $obj       = ContextActivities::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+            $versioned = $obj->asVersion('1.0.0');
+
+            $args[$k][0]['objectType'] = 'Activity';
+
+            $this->assertEquals($versioned, $args, "serialized version matches original");
+
+            unset($args[$k][0]['objectType']);
+        }
+    }
+
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = ContextActivities::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
         $versioned = $obj->asVersion('1.0.0');
 
-        $this->assertEquals(
-            ['category' => [
-                ['objectType' => 'Activity', 'id' => COMMON_ACTIVITY_ID]
-            ]],
-            $versioned,
-            "category only: 1.0.0"
-        );
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionWithEmptyList() {
+        $keys = ['category', 'parent', 'grouping', 'other'];
+        foreach ($keys as $k) {
+            $args      = [];
+            $args[$k]  = [];
+
+            $obj       = ContextActivities::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+            $versioned = $obj->asVersion('1.0.0');
+
+            unset($args[$k]);
+
+            $this->assertEquals($versioned, $args, "serialized version matches corrected");
+        }
     }
 
     public function testListSetters() {
-        $common_activity = new TinCan\Activity(self::$common_activity_cfg);
+        $common_activity = new Activity(self::$common_activity_cfg);
 
         foreach (self::$listProps as $k) {
             $setMethod = 'set' . ucfirst($k);
@@ -118,16 +148,16 @@ class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
 
     public function testCompareWithSignature() {
         $acts = [
-            new TinCan\Activity(
+            new Activity(
                 ['id' => COMMON_ACTIVITY_ID . '/0']
             ),
-            new TinCan\Activity(
+            new Activity(
                 ['id' => COMMON_ACTIVITY_ID . '/1']
             ),
-            new TinCan\Activity(
+            new Activity(
                 ['id' => COMMON_ACTIVITY_ID . '/2']
             ),
-            new TinCan\Activity(
+            new Activity(
                 ['id' => COMMON_ACTIVITY_ID . '/3']
             )
         ];
@@ -245,5 +275,27 @@ class ContextActivitiesTest extends PHPUnit_Framework_TestCase {
             $cases = array_merge($cases, $new_cases);
         }
         $this->runSignatureCases("TinCan\ContextActivities", $cases);
+    }
+
+    /**
+     * @dataProvider invalidListSetterDataProvider
+     */
+    public function testListSetterThrowsInvalidArgumentException($publicMethodName, $invalidValue) {
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'type of arg1 must be Activity, array of Activity properties, or array of Activity/array of Activity properties'
+        );
+        $obj = new ContextActivities();
+        $obj->$publicMethodName($invalidValue);
+    }
+
+    public function invalidListSetterDataProvider() {
+        $invalidValue = 1;
+        return [
+            ["setCategory", $invalidValue],
+            ["setParent", $invalidValue],
+            ["setGrouping", $invalidValue],
+            ["setOther", $invalidValue]
+        ];
     }
 }

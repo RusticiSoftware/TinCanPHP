@@ -15,10 +15,12 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
 use TinCan\Extensions;
 
-class ExtensionsTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+class ExtensionsTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     public function testInstantiation() {
         $obj = new Extensions();
@@ -34,6 +36,15 @@ class ExtensionsTest extends PHPUnit_Framework_TestCase {
         $versioned = $obj->asVersion('1.0.0');
 
         $this->assertEquals($versioned, $args, "version: 1.0.0");
+    }
+
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = Extensions::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, null, "serialized version matches original");
     }
 
     public function testCompareWithSignature() {

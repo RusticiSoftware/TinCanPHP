@@ -55,7 +55,7 @@ abstract class Map implements VersionableInterface
                 return $this->_unset($args[0]);
             break;
             default:
-                throw new BadMethodCallException(__CLASS__ . "::$func() does not exist");
+                throw new \BadMethodCallException(get_class($this) . "::$func() does not exist");
         }
     }
 }

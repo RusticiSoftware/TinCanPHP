@@ -129,15 +129,4 @@ class Context implements VersionableInterface, ComparableInterface
         return $this;
     }
     public function getExtensions() { return $this->extensions; }
-
-    private function _asVersion(array &$result, $version) {
-        foreach ($result as $property => $value) {
-            if (! isset($value)) {
-                unset($result[$property]);
-            }
-            elseif ($value instanceof VersionableInterface) {
-                $result[$property] = $value->asVersion($version);
-            }
-        }
-    }
 }

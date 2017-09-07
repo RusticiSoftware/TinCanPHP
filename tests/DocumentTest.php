@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright 2014 Rustici Software
+    Copyright 2016 Rustici Software
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,21 +15,20 @@
     limitations under the License.
 */
 
-namespace TinCan;
+namespace TinCanTest;
 
-trait FromJSONTrait
-{
-    public static function fromJSON($jsonStr) {
-        //
-        // 2nd arg as true means return value is an assoc. array rather than object
-        //
-        $cfg = json_decode($jsonStr, true);
+use TinCan\Document;
 
-        if (is_null($cfg)) {
-            throw new JSONParseErrorException($jsonStr, json_last_error(), json_last_error_msg());
-        }
-        $called_class = get_called_class();
-        return new $called_class($cfg);
+class StubDocument extends Document {}
+
+class DocumentTest extends \PHPUnit_Framework_TestCase {
+    public function testExceptionOnInvalidDateTime() {
+        $this->setExpectedException(
+            "InvalidArgumentException",
+            'type of arg1 must be string or DateTime'
+        );
+
+        $obj = new StubDocument();
+        $obj->setTimestamp(1);
     }
-
 }

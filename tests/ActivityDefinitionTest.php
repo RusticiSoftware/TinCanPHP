@@ -15,9 +15,11 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
 use TinCan\ActivityDefinition;
 
-class ActivityDefinitionTest extends PHPUnit_Framework_TestCase {
+class ActivityDefinitionTest extends \PHPUnit_Framework_TestCase {
     const NAME = 'testName';
 
     private $emptyProperties = array(
@@ -63,10 +65,55 @@ class ActivityDefinitionTest extends PHPUnit_Framework_TestCase {
 
     // TODO: need more robust test (happy-path)
     public function testAsVersion() {
-        $args      = ['name' => [self::NAME]];
-        $obj       = new ActivityDefinition($args);
-        $versioned = $obj->asVersion('test');
+        $args      = [
+            'name' => ['en' => self::NAME],
+            'extensions' => []
+        ];
+        $args['extensions'][COMMON_EXTENSION_ID_1] = 'test';
 
-        $this->assertEquals($versioned, $args, "name only: test");
+        $obj       = ActivityDefinition::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = ActivityDefinition::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionEmptyLanguageMap() {
+        $args      = ['name' => []];
+
+        $obj       = ActivityDefinition::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        unset($args['name']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmptyExtensions() {
+        $args      = ['extensions' => []];
+
+        $obj       = ActivityDefinition::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        unset($args['extensions']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmptyStringInLanguageMap() {
+        $args      = ['name' => ['en' => '']];
+
+        $obj       = ActivityDefinition::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
     }
 }

@@ -15,10 +15,12 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
 use TinCan\Verb;
 
-class VerbTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+class VerbTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     static private $DISPLAY;
 
@@ -40,26 +42,17 @@ class VerbTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testFromJSONInvalidNull() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
-        );
+        $this->setExpectedException('TinCan\JSONParseErrorException');
         $obj = Verb::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_NONE
-        );
+        $this->setExpectedException('TinCan\JSONParseErrorException');
         $obj = Verb::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'Invalid JSON: ' . JSON_ERROR_SYNTAX
-        );
+        $this->setExpectedException('TinCan\JSONParseErrorException');
         $obj = Verb::fromJSON('{id:"some value"}');
     }
 
@@ -76,10 +69,40 @@ class VerbTest extends PHPUnit_Framework_TestCase {
             'id' => COMMON_VERB_ID,
             'display' => self::$DISPLAY
         ];
-        $obj = new Verb($args);
+
+        $obj       = Verb::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
         $versioned = $obj->asVersion('1.0.0');
 
-        $this->assertEquals($versioned, $args, "version 1.0.0");
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = Verb::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionEmptyLanguageMap() {
+        $args      = ['display' => []];
+
+        $obj       = Verb::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        unset($args['display']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmptyStringInLanguageMap() {
+        $args      = ['display' => ['en' => '']];
+
+        $obj       = Verb::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
     }
 
     public function testCompareWithSignature() {

@@ -15,11 +15,13 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
 use TinCan\Attachment;
 use TinCan\Version;
 
-class AttachmentTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+class AttachmentTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     const USAGE_TYPE     = 'http://id.tincanapi.com/attachment/supporting_media';
     const DISPLAY        = 'testDisplay';
@@ -116,6 +118,26 @@ class AttachmentTest extends PHPUnit_Framework_TestCase {
             ['length' => self::CONTENT_LENGTH, 'sha2' => self::CONTENT_SHA2],
             'auto populated properties but content not returned'
         );
+    }
+
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = Attachment::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionEmptyLanguageMap() {
+        $args      = ['display' => []];
+
+        $obj       = Attachment::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        unset($args['display']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
     }
 
     public function testCompareWithSignature() {

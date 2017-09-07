@@ -15,10 +15,14 @@
     limitations under the License.
 */
 
-use TinCan\Result;
+namespace TinCanTest;
 
-class ResultTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+use TinCan\Extensions;
+use TinCan\Result;
+use TinCan\Score;
+
+class ResultTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     private $emptyProperties = array(
         'success',
@@ -72,10 +76,31 @@ class ResultTest extends PHPUnit_Framework_TestCase {
         $obj       = new Result($args);
         $versioned = $obj->asVersion('1.0.0');
 
-        $this->assertEquals($versioned, $args, "success only: 1.0.0");
+        $this->assertEquals($versioned, $args, "serialized version matches original");
     }
 
-    // reported https://github.com/RusticiSoftware/TinCanPHP/issues/34
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = Result::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionScoreEmpty() {
+        $args = [
+            'score' => []
+        ];
+
+        $obj       = Result::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        unset($args['score']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
     public function testAsVersionScoreZeroRaw() {
         $args = [
             'score' => [
@@ -89,8 +114,32 @@ class ResultTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($versioned, $args, "serialized version matches original");
     }
 
+    public function testAsVersionResponseEmptyString() {
+        $args = [
+            'response' => ''
+        ];
+
+        $obj       = Result::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionDurationEmptyString() {
+        $args = [
+            'duration' => ''
+        ];
+
+        $obj       = Result::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        unset($args['duration']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
     public function testCompareWithSignature() {
-        $score1 = new TinCan\Score(
+        $score1 = new Score(
             [
                 'raw'    => 97,
                 'scaled' => 0.97,
@@ -98,19 +147,19 @@ class ResultTest extends PHPUnit_Framework_TestCase {
                 'max'    => 100
             ]
         );
-        $score2 = new TinCan\Score(
+        $score2 = new Score(
             [
                 'raw'    => 15,
                 'scaled' => 0.50
             ]
         );
-        $extensions1 = new TinCan\Extensions(
+        $extensions1 = new Extensions(
             [
                 COMMON_EXTENSION_ID_1 => 'test1',
                 COMMON_EXTENSION_ID_2 => 'test2'
             ]
         );
-        $extensions2 = new TinCan\Extensions(
+        $extensions2 = new Extensions(
             [
                 COMMON_EXTENSION_ID_1 => 'test1'
             ]

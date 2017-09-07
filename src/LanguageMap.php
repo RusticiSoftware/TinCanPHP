@@ -20,13 +20,26 @@ namespace TinCan;
 class LanguageMap extends Map
 {
     public function getNegotiatedLanguageString ($acceptLanguage = null) {
-        $negotiator = new \Negotiation\Negotiator();
+        $negotiator = new \Negotiation\LanguageNegotiator();
         if ($acceptLanguage === null) {
-            $acceptLanguage = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE']. ', *' : '*';
+            //
+            // include the q=0 on * because of an issue in the library not picking up
+            // the earlier configured language correctly, see
+            // https://github.com/willdurand/Negotiation/issues/83
+            //
+            $acceptLanguage = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE']. ', *;q=0' : '*';
         }
-        $availableLanguages = array_keys ($this->_map);
+        $availableLanguages = array_keys($this->_map);
         $preferredLanguage = $negotiator->getBest($acceptLanguage, $availableLanguages);
 
-        return $this->_map[$preferredLanguage->getValue()];
+        $key = $availableLanguages[0];
+        if (isset($preferredLanguage)) {
+            $key = $preferredLanguage->getValue();
+        }
+        elseif (isset($this->_map['und'])) {
+            $key = 'und';
+        }
+
+        return $this->_map[$key];
     }
 }

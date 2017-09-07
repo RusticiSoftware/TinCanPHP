@@ -15,9 +15,11 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
 use TinCan\LanguageMap;
 
-class LanguageMapTest extends PHPUnit_Framework_TestCase {
+class LanguageMapTest extends \PHPUnit_Framework_TestCase {
     const NAME = 'testName';
 
     public function testInstantiation() {
@@ -27,16 +29,35 @@ class LanguageMapTest extends PHPUnit_Framework_TestCase {
 
     public function testAsVersion() {
         $args      = ['en' => [self::NAME]];
-        $obj       = new LanguageMap($args);
+
+        $obj       = LanguageMap::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
         $versioned = $obj->asVersion();
 
-        $this->assertEquals($versioned, $args, "en only: test");
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = LanguageMap::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, null, "serialization returns null");
+    }
+
+    public function testAsVersionValueEmptyString() {
+        $args      = ['en' => ['']];
+
+        $obj       = LanguageMap::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion();
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
     }
 
     public function testGetNegotiatedLanguageString() {
         $langs = [
             'en-GB' => 'petrol',
-            'en-US' => 'gas'
+            'en-US' => 'gasoline'
         ];
         $obj = new LanguageMap($langs);
 
@@ -45,5 +66,45 @@ class LanguageMapTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals($usValue, $langs['en-US'], 'US name equal');
         $this->assertEquals($ukValue, $langs['en-GB'], 'UK name equal');
+
+        $nullValue = $obj->getNegotiatedLanguageString();
+        $this->assertEquals($nullValue, $langs['en-GB'], 'from null: UK name equal');
+
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $restore = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+        }
+        $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'en-US';
+
+        $nullAcceptValue = $obj->getNegotiatedLanguageString();
+        $this->assertEquals($nullAcceptValue, $langs['en-US'], 'from server: US name equal');
+
+        if (isset($restore)) {
+            $_SERVER['HTTP_ACCEPT_LANGUAGE'] = $restore;
+        }
+        else {
+            unset($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        }
+
+        $langs = [
+            'en-US' => 'gasoline'
+        ];
+        $obj = new LanguageMap($langs);
+
+        $this->assertEquals($obj->getNegotiatedLanguageString('en'), $langs['en-US'], 'from prefix');
+
+        $langs = [
+            'fr-FR' => 'essence'
+        ];
+        $obj = new LanguageMap($langs);
+
+        $this->assertEquals($obj->getNegotiatedLanguageString('en, *'), $langs['fr-FR'], 'no matched');
+
+        $langs = [
+            'fr-FR' => 'essence',
+            'und' => 'fuel',
+        ];
+        $obj = new LanguageMap($langs);
+
+        $this->assertEquals($obj->getNegotiatedLanguageString('en'), $langs['und'], 'no matched with und');
     }
 }

@@ -1,7 +1,8 @@
-tests/Config.php
+tests/config/config.php
 
 # Third party libraries
 phpdoc.xml
+phpunit.xml
 php.ini
 
 # buildables
@@ -10,16 +11,8 @@ composer.lock
 sample/vendor
 sample/composer.lock
 doc/api
-
-# bad.
-.DS_Store
-*.swp
-tmp/
+doc/coverage
 
 # wild
 todo.md
 
-# eclipse project files
-.buildpath
-.project
-.settings

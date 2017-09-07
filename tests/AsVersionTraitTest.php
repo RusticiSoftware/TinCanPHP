@@ -15,7 +15,9 @@
     limitations under the License.
 */
 
-class AsVersionTraitTest extends PHPUnit_Framework_TestCase
+namespace TinCanTest;
+
+class AsVersionTraitTest extends \PHPUnit_Framework_TestCase
 {
     public function testTraitExists() {
         $this->assertTrue(trait_exists('TinCan\AsVersionTrait'));

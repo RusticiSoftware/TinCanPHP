@@ -15,11 +15,18 @@
     limitations under the License.
 */
 
+namespace TinCanTest;
+
+use TinCan\Agent;
 use TinCan\Context;
+use TinCan\ContextActivities;
+use TinCan\Extensions;
+use TinCan\Group;
+use TinCan\StatementRef;
 use TinCan\Util;
 
-class ContextTest extends PHPUnit_Framework_TestCase {
-    use TinCanTest\TestCompareWithSignatureTrait;
+class ContextTest extends \PHPUnit_Framework_TestCase {
+    use TestCompareWithSignatureTrait;
 
     private $emptyProperties = array(
         'registration',
@@ -70,18 +77,15 @@ class ContextTest extends PHPUnit_Framework_TestCase {
         $args = [
             'registration' => Util::getUUID(),
             'instructor'   => [
-                'objectType' => 'Agent',
-                'name'       => 'test agent'
+                'name' => 'test agent'
             ],
             'team' => [
-                'objectType' => 'Group',
-                'name'       => 'test group'
+                'name' => 'test group'
             ],
             'contextActivities' => [
                 'category' => [
                     [
-                        'objectType' => 'Activity',
-                        'id'         => 'test category'
+                        'id' => 'test category'
                     ]
                 ]
             ],
@@ -89,23 +93,54 @@ class ContextTest extends PHPUnit_Framework_TestCase {
             'platform'   => 'test platform',
             'language'   => 'test language',
             'statement'  => [
-                'objectType' => 'StatementRef',
-                'id'         => Util::getUUID()
+                'id' => Util::getUUID()
             ],
-            'extensions' => ['test extension'],
+            'extensions' => [],
         ];
+        $args['extensions'][COMMON_EXTENSION_ID_1] = "test";
 
-        $obj       = new Context($args);
+        $obj       = Context::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
         $versioned = $obj->asVersion('1.0.0');
 
-        $this->assertEquals($versioned, $args, "platform only: 1.0.0");
+        $args['instructor']['objectType'] = 'Agent';
+        $args['team']['objectType'] = 'Group';
+        $args['contextActivities']['category'][0]['objectType'] = 'Activity';
+        $args['statement']['objectType'] = 'StatementRef';
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
+    }
+
+    public function testAsVersionEmpty() {
+        $args = [];
+
+        $obj       = Context::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        $this->assertEquals($versioned, $args, "serialized version matches original");
+    }
+
+    public function testAsVersionEmptyLists() {
+        $args = [
+            'contextActivities' => [
+                'category' => []
+            ],
+            'extensions' => [],
+        ];
+
+        $obj       = Context::fromJSON(json_encode($args, JSON_UNESCAPED_SLASHES));
+        $versioned = $obj->asVersion('1.0.0');
+
+        unset($args['contextActivities']);
+        unset($args['extensions']);
+
+        $this->assertEquals($versioned, $args, "serialized version matches corrected");
     }
 
     public function testSetInstructor() {
         $common_agent_cfg = [ 'mbox' => COMMON_MBOX ];
-        $common_agent     = new TinCan\Agent($common_agent_cfg);
+        $common_agent     = new Agent($common_agent_cfg);
         $common_group_cfg = [ 'mbox' => COMMON_MBOX, 'objectType' => 'Group' ];
-        $common_group     = new TinCan\Group($common_agent_cfg);
+        $common_group     = new Group($common_agent_cfg);
 
         $obj = new Context();
 
@@ -119,38 +154,38 @@ class ContextTest extends PHPUnit_Framework_TestCase {
     public function testCompareWithSignature() {
         $registration1 = Util::getUUID();
         $registration2 = Util::getUUID();
-        $instructor1 = new TinCan\Agent(
+        $instructor1 = new Agent(
             [ 'mbox' => COMMON_MBOX ]
         );
-        $instructor2 = new TinCan\Agent(
+        $instructor2 = new Agent(
             [ 'account' => [ 'homePage' => COMMON_ACCT_HOMEPAGE, 'name' => COMMON_ACCT_NAME ]]
         );
-        $team1 = new TinCan\Agent(
+        $team1 = new Agent(
             [ 'mbox' => COMMON_MBOX ]
         );
-        $team2 = new TinCan\Agent(
+        $team2 = new Agent(
             [ 'account' => [ 'homePage' => COMMON_ACCT_HOMEPAGE, 'name' => COMMON_ACCT_NAME ]]
         );
-        $contextActivities1 = new TinCan\ContextActivities(
+        $contextActivities1 = new ContextActivities(
             [ 'parent' => [ COMMON_ACTIVITY_ID ]]
         );
-        $contextActivities2 = new TinCan\ContextActivities(
+        $contextActivities2 = new ContextActivities(
             [ 'parent' => [ COMMON_ACTIVITY_ID . '/parent' ]],
             [ 'grouping' => [ COMMON_ACTIVITY_ID ]]
         );
-        $ref1 = new TinCan\StatementRef(
+        $ref1 = new StatementRef(
             [ 'id' => Util::getUUID() ]
         );
-        $ref2 = new TinCan\StatementRef(
+        $ref2 = new StatementRef(
             [ 'id' => Util::getUUID() ]
         );
-        $extensions1 = new TinCan\Extensions(
+        $extensions1 = new Extensions(
             [
                 COMMON_EXTENSION_ID_1 => 'test1',
                 COMMON_EXTENSION_ID_2 => 'test2'
             ]
         );
-        $extensions2 = new TinCan\Extensions(
+        $extensions2 = new Extensions(
             [
                 COMMON_EXTENSION_ID_1 => 'test1'
             ]
@@ -323,5 +358,24 @@ class ContextTest extends PHPUnit_Framework_TestCase {
             ]
         ];
         $this->runSignatureCases("TinCan\Context", $cases);
+    }
+
+    public function testSetInstructorConvertToGroup() {
+        $obj = new Context();
+        $obj->setInstructor(
+            [
+                'objectType' => 'Group'
+            ]
+        );
+        $this->assertInstanceOf('TinCan\Group', $obj->getInstructor());
+    }
+
+    public function testSetRegistrationInvalidArgumentException() {
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'arg1 must be a UUID'
+        );
+        $obj = new Context();
+        $obj->setRegistration('232....3.3..3./2/2/1m3m3m3');
     }
 }
