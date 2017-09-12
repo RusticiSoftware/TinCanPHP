@@ -909,6 +909,9 @@ class RemoteLRS implements LRSInterface
                 if (isset($options['etag'])) {
                     $requestCfg['headers']['If-Match'] = $options['etag'];
                 }
+                else {
+                    $requestCfg['headers']['If-None-Match'] = '*';
+                }
             }
         }
 
