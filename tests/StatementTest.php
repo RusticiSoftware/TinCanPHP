@@ -601,20 +601,46 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
     public function testSignNoArgs() {
         $obj = new Statement();
 
+        $expectedException = 'PHPUnit_Framework_Error_Warning';
+        $expectedMessage = 'Missing argument 1';
+
+        if (getenv('TRAVIS_PHP_VERSION') == "hhvm") {
+            $expectedMessage = "sign() expects at least 2 parameters, 0 given";
+        }
+
+        if (getenv('TRAVIS_PHP_VERSION') == "7.1") {
+            $expectedException = "ArgumentCountError";
+            $expectedMessage = "Too few arguments to function TinCan\Statement::sign(), 0 passed in /home/travis/build/RusticiSoftware/TinCanPHP/tests/StatementTest.php on line 621 and at least 2 expected";
+        }
+
         $this->setExpectedException(
-            'PHPUnit_Framework_Error_Warning',
-            (getenv('TRAVIS_PHP_VERSION') == "hhvm" ? 'sign() expects at least 2 parameters, 0 given' : 'Missing argument 1')
+            $expectedException,
+            $expectedMessage
         );
+
         $obj->sign();
     }
 
     public function testSignOneArg() {
         $obj = new Statement();
 
+        $expectedException = 'PHPUnit_Framework_Error_Warning';
+        $expectedMessage = 'Missing argument 2';
+
+        if (getenv('TRAVIS_PHP_VERSION') == "hhvm") {
+            $expectedMessage = "sign() expects at least 2 parameters, 1 given";
+        }
+
+        if (getenv('TRAVIS_PHP_VERSION') == "7.1") {
+            $expectedException = "ArgumentCountError";
+            $expectedMessage = "Too few arguments to function TinCan\Statement::sign(), 0 passed in /home/travis/build/RusticiSoftware/TinCanPHP/tests/StatementTest.php on line 644 and at least 2 expected";
+        }
+
         $this->setExpectedException(
-            'PHPUnit_Framework_Error_Warning',
-            (getenv('TRAVIS_PHP_VERSION') == "hhvm" ? 'sign() expects at least 2 parameters, 1 given' : 'Missing argument 2')
+            $expectedException,
+            $expectedMessage
         );
+
         $obj->sign('test');
     }
 
