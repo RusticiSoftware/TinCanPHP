@@ -8,7 +8,7 @@ php:
   - hhvm
 matrix:
     allow_failures:
-        - php: 7.1
+        - php: hhvm
 before_script:
   - cp tests/config/config.travis-ci.php tests/config/config.php
   - composer install --dev
