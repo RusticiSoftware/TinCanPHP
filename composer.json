@@ -24,14 +24,14 @@
         "issues": "https://github.com/RusticiSoftware/TinCanPHP/issues"
     },
     "require": {
-        "php": "~5.5 || ^7.0.3",
+        "php": "~5.5 || ^7.0 || ^7.1",
         "ext-openssl": "*",
         "namshi/jose": "^7.2.1",
         "willdurand/negotiation": "^2.0"
     },
     "require-dev": {
         "phpdocumentor/phpdocumentor": "2.*",
-        "phpunit/phpunit": "@stable"
+        "phpunit/phpunit": "^4.8 || ^5.6 || ^5.7"
     },
     "autoload": {
         "psr-4": {
