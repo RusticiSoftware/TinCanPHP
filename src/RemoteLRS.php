@@ -147,7 +147,6 @@ class RemoteLRS implements LRSInterface
 
         try {
             $context = stream_context_create(array( 'http' => $http ));
-            var_dump($url, $context);
             $fp = fopen($url, 'rb', false, $context);
 
             if (! $fp) {
