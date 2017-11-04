@@ -633,7 +633,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
 
         if (getenv('TRAVIS_PHP_VERSION') == "7.1") {
             $expectedException = "ArgumentCountError";
-            $expectedMessage = "Too few arguments to function TinCan\Statement::sign(), 0 passed in /home/travis/build/RusticiSoftware/TinCanPHP/tests/StatementTest.php on line 644 and at least 2 expected";
+            $expectedMessage = "Too few arguments to function TinCan\Statement::sign(), 1 passed in /home/travis/build/RusticiSoftware/TinCanPHP/tests/StatementTest.php on line 644 and at least 2 expected";
         }
 
         $this->setExpectedException(
