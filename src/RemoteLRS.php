@@ -163,7 +163,7 @@ class RemoteLRS implements LRSInterface
             $metadata = stream_get_meta_data($fp);
             $content  = stream_get_contents($fp);
 
-            $response = $this->_parseMetadata($metadata, $options);
+            $response = $this->_parseMetadata($metadata);
 
             //
             // keep a copy of the raw content, the methods expecting
