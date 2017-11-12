@@ -194,7 +194,7 @@ class Statement extends StatementBase
         }
         $jws = new JWS($jwsHeader);
 
-        $jws->setPayload($serialization, false);
+        $jws->setPayload($serialization);
         $jws->sign($privateKey);
 
         $attachment = array(
