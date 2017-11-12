@@ -33,9 +33,7 @@ abstract class Map implements VersionableInterface
     }
 
     public function asVersion($version = null) {
-        if (! $this->isEmpty()) {
-            return $this->_map;
-        }
+        return $this->isEmpty() ? null : $this->_map;
     }
 
     public function set($code, $value) {
