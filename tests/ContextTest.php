@@ -167,11 +167,15 @@ class ContextTest extends \PHPUnit_Framework_TestCase {
             [ 'account' => [ 'homePage' => COMMON_ACCT_HOMEPAGE, 'name' => COMMON_ACCT_NAME ]]
         );
         $contextActivities1 = new ContextActivities(
-            [ 'parent' => [ COMMON_ACTIVITY_ID ]]
+            [
+                'parent' => [ COMMON_ACTIVITY_ID ]
+            ]
         );
         $contextActivities2 = new ContextActivities(
-            [ 'parent' => [ COMMON_ACTIVITY_ID . '/parent' ]],
-            [ 'grouping' => [ COMMON_ACTIVITY_ID ]]
+            [
+                'parent' => [ COMMON_ACTIVITY_ID . '/parent' ],
+                'grouping' => [ COMMON_ACTIVITY_ID ]
+            ]
         );
         $ref1 = new StatementRef(
             [ 'id' => Util::getUUID() ]
@@ -270,7 +274,7 @@ class ContextTest extends \PHPUnit_Framework_TestCase {
                 'description' => 'contextActivities only: mismatch',
                 'objArgs'     => ['contextActivities' => $contextActivities1 ],
                 'sigArgs'     => ['contextActivities' => $contextActivities2 ],
-                'reason'      => 'Comparison of contextActivities failed: Comparison of parent failed: array lengths differ'
+                'reason'      => 'Comparison of contextActivities failed: Comparison of grouping failed: array lengths differ'
             ],
             [
                 'description' => 'revision only: mismatch',
@@ -324,7 +328,7 @@ class ContextTest extends \PHPUnit_Framework_TestCase {
                 'description' => 'full: contextActivities mismatch',
                 'objArgs'     => $full,
                 'sigArgs'     => array_replace($full, ['contextActivities' => $contextActivities2]),
-                'reason'      => 'Comparison of contextActivities failed: Comparison of parent failed: array lengths differ'
+                'reason'      => 'Comparison of contextActivities failed: Comparison of grouping failed: array lengths differ'
             ],
             [
                 'description' => 'full: revision mismatch',
