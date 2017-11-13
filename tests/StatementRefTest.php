@@ -17,10 +17,11 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\StatementRef;
 use TinCan\Util;
 
-class StatementRefTest extends \PHPUnit_Framework_TestCase {
+class StatementRefTest extends TestCase {
     public function testInstantiation() {
         $obj = new StatementRef();
         $this->assertInstanceOf('TinCan\StatementRef', $obj);

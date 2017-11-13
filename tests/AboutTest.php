@@ -17,9 +17,10 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\About;
 
-class AboutTest extends \PHPUnit_Framework_TestCase {
+class AboutTest extends TestCase {
     const VERSION_1 = '1.0.0';
 
     public function testInstantiation() {

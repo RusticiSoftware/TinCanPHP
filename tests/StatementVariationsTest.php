@@ -17,12 +17,13 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\Activity;
 use TinCan\RemoteLRS;
 use TinCan\Statement;
 use TinCan\Util;
 
-class StatementVariationsTest extends \PHPUnit_Framework_TestCase {
+class StatementVariationsTest extends TestCase {
     static protected $lrss;
 
     static public function setUpBeforeClass() {
