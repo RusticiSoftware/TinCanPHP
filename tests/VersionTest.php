@@ -17,9 +17,10 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\Version;
 
-class VersionTest extends \PHPUnit_Framework_TestCase {
+class VersionTest extends TestCase {
     public function testStaticFactoryReturnsInstance() {
         $this->assertInstanceOf("TinCan\Version", Version::v101(), "factory returns instance");
     }
