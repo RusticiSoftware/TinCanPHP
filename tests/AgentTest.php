@@ -35,17 +35,17 @@ class AgentTest extends TestCase {
     }
 
     public function testFromJSONInvalidNull() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Agent::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Agent::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Agent::fromJSON('{name:"some value"}');
     }
 

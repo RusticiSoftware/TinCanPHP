@@ -65,10 +65,8 @@ class VersionTest extends TestCase {
 
     public function testInvalidArgumentExceptionIsThrown() {
         $number = '1.8.01';
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            "Invalid version [$number]"
-        );
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage("Invalid version [$number]");
         $version = Version::fromString($number);
     }
 }

@@ -34,17 +34,17 @@ class PersonTest extends TestCase {
     }
 
     public function testFromJSONInvalidNull() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Person::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Person::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Person::fromJSON('{name:"some value"}');
     }
 

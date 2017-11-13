@@ -50,10 +50,8 @@ class MapTest extends TestCase {
     public function testExceptionOnBadMethodCall() {
         $badName ="dsadasdasdasdasdasdas";
 
-        $this->setExpectedException(
-            '\BadMethodCallException',
-            get_class(new StubMap) . "::$badName() does not exist"
-        );
+        $this->expectException('\BadMethodCallException');
+        $this->expectExceptionMessage(get_class(new StubMap) . "::$badName() does not exist");
 
         $obj = new StubMap();
         $obj->$badName();

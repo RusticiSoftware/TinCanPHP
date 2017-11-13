@@ -372,10 +372,8 @@ class ContextTest extends TestCase {
     }
 
     public function testSetRegistrationInvalidArgumentException() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'arg1 must be a UUID'
-        );
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('arg1 must be a UUID');
         $obj = new Context();
         $obj->setRegistration('232....3.3..3./2/2/1m3m3m3');
     }

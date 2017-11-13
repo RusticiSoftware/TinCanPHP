@@ -44,17 +44,17 @@ class ActivityTest extends TestCase {
     }
 
     public function testFromJSONInvalidNull() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Activity::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Activity::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Activity::fromJSON('{id:"some value"}');
     }
 

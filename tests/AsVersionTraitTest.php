@@ -31,7 +31,7 @@ class AsVersionTraitTest extends TestCase
     }
 
     public function testMagicSetThrowsException() {
-        $this->setExpectedException('DomainException');
+        $this->expectException('DomainException');
         $trait = $this->getMockForTrait('TinCan\AsVersionTrait');
         $trait->foo = 'bar';
     }

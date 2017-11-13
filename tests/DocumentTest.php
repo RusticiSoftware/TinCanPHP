@@ -24,10 +24,8 @@ class StubDocument extends Document {}
 
 class DocumentTest extends TestCase {
     public function testExceptionOnInvalidDateTime() {
-        $this->setExpectedException(
-            "InvalidArgumentException",
-            'type of arg1 must be string or DateTime'
-        );
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('type of arg1 must be string or DateTime');
 
         $obj = new StubDocument();
         $obj->setTimestamp(1);

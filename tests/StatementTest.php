@@ -48,17 +48,17 @@ class StatementTest extends TestCase {
     }
 
     public function testFromJSONInvalidNull() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Statement::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Statement::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Statement::fromJSON('{id:"some value"}');
     }
 
@@ -90,20 +90,16 @@ class StatementTest extends TestCase {
     }
 
     public function testSetId() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'arg1 must be a UUID "some invalid id"'
-        );
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('arg1 must be a UUID "some invalid id"');
 
         $obj = new Statement();
         $obj->setId('some invalid id');
     }
 
     public function testSetStoredInvalidArgumentException() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'type of arg1 must be string or DateTime'
-        );
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('type of arg1 must be string or DateTime');
 
         $obj = new Statement();
         $obj->setStored(1);
@@ -602,38 +598,66 @@ class StatementTest extends TestCase {
     public function testSignNoArgs() {
         $obj = new Statement();
 
-        $this->setExpectedException(
-            'PHPUnit_Framework_Error_Warning',
-            (getenv('TRAVIS_PHP_VERSION') == "hhvm" ? 'sign() expects at least 2 parameters, 0 given' : 'Missing argument 1')
-        );
+        # PHP 7.1 promoted "too few arguments" warning to an error exception
+        if (version_compare(PHP_VERSION, '7.1') >= 0) {
+            $this->expectException('ArgumentCountError');
+            $this->expectExceptionMessageRegExp(
+                '/Too few arguments to function ' . get_class($obj) . '::sign(), 0 passed in '
+                . __FILE__ . ' on line \d+ and at least 2 expected/'
+            );
+        } else {
+            # PHPUnit class names changed in 6.0.0
+            if (class_exists('PHPUnit_Framework_Error_Warning')) {
+                $exceptionClass =  'PHPUnit_Framework_Error_Warning';
+            } else {
+                $exceptionClass =  'PHPUnit\Framework\Error\Warning';
+            }
+            $this->expectException($exceptionClass);
+            $this->expectExceptionMessage(
+                (getenv('TRAVIS_PHP_VERSION') == "hhvm" ? 'sign() expects at least 2 parameters, 0 given' : 'Missing argument 1')
+            );
+        }
+
         $obj->sign();
     }
 
     public function testSignOneArg() {
         $obj = new Statement();
 
-        $this->setExpectedException(
-            'PHPUnit_Framework_Error_Warning',
-            (getenv('TRAVIS_PHP_VERSION') == "hhvm" ? 'sign() expects at least 2 parameters, 1 given' : 'Missing argument 2')
-        );
+        # PHP 7.1 promoted "too few arguments" warning to an error exception
+        if (version_compare(PHP_VERSION, '7.1') >= 0) {
+            $this->expectException('ArgumentCountError');
+            $this->expectExceptionMessageRegExp(
+                '/Too few arguments to function ' . get_class($obj) . '::sign(), 1 passed in '
+                . __FILE__ . ' on line \d+ and at least 2 expected/'
+            );
+        } else {
+            # PHPUnit class names changed in 6.0.0
+            if (class_exists('PHPUnit_Framework_Error_Warning')) {
+                $exceptionClass =  'PHPUnit_Framework_Error_Warning';
+            } else {
+                $exceptionClass =  'PHPUnit\Framework\Error\Warning';
+            }
+            $this->expectException($exceptionClass);
+            $this->expectExceptionMessage(
+                (getenv('TRAVIS_PHP_VERSION') == "hhvm" ? 'sign() expects at least 2 parameters, 1 given' : 'Missing argument 2')
+            );
+        }
+
         $obj->sign('test');
     }
 
     public function testSignNoActor() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'actor must be present in signed statement'
-        );
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('actor must be present in signed statement');
 
         $obj = new Statement();
         $obj->sign('test', 'test');
     }
 
     public function testSignNoVerb() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'verb must be present in signed statement'
-        );
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('verb must be present in signed statement');
 
         $obj = new Statement(
             [
@@ -644,10 +668,8 @@ class StatementTest extends TestCase {
     }
 
     public function testSignNoObject() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'object must be present in signed statement'
-        );
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('object must be present in signed statement');
 
         $obj = new Statement(
             [
@@ -659,10 +681,8 @@ class StatementTest extends TestCase {
     }
 
     public function testSignInvalidAlgorithm() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            "Invalid signing algorithm: 'not right'"
-        );
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage("Invalid signing algorithm: 'not right'");
 
         $obj = new Statement(
             [
@@ -677,8 +697,8 @@ class StatementTest extends TestCase {
     }
 
     public function testSignEmptyPassword() {
-        $this->setExpectedException(
-            'Exception',
+        $this->expectException('Exception');
+        $this->expectExceptionMessage(
             'Unable to get private key: error:0906A068:PEM routines:PEM_do_header:bad password read'
         );
 
@@ -695,10 +715,8 @@ class StatementTest extends TestCase {
     }
 
     public function testSignInvalidPassword() {
-        $this->setExpectedExceptionRegExp(
-            'Exception',
-            '/Unable to get private key: error:.*:bad decrypt/'
-        );
+        $this->expectException('Exception');
+        $this->expectExceptionMessageRegExp('/Unable to get private key: error:.*:bad decrypt/');
 
         $obj = new Statement(
             [
@@ -713,8 +731,14 @@ class StatementTest extends TestCase {
     }
 
     public function testSignInvalidX5cErrorToException() {
-        $this->setExpectedExceptionRegExp(
-            'PHPUnit_Framework_Error',
+        # PHPUnit class names changed in 6.0.0
+        if (class_exists('PHPUnit_Framework_Error')) {
+            $exceptionClass =  'PHPUnit_Framework_Error';
+        } else {
+            $exceptionClass =  'PHPUnit\Framework\Error\Error';
+        }
+        $this->expectException($exceptionClass);
+        $this->expectExceptionMessageRegExp(
             '/supplied parameter cannot be coerced into an X509 certificate!/'
         );
 
@@ -731,8 +755,8 @@ class StatementTest extends TestCase {
     }
 
     public function testSignInvalidX5cNoError() {
-        $this->setExpectedExceptionRegExp(
-            'Exception',
+        $this->expectException('Exception');
+        $this->expectExceptionMessageRegExp(
             '/Unable to read certificate for x5c inclusion: .*/'
         );
 
@@ -793,8 +817,14 @@ class StatementTest extends TestCase {
     }
 
     public function testVerifyInvalidX5cErrorToException() {
-        $this->setExpectedExceptionRegExp(
-            'PHPUnit_Framework_Error',
+        # PHPUnit class names changed in 6.0.0
+        if (class_exists('PHPUnit_Framework_Error')) {
+            $exceptionClass =  'PHPUnit_Framework_Error';
+        } else {
+            $exceptionClass =  'PHPUnit\Framework\Error\Error';
+        }
+        $this->expectException($exceptionClass);
+        $this->expectExceptionMessageRegExp(
             '/supplied parameter cannot be coerced into an X509 certificate!/'
         );
 

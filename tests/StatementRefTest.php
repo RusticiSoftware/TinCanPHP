@@ -42,10 +42,8 @@ class StatementRefTest extends TestCase {
     }
 
     public function testSetIdThrowsException() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'arg1 must be a UUID'
-        );
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('arg1 must be a UUID');
         $obj = new StatementRef(['id' => 'foo']);
     }
 

@@ -282,8 +282,8 @@ class ContextActivitiesTest extends TestCase {
      * @dataProvider invalidListSetterDataProvider
      */
     public function testListSetterThrowsInvalidArgumentException($publicMethodName, $invalidValue) {
-        $this->setExpectedException(
-            'InvalidArgumentException',
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage(
             'type of arg1 must be Activity, array of Activity properties, or array of Activity/array of Activity properties'
         );
         $obj = new ContextActivities();
