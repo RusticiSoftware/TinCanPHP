@@ -17,6 +17,8 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
+
 class SignatureComparisonStub {
     use \TinCan\SignatureComparisonTrait;
 
@@ -25,7 +27,7 @@ class SignatureComparisonStub {
     }
 }
 
-class SignatureComparisonTraitTest extends \PHPUnit_Framework_TestCase {
+class SignatureComparisonTraitTest extends TestCase {
     public function testDoMatch() {
         $description = "A test Description";
 

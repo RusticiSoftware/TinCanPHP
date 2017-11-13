@@ -17,9 +17,10 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\Score;
 
-class ScoreTest extends \PHPUnit_Framework_TestCase {
+class ScoreTest extends TestCase {
     use TestCompareWithSignatureTrait;
 
     private $emptyProperties = array(

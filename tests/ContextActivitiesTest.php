@@ -17,10 +17,11 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\Activity;
 use TinCan\ContextActivities;
 
-class ContextActivitiesTest extends \PHPUnit_Framework_TestCase {
+class ContextActivitiesTest extends TestCase {
     use TestCompareWithSignatureTrait;
 
     static private $listProps = ['category', 'parent', 'grouping', 'other'];

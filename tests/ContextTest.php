@@ -17,6 +17,7 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\Agent;
 use TinCan\Context;
 use TinCan\ContextActivities;
@@ -25,7 +26,7 @@ use TinCan\Group;
 use TinCan\StatementRef;
 use TinCan\Util;
 
-class ContextTest extends \PHPUnit_Framework_TestCase {
+class ContextTest extends TestCase {
     use TestCompareWithSignatureTrait;
 
     private $emptyProperties = array(
