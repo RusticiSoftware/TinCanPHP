@@ -602,8 +602,8 @@ class StatementTest extends TestCase {
         if (version_compare(PHP_VERSION, '7.1') >= 0) {
             $this->expectException('ArgumentCountError');
             $this->expectExceptionMessageRegExp(
-                '/Too few arguments to function ' . get_class($obj) . '::sign(), 0 passed in '
-                . __FILE__ . ' on line \d+ and at least 2 expected/'
+                '/Too few arguments to function ' . preg_quote(get_class($obj)) . '::sign\(\),'
+                . ' 0 passed in ' . preg_quote(__FILE__) . ' on line \d+ and at least 2 expected/'
             );
         } else {
             # PHPUnit class names changed in 6.0.0
@@ -628,8 +628,8 @@ class StatementTest extends TestCase {
         if (version_compare(PHP_VERSION, '7.1') >= 0) {
             $this->expectException('ArgumentCountError');
             $this->expectExceptionMessageRegExp(
-                '/Too few arguments to function ' . get_class($obj) . '::sign(), 1 passed in '
-                . __FILE__ . ' on line \d+ and at least 2 expected/'
+                '/Too few arguments to function ' . preg_quote(get_class($obj)) . '::sign\(\),'
+                . ' 1 passed in ' . preg_quote(__FILE__) . ' on line \d+ and at least 2 expected/'
             );
         } else {
             # PHPUnit class names changed in 6.0.0
