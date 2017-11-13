@@ -17,9 +17,10 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\Extensions;
 
-class ExtensionsTest extends \PHPUnit_Framework_TestCase {
+class ExtensionsTest extends TestCase {
     use TestCompareWithSignatureTrait;
 
     public function testInstantiation() {

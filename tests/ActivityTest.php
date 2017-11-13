@@ -17,9 +17,10 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\Activity;
 
-class ActivityTest extends \PHPUnit_Framework_TestCase {
+class ActivityTest extends TestCase {
     use TestCompareWithSignatureTrait;
 
     static private $DEFINITION;
@@ -43,17 +44,17 @@ class ActivityTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testFromJSONInvalidNull() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Activity::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Activity::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Activity::fromJSON('{id:"some value"}');
     }
 

@@ -17,9 +17,10 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\Verb;
 
-class VerbTest extends \PHPUnit_Framework_TestCase {
+class VerbTest extends TestCase {
     use TestCompareWithSignatureTrait;
 
     static private $DISPLAY;
@@ -42,17 +43,17 @@ class VerbTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testFromJSONInvalidNull() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Verb::fromJSON(null);
     }
 
     public function testFromJSONInvalidEmptyString() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Verb::fromJSON('');
     }
 
     public function testFromJSONInvalidMalformed() {
-        $this->setExpectedException('TinCan\JSONParseErrorException');
+        $this->expectException('TinCan\JSONParseErrorException');
         $obj = Verb::fromJSON('{id:"some value"}');
     }
 

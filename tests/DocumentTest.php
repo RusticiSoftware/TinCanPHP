@@ -17,16 +17,15 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\Document;
 
 class StubDocument extends Document {}
 
-class DocumentTest extends \PHPUnit_Framework_TestCase {
+class DocumentTest extends TestCase {
     public function testExceptionOnInvalidDateTime() {
-        $this->setExpectedException(
-            "InvalidArgumentException",
-            'type of arg1 must be string or DateTime'
-        );
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('type of arg1 must be string or DateTime');
 
         $obj = new StubDocument();
         $obj->setTimestamp(1);

@@ -17,6 +17,7 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\Agent;
 use TinCan\Context;
 use TinCan\ContextActivities;
@@ -25,7 +26,7 @@ use TinCan\Group;
 use TinCan\StatementRef;
 use TinCan\Util;
 
-class ContextTest extends \PHPUnit_Framework_TestCase {
+class ContextTest extends TestCase {
     use TestCompareWithSignatureTrait;
 
     private $emptyProperties = array(
@@ -371,10 +372,8 @@ class ContextTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testSetRegistrationInvalidArgumentException() {
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'arg1 must be a UUID'
-        );
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('arg1 must be a UUID');
         $obj = new Context();
         $obj->setRegistration('232....3.3..3./2/2/1m3m3m3');
     }
