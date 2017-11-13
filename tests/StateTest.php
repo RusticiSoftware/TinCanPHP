@@ -17,10 +17,11 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\State;
 use TinCan\Group;
 
-class StateTest extends \PHPUnit_Framework_TestCase {
+class StateTest extends TestCase {
     public function testCanSetActivityWithArray() {
         $args = [
             'id' => COMMON_ACTIVITY_ID,

@@ -17,11 +17,12 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\Agent;
 use TinCan\AgentAccount;
 use TinCan\Group;
 
-class GroupTest extends \PHPUnit_Framework_TestCase {
+class GroupTest extends TestCase {
     use TestCompareWithSignatureTrait;
 
     public function testInstantiation() {

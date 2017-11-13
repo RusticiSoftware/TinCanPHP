@@ -17,6 +17,7 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\Activity;
 use TinCan\Agent;
 use TinCan\Attachment;
@@ -28,7 +29,7 @@ use TinCan\Verb;
 use TinCan\Version;
 use Namshi\JOSE\JWS;
 
-class StatementTest extends \PHPUnit_Framework_TestCase {
+class StatementTest extends TestCase {
     use TestCompareWithSignatureTrait;
 
     public function testInstantiation() {
