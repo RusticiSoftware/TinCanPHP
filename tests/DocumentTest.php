@@ -17,12 +17,11 @@
 
 namespace TinCanTest;
 
-use PHPUnit\Framework\TestCase;
 use TinCan\Document;
 
 class StubDocument extends Document {}
 
-class DocumentTest extends TestCase {
+class DocumentTest extends \PHPUnit_Framework_TestCase {
     public function testExceptionOnInvalidDateTime() {
         $this->setExpectedException(
             "InvalidArgumentException",

@@ -17,10 +17,9 @@
 
 namespace TinCanTest;
 
-use PHPUnit\Framework\TestCase;
 use TinCan\LRSResponse;
 
-class LRSResponseTest extends TestCase {
+class LRSResponseTest extends \PHPUnit_Framework_TestCase {
     public function testInstantiation() {
         $obj = new LRSResponse(true, '', false);
         $this->assertTrue($obj->success);

@@ -17,7 +17,6 @@
 
 namespace TinCanTest;
 
-use PHPUnit\Framework\TestCase;
 use TinCan\Activity;
 use TinCan\Agent;
 use TinCan\Context;
@@ -26,7 +25,7 @@ use TinCan\SubStatement;
 use TinCan\Util;
 use TinCan\Verb;
 
-class SubStatementTest extends TestCase {
+class SubStatementTest extends \PHPUnit_Framework_TestCase {
     use TestCompareWithSignatureTrait;
 
     public function testInstantiation() {

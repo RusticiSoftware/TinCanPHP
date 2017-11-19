@@ -17,12 +17,11 @@
 
 namespace TinCanTest;
 
-use PHPUnit\Framework\TestCase;
 use TinCan\AgentProfile;
 use TinCan\Agent;
 use TinCan\Group;
 
-class AgentProfileTest extends TestCase {
+class AgentProfileTest extends \PHPUnit_Framework_TestCase {
     public function testSetAgent() {
         $profile = new AgentProfile();
         $profile->setAgent(['mbox' => COMMON_MBOX]);

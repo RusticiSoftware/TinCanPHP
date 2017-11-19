@@ -17,10 +17,9 @@
 
 namespace TinCanTest;
 
-use PHPUnit\Framework\TestCase;
 use TinCan\Activity;
 
-class ActivityTest extends TestCase {
+class ActivityTest extends \PHPUnit_Framework_TestCase {
     use TestCompareWithSignatureTrait;
 
     static private $DEFINITION;

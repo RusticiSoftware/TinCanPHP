@@ -17,7 +17,6 @@
 
 namespace TinCanTest;
 
-use PHPUnit\Framework\TestCase;
 use TinCan\StatementBase;
 use TinCan\SubStatement;
 use TinCan\Verb;
@@ -27,7 +26,7 @@ use TinCan\Result;
 
 class StubStatementBase extends StatementBase {}
 
-class StatementBaseTest extends TestCase {
+class StatementBaseTest extends \PHPUnit_Framework_TestCase {
     public function testInstantiation() {
         $obj = new StubStatementBase();
     }

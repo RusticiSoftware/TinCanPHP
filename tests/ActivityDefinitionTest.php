@@ -17,10 +17,9 @@
 
 namespace TinCanTest;
 
-use PHPUnit\Framework\TestCase;
 use TinCan\ActivityDefinition;
 
-class ActivityDefinitionTest extends TestCase {
+class ActivityDefinitionTest extends \PHPUnit_Framework_TestCase {
     const NAME = 'testName';
 
     private $emptyProperties = array(
