@@ -128,14 +128,6 @@ class RemoteLRS implements LRSInterface
             }
         }
 
-        //
-        // If header is an array, when HHVM executes fopen(),
-        // it sends an 'Array to string conversion' notice,
-        // which is converted to an ErrorException by our error handler.
-        // Luckily, header is also allowed to be a string.
-        //
-        $http['header'] = implode("\r\n", $http['header']);
-
         $success = false;
 
         //

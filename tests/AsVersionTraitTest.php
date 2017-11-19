@@ -17,9 +17,7 @@
 
 namespace TinCanTest;
 
-use PHPUnit\Framework\TestCase;
-
-class AsVersionTraitTest extends TestCase
+class AsVersionTraitTest extends \PHPUnit_Framework_TestCase
 {
     public function testTraitExists() {
         $this->assertTrue(trait_exists('TinCan\AsVersionTrait'));

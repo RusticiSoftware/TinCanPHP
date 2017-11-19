@@ -17,10 +17,9 @@
 
 namespace TinCanTest;
 
-use PHPUnit\Framework\TestCase;
 use TinCan\Util;
 
-class UtilTest extends TestCase {
+class UtilTest extends \PHPUnit_Framework_TestCase {
     public function testGetUUID() {
         $result = Util::getUUID();
 

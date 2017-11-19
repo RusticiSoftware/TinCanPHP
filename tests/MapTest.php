@@ -17,12 +17,11 @@
 
 namespace TinCanTest;
 
-use PHPUnit\Framework\TestCase;
 use TinCan\Map;
 
 class StubMap extends Map {}
 
-class MapTest extends TestCase {
+class MapTest extends \PHPUnit_Framework_TestCase {
     public function testInstantiation() {
         $obj = new StubMap();
     }

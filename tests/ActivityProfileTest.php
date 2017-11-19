@@ -17,11 +17,10 @@
 
 namespace TinCanTest;
 
-use PHPUnit\Framework\TestCase;
 use TinCan\ActivityProfile;
 use TinCan\Activity;
 
-class ActivityProfileTest extends TestCase {
+class ActivityProfileTest extends \PHPUnit_Framework_TestCase {
     public function testSetActivity() {
         $profile = new ActivityProfile();
         $profile->setActivity(['id' => COMMON_ACTIVITY_ID]);

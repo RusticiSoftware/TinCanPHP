@@ -15,12 +15,9 @@
     limitations under the License.
 */
 
-namespace TinCanTest;
-
-use PHPUnit\Framework\TestCase;
 use TinCan\JSONParseErrorException;
 
-class JSONParseErrorExceptionTest extends TestCase
+class JSONParseErrorExceptionTest extends PHPUnit_Framework_TestCase
 {
     private $exception;
     private $malformedValue  = '.....';

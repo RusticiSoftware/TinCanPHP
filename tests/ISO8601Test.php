@@ -19,11 +19,10 @@ namespace TinCanTest;
 
 use DateTime;
 use DateTimeZone;
-use PHPUnit\Framework\TestCase;
 use TinCan\Statement;
 use TinCan\State;
 
-class ISO8601Test extends TestCase {
+class ISO8601Test extends \PHPUnit_Framework_TestCase {
     public function testProperties() {
         $str_datetime = '2014-12-15T19:16:05+00:00';
         $str_datetime_tz = '2014-12-15T13:16:05-06:00';

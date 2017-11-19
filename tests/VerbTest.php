@@ -17,10 +17,9 @@
 
 namespace TinCanTest;
 
-use PHPUnit\Framework\TestCase;
 use TinCan\Verb;
 
-class VerbTest extends TestCase {
+class VerbTest extends \PHPUnit_Framework_TestCase {
     use TestCompareWithSignatureTrait;
 
     static private $DISPLAY;

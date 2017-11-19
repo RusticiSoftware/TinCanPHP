@@ -17,10 +17,9 @@
 
 namespace TinCanTest;
 
-use PHPUnit\Framework\TestCase;
 use TinCan\Person;
 
-class PersonTest extends TestCase {
+class PersonTest extends \PHPUnit_Framework_TestCase {
     use TestCompareWithSignatureTrait;
 
     public function testInstantiation() {
