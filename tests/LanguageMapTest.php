@@ -17,9 +17,10 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\LanguageMap;
 
-class LanguageMapTest extends \PHPUnit_Framework_TestCase {
+class LanguageMapTest extends TestCase {
     const NAME = 'testName';
 
     public function testInstantiation() {

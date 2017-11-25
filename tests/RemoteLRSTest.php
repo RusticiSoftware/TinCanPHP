@@ -17,6 +17,7 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\Activity;
 use TinCan\Agent;
 use TinCan\Attachment;
@@ -28,7 +29,7 @@ use TinCan\Util;
 use TinCan\Verb;
 use TinCan\Version;
 
-class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
+class RemoteLRSTest extends TestCase {
     static private $endpoint;
     static private $version;
     static private $username;

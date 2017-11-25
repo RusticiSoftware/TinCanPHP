@@ -13,7 +13,22 @@ For more information about the Experience API visit:
 
 http://experienceapi.com/
 
+### Requirements
+
 Requires PHP 5.5 or later. (If you must run something older you should look at the 0.x release series or the PHP_5_2 branch.)
+
+Compatible with HHVM 3.4.0 through 3.14.5.
+HHVM 3.15.0 introduced a bug that causes ```RemoteLRS->sendRequest()``` to fail. The
+[issue](https://github.com/facebook/hhvm/issues/7684) has been reported and fixed in
+[PR #8048](https://github.com/facebook/hhvm/pull/8048). Until the fix is released, edit ```RemoteLRS->sendRequest()```,
+search for this line: 
+```php
+$context = stream_context_create(array( 'http' => $http ));
+```
+and precede it with this line.
+```php
+$http['header'] = implode("\r\n", $http['header']);
+```
 
 ### Installation
 

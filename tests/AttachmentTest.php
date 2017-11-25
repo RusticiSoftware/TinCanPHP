@@ -17,10 +17,11 @@
 
 namespace TinCanTest;
 
+use PHPUnit\Framework\TestCase;
 use TinCan\Attachment;
 use TinCan\Version;
 
-class AttachmentTest extends \PHPUnit_Framework_TestCase {
+class AttachmentTest extends TestCase {
     use TestCompareWithSignatureTrait;
 
     const USAGE_TYPE     = 'http://id.tincanapi.com/attachment/supporting_media';
