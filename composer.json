@@ -31,7 +31,7 @@
     },
     "require-dev": {
         "phpdocumentor/phpdocumentor": "2.*",
-        "phpunit/phpunit": "@stable"
+        "phpunit/phpunit": "^4"
     },
     "autoload": {
         "psr-4": {

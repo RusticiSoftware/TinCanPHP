@@ -601,20 +601,34 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
     public function testSignNoArgs() {
         $obj = new Statement();
 
-        $this->setExpectedException(
-            'PHPUnit_Framework_Error_Warning',
-            (getenv('TRAVIS_PHP_VERSION') == "hhvm" ? 'sign() expects at least 2 parameters, 0 given' : 'Missing argument 1')
-        );
+        if (PHP_MAJOR_VERSION >= 7 && PHP_MINOR_VERSION >= 1) {
+            $this->setExpectedException(
+                'ArgumentCountError'
+            );
+        }
+        else {
+            $this->setExpectedException(
+                'PHPUnit_Framework_Error_Warning',
+                (getenv('TRAVIS_PHP_VERSION') == "hhvm" ? 'sign() expects at least 2 parameters, 0 given' : 'Missing argument 1')
+            );
+        }
         $obj->sign();
     }
 
     public function testSignOneArg() {
         $obj = new Statement();
 
-        $this->setExpectedException(
-            'PHPUnit_Framework_Error_Warning',
-            (getenv('TRAVIS_PHP_VERSION') == "hhvm" ? 'sign() expects at least 2 parameters, 1 given' : 'Missing argument 2')
-        );
+        if (PHP_MAJOR_VERSION >= 7 && PHP_MINOR_VERSION >= 1) {
+            $this->setExpectedException(
+                'ArgumentCountError'
+            );
+        }
+        else {
+            $this->setExpectedException(
+                'PHPUnit_Framework_Error_Warning',
+                (getenv('TRAVIS_PHP_VERSION') == "hhvm" ? 'sign() expects at least 2 parameters, 1 given' : 'Missing argument 2')
+            );
+        }
         $obj->sign('test');
     }
 
