@@ -374,6 +374,44 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('TinCan\StatementsResult', $response->content, 'content');
     }
 
+    public function testRetrieveStatementWithFileUrlAttachments() {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $attachments = new Attachment(); 
+        $pdfUrl = 'http://www.adlnet.gov/wp-content/uploads/2013/10/xAPI_v1.0.1-2013-10-01.pdf';
+        // Store Attachments in and retrieve them from the LRS 
+        $attachments 
+        ->setUsageType('http://adlnet.gov/expapi/activities/media') 
+        ->setDisplay(['en-US' => 'Test PDF document']) 
+        ->setContentType('application/pdf') 
+        ->setLength(filesize('tests/files/attachment.pdf')) 
+        ->setSha2(hash_file('sha256', 'tests/files/attachment.pdf')) // hash of the attachment data 
+        ->setFileUrl($pdfUrl) 
+        ->setDescription(['en-US' => 'A test document used in an Attachments object example.']);
+
+        // Compose statement for sending to the LRS 
+        $statement = new Statement(
+            [
+                'actor' => [
+                    'mbox' => COMMON_MBOX
+                ],
+                'verb' => [
+                    'id' => COMMON_VERB_ID
+                ],
+                'object' => new Activity([
+                    'id' => COMMON_ACTIVITY_ID
+                ])
+            ]
+        );
+        $statement->setAttachments([$attachments]);
+        $saveResponse = $lrs->saveStatement($statement);
+        $statementResponse = $lrs->retrieveStatement($saveResponse->content->getId(), ['attachments' => true]);
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $statementResponse);
+        $this->assertTrue($statementResponse->success);
+        $this->assertInstanceOf('TinCan\Statement', $statementResponse->content);
+        $this->assertEquals($pdfUrl, $statementResponse->content->getAttachments()[0]->getFileUrl());
+    }
+
     public function testRetrieveStateIds() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->retrieveStateIds(

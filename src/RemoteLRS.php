@@ -479,7 +479,9 @@ class RemoteLRS implements LRSInterface
                 }
 
                 foreach ($response->content->getAttachments() as $attachment) {
-                    $attachment->setContent($attachmentsByHash[$attachment->getSha2()]['body']);
+                    if (array_key_exists($attachment->getSha2(), $attachmentsByHash)) {
+                        $attachment->setContent($attachmentsByHash[$attachment->getSha2()]['body']);
+                    }
                 }
             }
             else {
@@ -555,7 +557,9 @@ class RemoteLRS implements LRSInterface
 
             foreach ($response->content->getStatements() as $st) {
                 foreach ($st->getAttachments() as $attachment) {
-                    $attachment->setContent($attachmentsByHash[$attachment->getSha2()]['body']);
+                    if (array_key_exists($attachment->getSha2(), $attachmentsByHash)) {
+                        $attachment->setContent($attachmentsByHash[$attachment->getSha2()]['body']);
+                    }
                 }
             }
 

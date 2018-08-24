@@ -32,6 +32,8 @@ final class Version
      *
      * @var string
      */
+    const V103 = "1.0.3";
+    const V102 = "1.0.2";
     const V101 = "1.0.1";
     const V100 = "1.0.0";
     const V095 = "0.95";
@@ -39,6 +41,8 @@ final class Version
 
     /** @var array string => bool */
     private static $supported = [
+        self::V103 => true,
+        self::V102 => true,
         self::V101 => true,
         self::V100 => true,
         self::V095 => false

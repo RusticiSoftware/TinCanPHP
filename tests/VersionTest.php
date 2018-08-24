@@ -42,7 +42,7 @@ class VersionTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testIsLatestReturnsBool() {
-        $this->assertTrue(Version::v101()->isLatest(), "1.0.1 should be the latest version");
+        $this->assertTrue(Version::v103()->isLatest(), "1.0.3 should be the latest version");
         $this->assertFalse(Version::v095()->isLatest(), "0.95 should not be the latest version");
     }
 
@@ -52,7 +52,7 @@ class VersionTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testLatest() {
-        $this->assertSame(Version::V101, Version::latest(), "match latest");
+        $this->assertSame(Version::V103, Version::latest(), "match latest");
     }
 
     public function testVersionFromString() {
