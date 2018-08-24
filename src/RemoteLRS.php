@@ -510,7 +510,12 @@ class RemoteLRS implements LRSInterface
             ) as $k
         ) {
             if (isset($query[$k])) {
-                $result[$k] = $query[$k]->getId();
+                if (is_string($query[$k])) {
+                    $result[$k] = $query[$k];
+                }
+                else {
+                    $result[$k] = $query[$k]->getId();
+                }
             }
         }
         foreach (
