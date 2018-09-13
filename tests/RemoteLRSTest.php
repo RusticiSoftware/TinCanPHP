@@ -377,15 +377,15 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
     public function testRetrieveStatementWithFileUrlAttachments() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $attachments = new Attachment(); 
-        $pdfUrl = 'http://www.adlnet.gov/wp-content/uploads/2013/10/xAPI_v1.0.1-2013-10-01.pdf';
+        $attachmentUrl = 'https://github.com/RusticiSoftware/TinCanPHP/raw/master/tests/files/image.jpg';
         // Store Attachments in and retrieve them from the LRS 
         $attachments 
-        ->setUsageType('http://adlnet.gov/expapi/activities/media') 
-        ->setDisplay(['en-US' => 'Test PDF document']) 
-        ->setContentType('application/pdf') 
-        ->setLength(filesize('tests/files/attachment.pdf')) 
-        ->setSha2(hash_file('sha256', 'tests/files/attachment.pdf')) // hash of the attachment data 
-        ->setFileUrl($pdfUrl) 
+        ->setUsageType('http://id.tincanapi.com/attachment/supporting_media') 
+        ->setDisplay(['en-US' => 'Test image attachment']) 
+        ->setContentType('image/jpg') 
+        ->setLength(filesize('tests/files/image.jpg')) 
+        ->setSha2(hash_file('sha256', 'tests/files/image.jpg')) // hash of the attachment data 
+        ->setFileUrl($attachmentUrl) 
         ->setDescription(['en-US' => 'A test document used in an Attachments object example.']);
 
         // Compose statement for sending to the LRS 
@@ -409,7 +409,7 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('TinCan\LRSResponse', $statementResponse);
         $this->assertTrue($statementResponse->success);
         $this->assertInstanceOf('TinCan\Statement', $statementResponse->content);
-        $this->assertEquals($pdfUrl, $statementResponse->content->getAttachments()[0]->getFileUrl());
+        $this->assertEquals($attachmentUrl, $statementResponse->content->getAttachments()[0]->getFileUrl());
     }
 
     public function testRetrieveStateIds() {
