@@ -138,6 +138,18 @@ class RemoteLRS implements LRSInterface
         //
         set_error_handler(
             function ($errno, $errstr, $errfile, $errline, array $errcontext) {
+                // "!== false" is intentional. strpos() can return 0, which is falsey, but returning
+                // 0 matches our "true" condition. Using strict equality to avoid that confusion.
+                if ($errno == E_NOTICE && strpos($errstr, 'Array to string conversion') !== false) {
+                    // The way HHVM handles array comparison results in a Notice being raised in fopen(),
+                    // but that's expected here and won't affect functionality. We don't want to throw
+                    // those Notices as Errors. Checking if this is a Notice before looking at the
+                    // contents of the string to hopefully minimize any performance impact here.
+                    // See https://github.com/facebook/hhvm/issues/1561 for the "won't fix" from HHVM.
+
+                    return true;
+                }
+
                 throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
             }
         );
@@ -479,7 +491,9 @@ class RemoteLRS implements LRSInterface
                 }
 
                 foreach ($response->content->getAttachments() as $attachment) {
-                    $attachment->setContent($attachmentsByHash[$attachment->getSha2()]['body']);
+                    if (array_key_exists($attachment->getSha2(), $attachmentsByHash)) {
+                        $attachment->setContent($attachmentsByHash[$attachment->getSha2()]['body']);
+                    }
                 }
             }
             else {
@@ -555,7 +569,9 @@ class RemoteLRS implements LRSInterface
 
             foreach ($response->content->getStatements() as $st) {
                 foreach ($st->getAttachments() as $attachment) {
-                    $attachment->setContent($attachmentsByHash[$attachment->getSha2()]['body']);
+                    if (array_key_exists($attachment->getSha2(), $attachmentsByHash)) {
+                        $attachment->setContent($attachmentsByHash[$attachment->getSha2()]['body']);
+                    }
                 }
             }
 

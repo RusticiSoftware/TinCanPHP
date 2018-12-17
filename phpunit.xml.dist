@@ -14,11 +14,9 @@
     <testsuites>
         <testsuite name="TinCanPHP Test Suite">
             <directory suffix="Test.php">tests</directory>
-            <exclude>
-                <directory>tests/config</directory>
-                <directory>tests/files</directory>
-                <directory>tests/keys</directory>
-            </exclude>
+            <exclude>tests/config</exclude>
+            <exclude>tests/files</exclude>
+            <exclude>tests/keys</exclude>
         </testsuite>
     </testsuites>
 
