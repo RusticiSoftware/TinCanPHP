@@ -329,6 +329,24 @@ class RemoteLRSTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('TinCan\StatementsResult', $response->content);
     }
 
+    public function testQueryStatementsWithActivityId() {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $response = $lrs->queryStatements(['activity' => COMMON_ACTIVITY_ID]);
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertTrue($response->success, 'success');
+        $this->assertInstanceOf('TinCan\StatementsResult', $response->content);
+    }
+
+    public function testQueryStatementsWithVerbId() {
+        $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
+        $response = $lrs->queryStatements(['verb' => COMMON_VERB_ID]);
+
+        $this->assertInstanceOf('TinCan\LRSResponse', $response);
+        $this->assertTrue($response->success, 'success');
+        $this->assertInstanceOf('TinCan\StatementsResult', $response->content);
+    }
+
     public function testQueryStatementsWithAttachments() {
         $lrs = new RemoteLRS(self::$endpoint, self::$version, self::$username, self::$password);
         $response = $lrs->queryStatements(['limit' => 4, 'attachments' => true]);
