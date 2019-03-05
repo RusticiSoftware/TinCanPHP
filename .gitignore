@@ -16,3 +16,10 @@ doc/coverage
 # wild
 todo.md
 
+# PhpStorm
+.idea
+
+# Zend Studio
+.buildpath
+.project
+.settings
