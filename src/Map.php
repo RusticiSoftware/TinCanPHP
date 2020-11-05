@@ -46,7 +46,7 @@ abstract class Map implements VersionableInterface
     }
 
     public function isEmpty() {
-        return count($this->_map) === 0;
+        return count((array)($this->_map)) === 0;
     }
 
     public function __call($func, $args) {
