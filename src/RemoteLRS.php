@@ -118,7 +118,7 @@ class RemoteLRS implements LRSInterface
             }
         }
         if (isset($options['params']) && count($options['params']) > 0) {
-            $url .= '?' . http_build_query($options['params'], null, '&', PHP_QUERY_RFC3986);
+            $url .= '?' . http_build_query($options['params'], '', '&', PHP_QUERY_RFC3986);
         }
 
         if (($method === 'PUT' || $method === 'POST') && isset($options['content'])) {
