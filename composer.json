@@ -1,8 +1,8 @@
 {
-    "name": "rusticisoftware/tincan",
+    "name": "taylora/tincan",
     "type": "library",
     "description": "Experience API (Tin Can API) Library",
-    "homepage": "http://rusticisoftware.github.io/TinCanPHP/",
+    "homepage": "https://github.com/TayloraLMS/TinCanPHP",
     "keywords": [
         "tin can",
         "tincan",
