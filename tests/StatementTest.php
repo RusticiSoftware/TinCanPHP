@@ -817,7 +817,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
                 'x5c' => ['notAValidCertificate']
             ]
         );
-        $content->setPayload(['prop' => 'val'], false);
+        $content->setPayload(['prop' => 'val']);
         $content->sign(openssl_pkey_get_private('file://' . $GLOBALS['KEYs']['private'], $GLOBALS['KEYs']['password']));
 
         $obj = new Statement(
@@ -847,7 +847,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
                 'x5c' => ['notAValidCertificate']
             ]
         );
-        $content->setPayload(['prop' => 'val'], false);
+        $content->setPayload(['prop' => 'val']);
         $content->sign(openssl_pkey_get_private('file://' . $GLOBALS['KEYs']['private'], $GLOBALS['KEYs']['password']));
 
         $obj = new Statement(
@@ -879,7 +879,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
                 'alg' => 'RS256'
             ]
         );
-        $content->setPayload(['prop' => 'val'], false);
+        $content->setPayload(['prop' => 'val']);
         $content->sign(openssl_pkey_get_private('file://' . $GLOBALS['KEYs']['private'], $GLOBALS['KEYs']['password']));
 
         $obj = new Statement(
@@ -911,7 +911,7 @@ class StatementTest extends \PHPUnit_Framework_TestCase {
                 'alg' => 'RS256'
             ]
         );
-        $content->setPayload(['prop' => 'val'], false);
+        $content->setPayload(['prop' => 'val']);
         $content->sign(openssl_pkey_get_private('file://' . $GLOBALS['KEYs']['private'], $GLOBALS['KEYs']['password']));
 
         $obj = new Statement(

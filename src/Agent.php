@@ -149,6 +149,8 @@ class Agent implements VersionableInterface, StatementTargetInterface, Comparabl
         if (isset($this->mbox)) {
             return sha1($this->mbox);
         }
+
+        return null;
     }
     public function setOpenid($value) { $this->openid = $value; return $this; }
     public function getOpenid() { return $this->openid; }
